@@ -33,20 +33,29 @@ class AdaptiveTableContainer extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           // S'assurer qu'on a une largeur minimum
-          final minWidth = constraints.maxWidth > 0 ? constraints.maxWidth : 200.0;
+          final availableWidth = constraints.maxWidth > 0 ? constraints.maxWidth : 200.0;
           final maxHeight = constraints.maxHeight > 0 ? constraints.maxHeight : 500.0;
           
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: minWidth,
-                minHeight: 100.0, // Assurer une hauteur minimum
-                maxHeight: maxHeight, // Assurer une hauteur maximum
-              ),
-              child: child,
-            ),
-          );
+          return enableHorizontalScroll
+              ? SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: availableWidth,
+                      minHeight: 100.0,
+                      maxHeight: maxHeight,
+                    ),
+                    child: child,
+                  ),
+                )
+              : Container(
+                  width: availableWidth,
+                  constraints: BoxConstraints(
+                    minHeight: 100.0,
+                    maxHeight: maxHeight,
+                  ),
+                  child: child,
+                );
         },
       ),
     );
