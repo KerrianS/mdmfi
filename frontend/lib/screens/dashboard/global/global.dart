@@ -245,6 +245,42 @@ class _GlobalState extends State<Global> {
             icon: Icon(Icons.euro, size: 16),
             label: Text(isKEuros ? 'Euros' : 'KEuros', style: TextStyle(fontWeight: FontWeight.w500)),
           ),
+          // Bouton info jaune
+          Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow.shade200,
+                foregroundColor: Colors.black,
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                elevation: 1,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Row(
+                      children: [
+                        Icon(Icons.info, color: Colors.yellow.shade200),
+                        SizedBox(width: 8),
+                        Text('Information'),
+                      ],
+                    ),
+                    content: Text('Chaque élément surligné en jaune est relié au calcul de l\'indicateur que vous avez sélectionné !'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: Text('Fermer'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              icon: Icon(Icons.info, color: Colors.black, size: 20),
+              label: Text('Info'),
+            ),
+          ),
           Spacer(),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(

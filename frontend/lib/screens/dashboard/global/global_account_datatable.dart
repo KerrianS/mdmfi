@@ -106,7 +106,7 @@ class GlobalAccountDataTable extends StatelessWidget {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
-            showCheckboxColumn: false, columnSpacing: 285, headingRowHeight: 32, dataRowMinHeight: 28, dataRowMaxHeight: 32,
+            showCheckboxColumn: false, columnSpacing: 16, headingRowHeight: 32, dataRowMinHeight: 28, dataRowMaxHeight: 32,
             columns: [
               const DataColumn(
                 label: SizedBox(
