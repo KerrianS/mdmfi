@@ -99,13 +99,24 @@ class NavisionIndicateurMensuel {
     this.associe = const [],
   });
 
+  // Helper method to clean text corruption
+  static String _cleanText(String text) {
+    return text
+        .replaceAll('PRODUCTSTOCION', 'PRODUCTION')
+        .replaceAll('SERVICEEURSS', 'SERVICES')
+        .replaceAll('EXTÉRIEURS', 'EXTÉRIEURS')
+        .trim();
+  }
+
   factory NavisionIndicateurMensuel.fromJson(Map<String, dynamic> json) {
     return NavisionIndicateurMensuel(
       indicateur: json['indicateur'],
-      libelle: json['libelle'],
+      libelle: _cleanText(json['libelle']),
       initiales: json['initiales'] ?? '',
       valeur: (json['valeur'] as num).toDouble(),
-      associe: (json['associe'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      associe: (json['associe'] as List?)
+          ?.map((e) => _cleanText(e.toString()))
+          .toList() ?? [],
     );
   }
 
@@ -169,12 +180,21 @@ class NavisionSousIndicateurMensuel {
     required this.montant,
   });
 
+  // Helper method to clean text corruption
+  static String _cleanText(String text) {
+    return text
+        .replaceAll('PRODUCTSTOCION', 'PRODUCTION')
+        .replaceAll('SERVICEEURSS', 'SERVICES')
+        .replaceAll('EXTÉRIEURS', 'EXTÉRIEURS')
+        .trim();
+  }
+
   factory NavisionSousIndicateurMensuel.fromJson(Map<String, dynamic> json) {
     return NavisionSousIndicateurMensuel(
       sousIndicateur: json['sousIndicateur'] ?? '',
-      libelle: json['libelle'] ?? '',
+      libelle: _cleanText(json['libelle'] ?? ''),
       initiales: json['initiales'] ?? '',
-      formule: json['formule'] ?? '',
+      formule: _cleanText(json['formule'] ?? ''),
       montant: (json['montant'] as num).toDouble(),
     );
   }
@@ -247,12 +267,23 @@ class NavisionIndicateurGlobal {
     required this.associe,
   });
 
+  // Helper method to clean text corruption
+  static String _cleanText(String text) {
+    return text
+        .replaceAll('PRODUCTSTOCION', 'PRODUCTION')
+        .replaceAll('SERVICEEURSS', 'SERVICES')
+        .replaceAll('EXTÉRIEURS', 'EXTÉRIEURS')
+        .trim();
+  }
+
   factory NavisionIndicateurGlobal.fromJson(Map<String, dynamic> json) {
     return NavisionIndicateurGlobal(
       indicateur: json['indicateur'] ?? '',
-      libelle: json['libelle'] ?? '',
+      libelle: _cleanText(json['libelle'] ?? ''),
       valeur: (json['valeur'] as num).toDouble(),
-      associe: (json['associe'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      associe: (json['associe'] as List<dynamic>?)
+          ?.map((e) => _cleanText(e.toString()))
+          .toList() ?? [],
     );
   }
 
@@ -321,14 +352,25 @@ class NavisionSousIndicateurGlobal {
     };
   }
 
+  // Helper method to clean text corruption
+  static String _cleanText(String text) {
+    return text
+        .replaceAll('PRODUCTSTOCION', 'PRODUCTION')
+        .replaceAll('SERVICEEURSS', 'SERVICES')
+        .replaceAll('EXTÉRIEURS', 'EXTÉRIEURS')
+        .trim();
+  }
+
   factory NavisionSousIndicateurGlobal.fromJson(Map<String, dynamic> json) {
     return NavisionSousIndicateurGlobal(
       sousIndicateur: json['sousIndicateur'] ?? '',
-      libelle: json['libelle'] ?? '',
+      libelle: _cleanText(json['libelle'] ?? ''),
       initiales: json['initiales'] ?? '',
       montant: (json['montant'] as num).toDouble(),
-      formule: json['formule'] ?? '',
-      associe: (json['associe'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      formule: _cleanText(json['formule'] ?? ''),
+      associe: (json['associe'] as List<dynamic>?)
+          ?.map((e) => _cleanText(e.toString()))
+          .toList() ?? [],
     );
   }
 }
