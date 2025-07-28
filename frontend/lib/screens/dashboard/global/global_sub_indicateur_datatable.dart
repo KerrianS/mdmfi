@@ -69,6 +69,14 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
           final libelleNorm = (libelle ?? '').trim().toUpperCase();
           final sousIndicateursAssociesNorm = sousIndicateursAssocies.map((e) => e.trim().toUpperCase()).toList();
           final isAssocie = sousIndicateursAssociesNorm.contains(libelleNorm) || sousIndicateursAssociesNorm.contains(sousIndNorm);
+          
+          // Debug log pour chaque sous-indicateur
+          if (sousIndicateursAssocies.isNotEmpty) {
+            print('[DEBUG-TABLE] Sous-indicateur: $sousInd | Libellé: $libelle');
+            print('[DEBUG-TABLE] sousIndNorm: $sousIndNorm | libelleNorm: $libelleNorm');
+            print('[DEBUG-TABLE] sousIndicateursAssociesNorm: $sousIndicateursAssociesNorm');
+            print('[DEBUG-TABLE] isAssocie: $isAssocie');
+          }
           return DataRow(
             selected: isSelected,
             onSelectChanged: (_) => onSelectSousIndicateur(sousInd),

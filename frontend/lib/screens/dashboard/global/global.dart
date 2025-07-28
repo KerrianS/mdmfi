@@ -364,8 +364,8 @@ class _GlobalState extends State<Global> {
   }
   // Helper pour obtenir la liste des sous-indicateurs associés à l'indicateur sélectionné
   List<String> getSousIndicateursAssocies() {
-    // On veut la liste des sous-indicateurs dont le code OU le libellé correspond à un des éléments de la liste associe de l'indicateur sélectionné (case-insensitive, trim)
-    if (sousIndicsResponse == null || selectedIndicateur == null || indicateursResponse == null) return [];
+    // Retourne la liste associe de l'indicateur sélectionné (depuis le backend)
+    if (selectedIndicateur == null || indicateursResponse == null) return [];
 
     // Récupérer la liste des libellés/codes associés à l'indicateur sélectionné (dans indicateursResponse)
     List<String> associeLibelles = [];
@@ -381,23 +381,7 @@ class _GlobalState extends State<Global> {
       if (associeLibelles.isNotEmpty) break;
     }
     print('[DEBUG-PARENT] associeLibelles récupérés pour $selectedIndicateur : $associeLibelles');
-
-    final Set<String> associeSet = associeLibelles.map((e) => e.trim().toUpperCase()).toSet();
-    final Set<String> associes = {};
-    for (final an in sousIndicsResponse!.sousIndicateurs.keys) {
-      final indicMap = sousIndicsResponse!.sousIndicateurs[an] ?? {};
-      final sousList = indicMap[selectedIndicateur] ?? [];
-      for (final sous in sousList) {
-        final codeNorm = sous.sousIndicateur.trim().toUpperCase();
-        final libelleNorm = sous.libelle.trim().toUpperCase();
-        print('[DEBUG] Sous-indicateur: ${sous.sousIndicateur} | codeNorm: $codeNorm | libelleNorm: $libelleNorm | AssocieSet: $associeSet');
-        if (associeSet.contains(codeNorm) || associeSet.contains(libelleNorm)) {
-          associes.add(sous.sousIndicateur);
-        }
-      }
-    }
-    print('[DEBUG-PARENT] Liste finale des sousIndicateursAssocies retournée : $associes');
-    return associes.toList();
+    return associeLibelles;
   }
 
   List<String> getAnnees() {
@@ -656,6 +640,7 @@ class _GlobalState extends State<Global> {
                   });
                 },
                 sousIndicsResponse: sousIndicsResponse,
+                sousIndicateursAssocies: getSousIndicateursAssocies(),
                 isKEuros: isKEuros,
               ),
             ),
