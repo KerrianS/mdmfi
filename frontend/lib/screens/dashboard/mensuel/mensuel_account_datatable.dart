@@ -40,23 +40,29 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
       dataRowMaxHeight: 32,
       columns: [
         DataColumn(
-          label: Text('N° compte', style: TextStyle(fontSize: 13)),
+          label: Container(
+            width: 110,
+            alignment: Alignment.centerLeft,
+            child: Text('N° compte', style: TextStyle(fontSize: 13)),
+          ),
           numeric: false,
         ),
         DataColumn(
           label: Container(
             width: 150,
+            alignment: Alignment.centerLeft,
             child: Text('Libellé', style: TextStyle(fontSize: 13)),
           ),
         ),
         ...widget.mois.map((mois) => DataColumn(
               label: Container(
-                alignment: Alignment.center,
                 width: 100,
+                alignment: Alignment.centerRight,
                 child: Text(
                   mois,
                   style: TextStyle(fontSize: 13),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.right,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             )),
@@ -76,7 +82,8 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
           onSelectChanged: widget.onRowSelect != null ? (_) => widget.onRowSelect!(i) : null,
           cells: [
             DataCell(
-              Align(
+              Container(
+                width: 110,
                 alignment: Alignment.centerLeft,
                 child: Text(
                   compte.codeCompte,
@@ -85,12 +92,14 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).brightness == Brightness.dark ? Color(0xFFE0E0E0) : Colors.black,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
             DataCell(
               Container(
                 width: 150,
+                alignment: Alignment.centerLeft,
                 child: Text(
                   compte.libelleCompte,
                   style: TextStyle(fontSize: 13, color: Theme.of(context).brightness == Brightness.dark ? Color(0xFFE0E0E0) : Colors.black),
@@ -102,12 +111,13 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
               final montant = widget.montantsParMois[compte.codeCompte]?[mois] ?? 0.0;
               return DataCell(
                 Container(
-                  alignment: Alignment.center,
                   width: 100,
+                  alignment: Alignment.centerRight,
                   child: Text(
                     montant.format(),
                     style: TextStyle(fontSize: 13, color: Theme.of(context).brightness == Brightness.dark ? Color(0xFFE0E0E0) : Colors.black),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.right,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               );

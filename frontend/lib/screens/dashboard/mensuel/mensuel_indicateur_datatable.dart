@@ -46,28 +46,23 @@ class MensuelIndicateurDataTable extends StatelessWidget {
 
     return DataTable(
       showCheckboxColumn: false,
-      columnSpacing: 16,
+      columnSpacing: 12,
       headingRowHeight: 32,
       dataRowMinHeight: 28,
       dataRowMaxHeight: 32,
       columns: [
-        const DataColumn(
-          label: Row(
-            children: [
-              Text('Indicateur', style: TextStyle(fontSize: 13)),
-              SizedBox(width: 35),
-            ],
+        DataColumn(
+          label: Container(
+            width: 110,
+            alignment: Alignment.centerLeft,
+            child: Text('Indicateur', style: TextStyle(fontSize: 13)),
           ),
         ),
         DataColumn(
           label: Container(
             width: 150,
-            child: Row(
-              children: [
-                Text('Libellé', style: TextStyle(fontSize: 13)),
-                SizedBox(width: 16),
-              ],
-            ),
+            alignment: Alignment.centerLeft,
+            child: Text('Libellé', style: TextStyle(fontSize: 13)),
           ),
         ),
         ...mois.map((m) => DataColumn(
@@ -98,7 +93,6 @@ class MensuelIndicateurDataTable extends StatelessWidget {
           }
         }
         final isSelected = ind == selectedIndicateur;
-        // Jaune si le code indicateur (ind) ou le libellé est dans la liste associe de l'indicateur sélectionné
         final isAssocie = associeLibelles.contains(ind) || (libelle != null && associeLibelles.contains(libelle));
         return DataRow(
           selected: isSelected,
@@ -117,15 +111,20 @@ class MensuelIndicateurDataTable extends StatelessWidget {
           }),
           cells: [
             DataCell(
-              Text(
-                ind,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
+              Container(
+                width: 110,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  ind,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             DataCell(
               Container(
                 width: 150,
+                alignment: Alignment.centerLeft,
                 child: Text(
                   libelle ?? ind,
                   style: TextStyle(fontSize: 12),
@@ -140,6 +139,7 @@ class MensuelIndicateurDataTable extends StatelessWidget {
                 child: Text(
                   montants[m]?.format(isKEuros: isKEuros) ?? '0,00 €',
                   style: TextStyle(fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             )),

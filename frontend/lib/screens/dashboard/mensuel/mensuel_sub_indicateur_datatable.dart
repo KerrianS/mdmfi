@@ -55,8 +55,20 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
       dataRowMinHeight: 28,
       dataRowMaxHeight: 32,
       columns: [
-        const DataColumn(label: Text('Sous-indicateur', style: TextStyle(fontSize: 13))),
-        const DataColumn(label: Text('Libellé', style: TextStyle(fontSize: 13))),
+        DataColumn(
+          label: Container(
+            width: 100,
+            alignment: Alignment.centerLeft,
+            child: Text('Sous-indicateur', style: TextStyle(fontSize: 13)),
+          ),
+        ),
+        DataColumn(
+          label: Container(
+            width: 150,
+            alignment: Alignment.centerLeft,
+            child: Text('Libellé', style: TextStyle(fontSize: 13)),
+          ),
+        ),
         ...mois.map((m) => DataColumn(
           label: Container(
             width: 100,
@@ -123,7 +135,7 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
             ),
             DataCell(
               Container(
-                width: 200,
+                width: 155,
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: Row(
                   children: [
@@ -137,6 +149,7 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                               : Colors.black,
                         ),
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                     if (sousIndicsResponse != null)
