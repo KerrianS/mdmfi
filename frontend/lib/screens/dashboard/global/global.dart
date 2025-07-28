@@ -370,10 +370,8 @@ class _GlobalState extends State<Global> {
   // Helper pour obtenir la liste des sous-indicateurs associés à l'indicateur sélectionné
   List<String> getSousIndicateursAssocies() {
     // On veut la liste des sous-indicateurs dont le libellé correspond à un des éléments de la liste associée de l'indicateur sélectionné (case-insensitive, trim)
-    if (sousIndicsResponse == null || selectedIndicateur == null || indicateursResponse == null) return [];
-
-    // Récupérer la liste des libellés associés à l'indicateur sélectionné
     List<String> associeLibelles = [];
+    if (indicateursResponse == null || selectedIndicateur == null || sousIndicsResponse == null) return [];
     for (final an in indicateursResponse!.indicateurs.keys) {
       final indics = indicateursResponse!.indicateurs[an] ?? [];
       for (final ind in indics) {

@@ -26,8 +26,6 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // La liste associeLibelles est maintenant fournie par le parent
-
     return SingleChildScrollView(
       child: DataTable(
         showCheckboxColumn: false,
@@ -63,13 +61,9 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
             }
           }
 
-          // Jaune si le libellé du sous-indicateur est dans la liste associe de l'indicateur sélectionné
           final isSelected = sousInd == selectedSousIndicateur;
           final libelleOriginal = libelle ?? '';
           final isAssocie = associeLibelles.contains(libelleOriginal);
-          // Debug pour vérifier la correspondance
-          // ignore: avoid_print
-          print('[DEBUG-SURBRILLANCE] libelle: "$libelleOriginal" | associeList: $associeLibelles | isAssocie: $isAssocie');
           return DataRow(
             selected: isSelected,
             onSelectChanged: (_) => onSelectSousIndicateur(sousInd),

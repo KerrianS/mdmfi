@@ -57,15 +57,35 @@ class GlobalIndicateurDataTable extends StatelessWidget {
         dataRowMinHeight: 28,
         dataRowMaxHeight: 32,
         columns: [
-          const DataColumn(label: Text('Indicateur', style: TextStyle(fontSize: 13))),
-          const DataColumn(label: Text('Libellé', style: TextStyle(fontSize: 13))),
-          ...annees.map((an) => DataColumn(label: Text(an, style: TextStyle(fontSize: 13)))),
+          const DataColumn(label: Text('Indicateur', style: TextStyle(fontSize: 12))),
+          const DataColumn(label: Text('Libellé', style: TextStyle(fontSize: 12))),
+          ...annees.map((an) => DataColumn(label: Text(an, style: TextStyle(fontSize: 12)))),
         ],
         rows: entries.map((entry) {
           final ind = entry.key;
           final montants = entry.value;
           final isSelected = ind == selectedIndicateur;
           final isAssocie = associeLibelles.contains(ind);
+          // Chercher le libellé dans sigResult si possible
+          String libelle = ind;
+          if (sigResult != null) {
+            for (final annee in sigResult.indicateurs.keys) {
+              final indicateursList = sigResult.indicateurs[annee] as List<NavisionIndicateurGlobal>;
+              final indObj = indicateursList.firstWhere(
+                (i) => i.indicateur == ind,
+                orElse: () => NavisionIndicateurGlobal(
+                  indicateur: '',
+                  libelle: '',
+                  valeur: 0.0,
+                  associe: [],
+                ),
+              );
+              if (indObj.libelle.isNotEmpty) {
+                libelle = indObj.libelle;
+                break;
+              }
+            }
+          }
           return DataRow(
             selected: isSelected,
             onSelectChanged: (_) => onSelectIndicateur(ind),
@@ -98,7 +118,7 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                   width: 200,
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    ind,
+                    libelle,
                     style: TextStyle(fontSize: 12),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -108,7 +128,10 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text(montants[an]?.format(isKEuros: isKEuros) ?? '-', style: TextStyle(fontSize: 12)),
+                  child: Text(
+                    montants[an]?.format(isKEuros: isKEuros) ?? '-',
+                    style: TextStyle(fontSize: 12),
+                  ),
                 ),
               )),
             ],

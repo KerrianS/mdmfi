@@ -46,16 +46,28 @@ class MensuelIndicateurDataTable extends StatelessWidget {
 
     return DataTable(
       showCheckboxColumn: false,
-      columnSpacing: 12,
+      columnSpacing: 16,
       headingRowHeight: 32,
       dataRowMinHeight: 28,
       dataRowMaxHeight: 32,
       columns: [
-        const DataColumn(label: Text('Indicateur', style: TextStyle(fontSize: 13))),
+        const DataColumn(
+          label: Row(
+            children: [
+              Text('Indicateur', style: TextStyle(fontSize: 13)),
+              SizedBox(width: 35),
+            ],
+          ),
+        ),
         DataColumn(
           label: Container(
             width: 150,
-            child: Text('Libellé', style: TextStyle(fontSize: 13)),
+            child: Row(
+              children: [
+                Text('Libellé', style: TextStyle(fontSize: 13)),
+                SizedBox(width: 16),
+              ],
+            ),
           ),
         ),
         ...mois.map((m) => DataColumn(

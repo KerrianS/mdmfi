@@ -54,7 +54,6 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
       headingRowHeight: 32,
       dataRowMinHeight: 28,
       dataRowMaxHeight: 32,
-      horizontalMargin: 12,
       columns: [
         const DataColumn(label: Text('Sous-indicateur', style: TextStyle(fontSize: 13))),
         const DataColumn(label: Text('Libellé', style: TextStyle(fontSize: 13))),
