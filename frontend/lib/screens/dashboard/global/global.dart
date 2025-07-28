@@ -298,13 +298,17 @@ class _GlobalState extends State<Global> {
         annees: getAnnees(),
         selectedIndicateur: selectedIndicateur,
         onSelectIndicateur: (ind) {
-          // Ajout debug : afficher la liste associe dès la sélection
+          // Ajout debug : afficher la liste associe dès la sélection (une seule fois)
           if (indicateursResponse != null) {
+            bool found = false;
             for (final an in indicateursResponse!.indicateurs.keys) {
+              if (found) break;
               final indics = indicateursResponse!.indicateurs[an] ?? [];
               for (final indic in indics) {
                 if (indic.indicateur == ind) {
                   print('[DEBUG] (onSelectIndicateur) Liste associe (libellés) pour $ind : ${indic.associe}');
+                  found = true;
+                  break;
                 }
               }
             }
