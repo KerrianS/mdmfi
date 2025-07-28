@@ -3,14 +3,14 @@ import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/utils/currency.dart';
 
 class GlobalSubIndicateurDataTable extends StatelessWidget {
-  final Map<String, Map<String, double>> data; // sousIndicateur -> {année: montant}
-  final List<String> annees; // toutes les années à afficher en colonnes
+  final Map<String, Map<String, double>> data;
+  final List<String> annees;
   final String? selectedSousIndicateur;
-  final String? selectedIndicateur; // Ajouté pour la surbrillance
+  final String? selectedIndicateur;
   final void Function(String) onSelectSousIndicateur;
-  final NavisionSousIndicateursGlobalResponse? sousIndicsResponse; // Pour accéder aux libellés
-  final List<String> sousIndicateursAssocies; // Liste des sous-indicateurs associés à l'indicateur sélectionné
-  final bool isKEuros; // Paramètre pour affichage en KEuros
+  final NavisionSousIndicateursGlobalResponse? sousIndicsResponse;
+  final bool isKEuros;
+  final List<String> associeLibelles;
 
   const GlobalSubIndicateurDataTable({
     super.key,
@@ -20,13 +20,13 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
     required this.selectedIndicateur,
     required this.onSelectSousIndicateur,
     this.sousIndicsResponse,
-    this.sousIndicateursAssocies = const [],
     this.isKEuros = false,
+    required this.associeLibelles,
   });
 
   @override
   Widget build(BuildContext context) {
-    // sousIndicateursAssocies contient déjà la liste reçue en paramètre
+    // La liste associeLibelles est maintenant fournie par le parent
 
     return SingleChildScrollView(
       child: DataTable(
@@ -63,12 +63,13 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
             }
           }
 
-          // Jaune si le code sousIndicateur (entry.key) OU le libellé est dans la liste associe de l'indicateur sélectionné
+          // Jaune si le libellé du sous-indicateur est dans la liste associe de l'indicateur sélectionné
           final isSelected = sousInd == selectedSousIndicateur;
-          final sousIndNorm = sousInd.trim().toUpperCase();
-          final libelleNorm = (libelle ?? '').trim().toUpperCase();
-          final sousIndicateursAssociesNorm = sousIndicateursAssocies.map((e) => e.trim().toUpperCase()).toList();
-          final isAssocie = sousIndicateursAssociesNorm.contains(libelleNorm) || sousIndicateursAssociesNorm.contains(sousIndNorm);
+          final libelleOriginal = libelle ?? '';
+          final isAssocie = associeLibelles.contains(libelleOriginal);
+          // Debug pour vérifier la correspondance
+          // ignore: avoid_print
+          print('[DEBUG-SURBRILLANCE] libelle: "$libelleOriginal" | associeList: $associeLibelles | isAssocie: $isAssocie');
           return DataRow(
             selected: isSelected,
             onSelectChanged: (_) => onSelectSousIndicateur(sousInd),
@@ -77,7 +78,7 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                 return Colors.yellow.shade200;
               }
               if (isSelected) {
-                return const Color.fromARGB(255, 159, 31, 31);
+                return Colors.grey.shade300;
               }
               if (states.contains(MaterialState.hovered)) {
                 return Colors.grey.withOpacity(0.1);

@@ -326,8 +326,13 @@ class _GlobalState extends State<Global> {
   }
 
   Widget buildSousIndicateurTable() {
-    // Récupère la liste des sous-indicateurs associés à l'indicateur sélectionné
-    final List<String> sousIndicateursAssocies = getSousIndicateursAssocies();
+    // DEBUG : Afficher l'indicateur sélectionné et la structure des indicateurs
+    print('[DEBUG-PARENT] selectedIndicateur: $selectedIndicateur');
+    if (indicateursResponse != null) {
+      for (final an in indicateursResponse!.indicateurs.keys) {
+        print('[DEBUG-PARENT] an: $an | indicateurs: ${indicateursResponse!.indicateurs[an]?.map((i) => i.indicateur).toList()}');
+      }
+    }
     return AdaptiveTableContainer(
       child: GlobalSubIndicateurDataTable(
         data: getSousIndicateurData(),
@@ -344,8 +349,8 @@ class _GlobalState extends State<Global> {
           });
         },
         sousIndicsResponse: sousIndicsResponse,
-        sousIndicateursAssocies: sousIndicateursAssocies,
         isKEuros: isKEuros,
+        associeLibelles: getSousIndicateursAssocies(),
       ),
     );
   }
@@ -364,40 +369,34 @@ class _GlobalState extends State<Global> {
   }
   // Helper pour obtenir la liste des sous-indicateurs associés à l'indicateur sélectionné
   List<String> getSousIndicateursAssocies() {
-    // On veut la liste des sous-indicateurs dont le code OU le libellé correspond à un des éléments de la liste associe de l'indicateur sélectionné (case-insensitive, trim)
+    // On veut la liste des sous-indicateurs dont le libellé correspond à un des éléments de la liste associée de l'indicateur sélectionné (case-insensitive, trim)
     if (sousIndicsResponse == null || selectedIndicateur == null || indicateursResponse == null) return [];
 
-    // Récupérer la liste des libellés/codes associés à l'indicateur sélectionné (dans indicateursResponse)
+    // Récupérer la liste des libellés associés à l'indicateur sélectionné
     List<String> associeLibelles = [];
     for (final an in indicateursResponse!.indicateurs.keys) {
       final indics = indicateursResponse!.indicateurs[an] ?? [];
       for (final ind in indics) {
         if (ind.indicateur == selectedIndicateur) {
           associeLibelles = List<String>.from(ind.associe);
-          print('[DEBUG] Liste associe (libellés/codes) pour $selectedIndicateur : $associeLibelles');
           break;
         }
       }
       if (associeLibelles.isNotEmpty) break;
     }
-    print('[DEBUG-PARENT] associeLibelles récupérés pour $selectedIndicateur : $associeLibelles');
-
     final Set<String> associeSet = associeLibelles.map((e) => e.trim().toUpperCase()).toSet();
-    final Set<String> associes = {};
+    final Set<String> sousIndicateurLibelles = {};
     for (final an in sousIndicsResponse!.sousIndicateurs.keys) {
       final indicMap = sousIndicsResponse!.sousIndicateurs[an] ?? {};
       final sousList = indicMap[selectedIndicateur] ?? [];
       for (final sous in sousList) {
-        final codeNorm = sous.sousIndicateur.trim().toUpperCase();
         final libelleNorm = sous.libelle.trim().toUpperCase();
-        print('[DEBUG] Sous-indicateur: ${sous.sousIndicateur} | codeNorm: $codeNorm | libelleNorm: $libelleNorm | AssocieSet: $associeSet');
-        if (associeSet.contains(codeNorm) || associeSet.contains(libelleNorm)) {
-          associes.add(sous.sousIndicateur);
+        if (associeSet.contains(libelleNorm)) {
+          sousIndicateurLibelles.add(sous.libelle);
         }
       }
     }
-    print('[DEBUG-PARENT] Liste finale des sousIndicateursAssocies retournée : $associes');
-    return associes.toList();
+    return sousIndicateurLibelles.toList();
   }
 
   List<String> getAnnees() {
@@ -656,7 +655,8 @@ class _GlobalState extends State<Global> {
                   });
                 },
                 sousIndicsResponse: sousIndicsResponse,
-                isKEuros: isKEuros,
+        isKEuros: isKEuros,
+        associeLibelles: getSousIndicateursAssocies(),
               ),
             ),
           ),
