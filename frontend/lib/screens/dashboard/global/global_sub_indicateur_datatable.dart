@@ -27,6 +27,10 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // sousIndicateursAssocies contient déjà la liste reçue en paramètre
+    print('[DEBUG-DATATABLE] Début build - selectedIndicateur: $selectedIndicateur');
+    print('[DEBUG-DATATABLE] sousIndicateursAssocies reçu: $sousIndicateursAssocies');
+    print('[DEBUG-DATATABLE] Nombre de sous-indicateurs dans data: ${data.length}');
+    print('[DEBUG-DATATABLE] Codes des sous-indicateurs: ${data.keys.toList()}');
 
     return SingleChildScrollView(
       child: DataTable(

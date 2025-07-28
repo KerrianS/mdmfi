@@ -381,6 +381,7 @@ class _GlobalState extends State<Global> {
       if (associeLibelles.isNotEmpty) break;
     }
     print('[DEBUG-PARENT] associeLibelles récupérés pour $selectedIndicateur : $associeLibelles');
+    print('[DEBUG-PARENT] Retour de getSousIndicateursAssocies() : $associeLibelles');
     return associeLibelles;
   }
 
