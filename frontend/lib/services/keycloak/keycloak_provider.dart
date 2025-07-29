@@ -65,7 +65,18 @@ class KeycloakProvider extends ChangeNotifier {
     if (_selectedCompany != company) {
       _selectedCompany = company;
       notifyListeners();
+      // Recharge les données dès qu'une société est sélectionnée
+      reloadDataForCompany(company);
     }
+  }
+  // Méthode à adapter selon tes besoins pour recharger les données
+  Future<void> reloadDataForCompany(String company) async {
+    setDataReloading(true);
+    print('[KeycloakProvider] reloadDataForCompany appelé pour: ' + company);
+    // TODO: Ajoute ici la logique pour recharger les données (API, etc.)
+    await Future.delayed(Duration(seconds: 1)); // Simule le chargement
+    setDataReloading(false);
+    notifyListeners();
   }
 
   void setDataReloading(bool isReloading) {

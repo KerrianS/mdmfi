@@ -89,6 +89,8 @@ class OdooIndicateurMensuel {
   final String initiales;
   final double valeur;
   final List<String> associe;
+  final String formuleText;
+  final String formuleNumeric;
 
   OdooIndicateurMensuel({
     required this.indicateur,
@@ -96,6 +98,8 @@ class OdooIndicateurMensuel {
     required this.initiales,
     required this.valeur,
     this.associe = const [],
+    this.formuleText = '',
+    this.formuleNumeric = '',
   });
 
   factory OdooIndicateurMensuel.fromJson(Map<String, dynamic> json) {
@@ -105,6 +109,8 @@ class OdooIndicateurMensuel {
       initiales: json['initiales'] ?? '',
       valeur: (json['valeur'] as num).toDouble(),
       associe: (json['associe'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      formuleText: json['formule_text'] ?? '',
+      formuleNumeric: json['formule_numeric'] ?? '',
     );
   }
 
@@ -115,6 +121,8 @@ class OdooIndicateurMensuel {
       'initiales': initiales,
       'valeur': valeur,
       'associe': associe,
+      'formule_text': formuleText,
+      'formule_numeric': formuleNumeric,
     };
   }
 }
@@ -237,12 +245,16 @@ class OdooIndicateurGlobal {
   final String libelle;
   final double valeur;
   final List<String> associe;
+  final String formuleText;
+  final String formuleNumeric;
 
   OdooIndicateurGlobal({
     required this.indicateur,
     required this.libelle,
     required this.valeur,
     required this.associe,
+    this.formuleText = '',
+    this.formuleNumeric = '',
   });
 
   factory OdooIndicateurGlobal.fromJson(Map<String, dynamic> json) {
@@ -251,6 +263,8 @@ class OdooIndicateurGlobal {
       libelle: json['libelle'] ?? '',
       valeur: (json['valeur'] as num).toDouble(),
       associe: (json['associe'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      formuleText: json['formule_text'] ?? '',
+      formuleNumeric: json['formule_numeric'] ?? '',
     );
   }
 
@@ -260,6 +274,8 @@ class OdooIndicateurGlobal {
       'libelle': libelle,
       'valeur': valeur,
       'associe': associe,
+      'formule_text': formuleText,
+      'formule_numeric': formuleNumeric,
     };
   }
 }

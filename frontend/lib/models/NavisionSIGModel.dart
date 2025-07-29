@@ -90,6 +90,8 @@ class NavisionIndicateurMensuel {
   final String initiales;
   final double valeur;
   final List<String> associe;
+  final String formuleText;
+  final String formuleNumeric;
 
   NavisionIndicateurMensuel({
     required this.indicateur,
@@ -97,6 +99,8 @@ class NavisionIndicateurMensuel {
     required this.initiales,
     required this.valeur,
     this.associe = const [],
+    this.formuleText = '',
+    this.formuleNumeric = '',
   });
 
   factory NavisionIndicateurMensuel.fromJson(Map<String, dynamic> json) {
@@ -106,6 +110,8 @@ class NavisionIndicateurMensuel {
       initiales: json['initiales'] ?? '',
       valeur: (json['valeur'] as num).toDouble(),
       associe: (json['associe'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      formuleText: json['formule_text'] ?? '',
+      formuleNumeric: json['formule_numeric'] ?? '',
     );
   }
 
@@ -116,6 +122,8 @@ class NavisionIndicateurMensuel {
       'initiales': initiales,
       'valeur': valeur,
       'associe': associe,
+      'formule_text': formuleText,
+      'formule_numeric': formuleNumeric,
     };
   }
 }
@@ -239,20 +247,26 @@ class NavisionIndicateurGlobal {
   final String libelle;
   final double valeur;
   final List<String> associe;
+  final String formuleText;
+  final String formuleNumeric;
 
   NavisionIndicateurGlobal({
     required this.indicateur,
     required this.libelle,
     required this.valeur,
     required this.associe,
+    this.formuleText = '',
+    this.formuleNumeric = '',
   });
 
   factory NavisionIndicateurGlobal.fromJson(Map<String, dynamic> json) {
     return NavisionIndicateurGlobal(
       indicateur: json['indicateur'] ?? '',
       libelle: json['libelle'] ?? '',
-      valeur: (json['valeur'] as num).toDouble(),
+      valeur: (json['valeur_calculee'] ?? json['valeur'] ?? 0).toDouble(),
       associe: (json['associe'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      formuleText: json['formule_text'] ?? json['formuleText'] ?? '',
+      formuleNumeric: json['formule_numeric'] ?? json['formuleNumeric'] ?? '',
     );
   }
 
@@ -262,6 +276,8 @@ class NavisionIndicateurGlobal {
       'libelle': libelle,
       'valeur': valeur,
       'associe': associe,
+      'formule_text': formuleText,
+      'formule_numeric': formuleNumeric,
     };
   }
 }

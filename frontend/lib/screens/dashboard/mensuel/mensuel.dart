@@ -37,46 +37,35 @@ class _MensuelState extends State<Mensuel> {
   Set<String> expandedSousIndicateurs = {}; // Gardé pour compatibilité mais non utilisé
   Map<String, dynamic> comptesResponses = {};
   Map<String, bool> isLoadingComptes = {};
-  bool _isInitialized = false; // Flag pour éviter les réinitialisations multiples
+  // _isInitialized supprimé, on utilise le Provider pour écouter les changements
   bool isKEuros = false; // Variable pour gérer l'affichage en KEuros
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
-    // Ne faire le check qu'une seule fois par build
-    if (!_isInitialized) {
-      _isInitialized = true;
-      final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: false);
-      final societe = keycloakProvider.selectedCompany;
-      
-      if (societe != null && societe != _lastSociete) {
-        print('[Mensuel] Changement de société détecté: $_lastSociete -> $societe');
-        _lastSociete = societe;
-        
-        // Réinitialiser directement sans setState
-        indicateursResponse = null;
-        sousIndicsResponse = null;
-        comptesPage = null;
-        comptesResponses.clear();
-        isLoadingComptes.clear();
-        expandedSousIndicateurs.clear();
-        selectedIndicateur = null;
-        selectedSousIndicateur = null;
-        
-        // Planifier le chargement pour le prochain frame
-        Future.microtask(() {
-          if (mounted) {
-            _loadAnnees(societe);
-          }
-        });
-      }
+    final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: true);
+    final societe = keycloakProvider.selectedCompany;
+    if (societe != null && societe != _lastSociete) {
+      print('[Mensuel] Changement de société détecté: $_lastSociete -> $societe');
+      _lastSociete = societe;
+      indicateursResponse = null;
+      sousIndicsResponse = null;
+      comptesPage = null;
+      comptesResponses.clear();
+      isLoadingComptes.clear();
+      expandedSousIndicateurs.clear();
+      selectedIndicateur = null;
+      selectedSousIndicateur = null;
+      Future.microtask(() {
+        if (mounted) {
+          _loadAnnees(societe);
+        }
+      });
     }
   }
 
   @override
   void dispose() {
-    _isInitialized = false;
     super.dispose();
   }
 

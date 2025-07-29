@@ -119,10 +119,81 @@ class MensuelIndicateurDataTable extends StatelessWidget {
               Container(
                 width: 150,
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  libelle ?? ind,
-                  style: TextStyle(fontSize: 12),
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        libelle ?? ind,
+                        style: TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          // Récupérer les formules pour chaque mois
+                          List<Widget> formuleWidgets = [];
+                          if (indicateursResponse != null && indicateursResponse.mois != null) {
+                            for (final mois in mois) {
+                              String formuleText = '';
+                              String formuleNumeric = '';
+                              final indicateursList = indicateursResponse.mois[mois] ?? [];
+                              final indObj = indicateursList.cast<dynamic>().firstWhere(
+                                (i) => i != null && i.indicateur == ind,
+                                orElse: () => null,
+                              );
+                              if (indObj != null) {
+                                formuleText = indObj.formuleText ?? '';
+                                formuleNumeric = indObj.formuleNumeric ?? '';
+                              }
+                              formuleWidgets.add(Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Mois : ' + mois, style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text('Formule (textuelle) : ' + (formuleText.isNotEmpty ? formuleText : '-')),
+                                  Text('Formule (numérique) : ' + (formuleNumeric.isNotEmpty ? formuleNumeric : '-')),
+                                  SizedBox(height: 8),
+                                ],
+                              ));
+                            }
+                          }
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Row(
+                                  children: [
+                                    Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                                    SizedBox(width: 8),
+                                    Text('Indicateur : ' + ind, style: TextStyle(fontWeight: FontWeight.bold)),
+                                    SizedBox(width: 16),
+                                    Text('Libellé : ' + (libelle ?? ind), style: TextStyle(fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      ...formuleWidgets,
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: Text('Fermer'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Icon(Icons.info_outline, size: 18, color: Colors.blue),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

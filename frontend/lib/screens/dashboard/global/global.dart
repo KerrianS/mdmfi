@@ -49,32 +49,26 @@ class _GlobalState extends State<Global> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
-    if (!_isInitialized) {
-      _isInitialized = true;
-      final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: false);
-      final societe = keycloakProvider.selectedCompany;
-      
-      if (societe != null && societe != _lastSociete) {
-        print('[Global] Changement de société détecté: $_lastSociete -> $societe');
-        _lastSociete = societe;
-                indicateursResponse = null;
-        sousIndicsResponse = null;
-        comptesResponse = null;
-        comptesResponses.clear();
-        isLoadingComptes.clear();
-        expandedSousIndicateurs.clear();
-        selectedIndicateur = null;
-        selectedSousIndicateur = null;
-        selectedAnnee = null;
-        
-        // Planifier le chargement pour le prochain frame
-        Future.microtask(() {
-          if (mounted) {
-            _loadData();
-          }
-        });
-      }
+    final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: false);
+    final societe = keycloakProvider.selectedCompany;
+    if (societe != null && societe != _lastSociete) {
+      print('[Global] Changement de société détecté: $_lastSociete -> $societe');
+      _lastSociete = societe;
+      indicateursResponse = null;
+      sousIndicsResponse = null;
+      comptesResponse = null;
+      comptesResponses.clear();
+      isLoadingComptes.clear();
+      expandedSousIndicateurs.clear();
+      selectedIndicateur = null;
+      selectedSousIndicateur = null;
+      selectedAnnee = null;
+      // Planifier le chargement pour le prochain frame
+      Future.microtask(() {
+        if (mounted) {
+          _loadData();
+        }
+      });
     }
   }
 

@@ -330,10 +330,65 @@ def get_indicateurs_global_valeurs(
             indicateurs_calcules = calcul_sig_adapte(lignes_annee)
             indicateurs_list = []
             for code, montant in indicateurs_calcules.items():
+                # Construction des champs manquants
+                formule_text = ""
+                formule_numeric = ""
+                valeur_formule = montant
+                ecart = 0
+                # MC
+                if code == "MC":
+                    ventes_marchandises = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["VENTES DE MARCHANDISES", "VENTES DE PRODUITS FINIS", "VENTES DE SERVICES", "PRESTATIONS DE SERVICES", "TVA COLLECTEE"]))
+                    achats_marchandises = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS DE MARCHANDISES"]))
+                    formule_text = f"MC = VENTES DE MARCHANDISES ({ventes_marchandises:.2f}) - ACHATS DE MARCHANDISES ({abs(achats_marchandises):.2f}) = {montant:.2f}"
+                    formule_numeric = f"MC = {ventes_marchandises:.2f} - {abs(achats_marchandises):.2f} = {montant:.2f}"
+                    valeur_formule = montant
+                # VA
+                elif code == "VA":
+                    mc_value = indicateurs_calcules.get('MC', 0)
+                    prestations_services = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRESTATIONS DE SERVICES"]))
+                    production_stockee = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRODUCTION STOCKÉE"]))
+                    production_immobilisee = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRODUCTION IMMOBILISÉE"]))
+                    achats = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS", "FOURNITURES"]))
+                    charges_externes = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["SERVICES EXTÉRIEURS", "AUTRES SERVICES EXTÉRIEURS"]))
+                    formule_text = f"VA = MC ({mc_value:.2f}) + PRESTATIONS DE SERVICES ({prestations_services:.2f}) + PRODUCTION STOCKÉE ({production_stockee:.2f}) + PRODUCTION IMMOBILISÉE ({production_immobilisee:.2f}) - ACHATS ({abs(achats):.2f}) - CHARGES EXTERNES ({abs(charges_externes):.2f}) = {montant:.2f}"
+                    formule_numeric = f"VA = ({mc_value:.2f} + {prestations_services:.2f} + {production_stockee:.2f} + {production_immobilisee:.2f}) - ({abs(achats):.2f} + {abs(charges_externes):.2f}) = {montant:.2f}"
+                    valeur_formule = montant
+                # EBE
+                elif code == "EBE":
+                    va_value = indicateurs_calcules.get('VA', 0)
+                    subventions = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["SUBVENTIONS D'EXPLOITATION"]))
+                    impots_taxes = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["IMPÔTS ET TAXES"]))
+                    charges_personnel = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES DE PERSONNEL"]))
+                    formule_text = f"EBE = VA ({va_value:.2f}) + SUBVENTIONS D'EXPLOITATION ({subventions:.2f}) - IMPÔTS ET TAXES ({abs(impots_taxes):.2f}) - CHARGES DE PERSONNEL ({abs(charges_personnel):.2f}) = {montant:.2f}"
+                    formule_numeric = f"EBE = ({va_value:.2f} + {subventions:.2f}) - ({abs(impots_taxes):.2f} + {abs(charges_personnel):.2f}) = {montant:.2f}"
+                    valeur_formule = montant
+                # RE
+                elif code == "RE":
+                    ebe_value = indicateurs_calcules.get('EBE', 0)
+                    autres_produits = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES PRODUITS DE GESTION COURANTE", "REPRISES AMORTISSEMENTS"]))
+                    autres_charges = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES CHARGES DE GESTION COURANTE", "DOTATIONS AMORTISSEMENTS"]))
+                    formule_text = f"RE = EBE ({ebe_value:.2f}) + AUTRES PRODUITS ({autres_produits:.2f}) - AUTRES CHARGES ({abs(autres_charges):.2f}) = {montant:.2f}"
+                    formule_numeric = f"RE = ({ebe_value:.2f} + {autres_produits:.2f}) - ({abs(autres_charges):.2f}) = {montant:.2f}"
+                    valeur_formule = montant
+                # R
+                elif code == "R":
+                    re_value = indicateurs_calcules.get('RE', 0)
+                    produits_financiers = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["PRODUITS FINANCIERS"]))
+                    charges_financieres = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES FINANCIÈRES"]))
+                    produits_exceptionnels = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["PRODUITS EXCEPTIONNELS"]))
+                    charges_exceptionnelles = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES EXCEPTIONNELLES"]))
+                    impots_benefices = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["IMPÔTS SUR LES BÉNÉFICES"]))
+                    formule_text = f"R = RE ({re_value:.2f}) + PRODUITS FINANCIERS ({produits_financiers:.2f}) + PRODUITS EXCEPTIONNELS ({produits_exceptionnels:.2f}) - CHARGES FINANCIÈRES ({abs(charges_financieres):.2f}) - CHARGES EXCEPTIONNELLES ({abs(charges_exceptionnelles):.2f}) - IMPÔTS SUR LES BÉNÉFICES ({abs(impots_benefices):.2f}) = {montant:.2f}"
+                    formule_numeric = f"R = ({re_value:.2f} + {produits_financiers:.2f} + {produits_exceptionnels:.2f}) - ({abs(charges_financieres):.2f} + {abs(charges_exceptionnelles):.2f} + {abs(impots_benefices):.2f}) = {montant:.2f}"
+                    valeur_formule = montant
                 indicateurs_list.append({
                     "indicateur": code,
                     "libelle": libelles.get(code, code),
-                    "valeur": montant,
+                    "valeur_calculee": montant,
+                    "formule_text": formule_text,
+                    "formule_numeric": formule_numeric,
+                    "valeur_formule": valeur_formule,
+                    "ecart": ecart,
                     "associe": associe_mapping.get(code, [])
                 })
             result[a] = indicateurs_list

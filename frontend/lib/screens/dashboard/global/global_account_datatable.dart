@@ -149,7 +149,7 @@ class GlobalAccountDataTable extends StatelessWidget {
                                         children: [
                                           Text('Infos : $codeCompte', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                                           SizedBox(width: 12),
-                                          Text('-  Libellé : $libelle', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                                          Text('- Libellé : $libelle', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                                         ],
                                       ),
                                       content: Column(

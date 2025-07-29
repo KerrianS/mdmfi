@@ -106,10 +106,91 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                 Container(
                   width: 200,
                   padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    libelle,
-                    style: TextStyle(fontSize: 12),
-                    overflow: TextOverflow.ellipsis,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          libelle,
+                          style: TextStyle(fontSize: 12),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            List<Widget> formuleWidgets = [];
+                            if (sigResult != null && sigResult.indicateurs != null) {
+                              for (final annee in annees) {
+                                String formuleText = '';
+                                String formuleNumeric = '';
+                                if (sigResult.indicateurs[annee] != null) {
+                                  final indicateursList = sigResult.indicateurs[annee] as List<dynamic>;
+                                  final indObj = indicateursList.cast<dynamic>().firstWhere(
+                                    (i) => i != null && (
+                                      (i is Map && (i['indicateur'] == ind)) ||
+                                      (i is! Map && (i.indicateur == ind))
+                                    ),
+                                    orElse: () => null,
+                                  );
+                                  if (indObj != null) {
+                                    if (indObj is Map) {
+                                      formuleText = indObj['formule_text'] ?? indObj['formuleText'] ?? '';
+                                      formuleNumeric = indObj['formule_numeric'] ?? indObj['formuleNumeric'] ?? '';
+                                    } else {
+                                      // Pour les modèles Dart, utilise les propriétés du modèle
+                                      formuleText = indObj.formuleText ?? '';
+                                      formuleNumeric = indObj.formuleNumeric ?? '';
+                                    }
+                                  }
+                                }
+                                formuleWidgets.add(Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Année : $annee', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Text('Formule (textuelle) : ${formuleText.isNotEmpty ? formuleText : '-'}'),
+                                    Text('Formule (numérique) : ${formuleNumeric.isNotEmpty ? formuleNumeric : '-'}'),
+                                    SizedBox(height: 8),
+                                  ],
+                                ));
+                              }
+                            }
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Row(
+                                    children: [
+                                      Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                                      SizedBox(width: 8),
+                                      Text('Indicateur : $ind', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      SizedBox(width: 16),
+                                      Text('Libellé : $libelle', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        ...formuleWidgets,
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: Text('Fermer'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Icon(Icons.info_outline, size: 18, color: Colors.blue),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
