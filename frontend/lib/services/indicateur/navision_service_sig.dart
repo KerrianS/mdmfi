@@ -28,7 +28,8 @@ class NavisionSIGService {
       final data = json.decode(response.body);
       return NavisionComptesMensuelPage.fromJson(data);
     } else {
-      print('Erreur lors du chargement des comptes mensuels: ' + response.body.toString());
+      print('Erreur lors du chargement des comptes mensuels: ' +
+          response.body.toString());
       throw Exception('Erreur lors du chargement des comptes mensuels');
     }
   }
@@ -48,7 +49,8 @@ class NavisionSIGService {
       final data = json.decode(response.body);
       return NavisionIndicateursMensuelResponse.fromJson(data);
     } else {
-      print('Erreur lors du chargement des indicateurs mensuels: ' + response.body.toString());
+      print('Erreur lors du chargement des indicateurs mensuels: ' +
+          response.body.toString());
       throw Exception('Erreur lors du chargement des indicateurs mensuels');
     }
   }
@@ -68,8 +70,10 @@ class NavisionSIGService {
       final data = json.decode(response.body);
       return NavisionSousIndicateursMensuelResponse.fromJson(data);
     } else {
-      print('Erreur lors du chargement des sous-indicateurs mensuels: ' + response.body.toString());
-      throw Exception('Erreur lors du chargement des sous-indicateurs mensuels');
+      print('Erreur lors du chargement des sous-indicateurs mensuels: ' +
+          response.body.toString());
+      throw Exception(
+          'Erreur lors du chargement des sous-indicateurs mensuels');
     }
   }
 
@@ -85,17 +89,29 @@ class NavisionSIGService {
     };
     final path = '/$societe/indicateurs/global';
     final uri = Uri.parse(baseUrl + path).replace(queryParameters: params);
-    final response = await http.get(uri);
-    print('[API] GET $uri');
-    print('[API] Status:  [33m${response.statusCode} [0m');
-    print('[API] Body: ${response.body}');
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      print('[API] Parsed indicateurs: ' + data.toString());
-      return NavisionIndicateursGlobalResponse.fromJson(data);
-    } else {
-      print('Erreur lors du chargement des indicateurs globaux: ' + response.body.toString());
-      throw Exception('Erreur lors du chargement des indicateurs globaux');
+
+    print('[NavisionSIGService] Tentative de connexion à: $uri');
+    print('[NavisionSIGService] Paramètres: $params');
+
+    try {
+      final response = await http.get(uri);
+      print('[API] GET $uri');
+      print('[API] Status: ${response.statusCode}');
+      print('[API] Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('[API] Parsed indicateurs: ' + data.toString());
+        return NavisionIndicateursGlobalResponse.fromJson(data);
+      } else {
+        print('Erreur lors du chargement des indicateurs globaux: ' +
+            response.body.toString());
+        throw Exception(
+            'Erreur lors du chargement des indicateurs globaux: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('[NavisionSIGService] Exception lors de la requête: $e');
+      throw Exception('Erreur de connexion: $e');
     }
   }
 
@@ -120,7 +136,8 @@ class NavisionSIGService {
       print('[API] Parsed sous_indicateurs: ' + data.toString());
       return NavisionSousIndicateursGlobalResponse.fromJson(data);
     } else {
-      print('Erreur lors du chargement des sous-indicateurs globaux: ' + response.body.toString());
+      print('Erreur lors du chargement des sous-indicateurs globaux: ' +
+          response.body.toString());
       throw Exception('Erreur lors du chargement des sous-indicateurs globaux');
     }
   }
@@ -152,7 +169,8 @@ class NavisionSIGService {
       print('[API] Parsed comptes: ' + data.toString());
       return NavisionComptesGlobalResponse.fromJson(data);
     } else {
-      print('Erreur lors du chargement des comptes globaux: ' + response.body.toString());
+      print('Erreur lors du chargement des comptes globaux: ' +
+          response.body.toString());
       throw Exception('Erreur lors du chargement des comptes globaux');
     }
   }

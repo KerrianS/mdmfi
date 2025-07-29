@@ -65,26 +65,31 @@ def calcul_sig_adapte(lignes):
     
     # Production = MC + Production vendue + Production stockée + Production immobilisée
     mc_value = result.get('MC', 0)
-    production_vendue = get_montant_par_indicateur_sous_ind('VA', ['PRESTATIONS DE SERVICES', 'VENTES DE PRODUITS'])
+    prestations_services = get_montant_par_indicateur_sous_ind('VA', ['PRESTATIONS DE SERVICES'])
+    ventes_produits = get_montant_par_indicateur_sous_ind('VA', ['VENTES DE PRODUITS FINIS'])
     production_stockee = get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION STOCKÉE'])
     production_immobilisee = get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION IMMOBILISÉE'])
     
-    production_exercice = mc_value + production_vendue + production_stockee + production_immobilisee
+    production_exercice = mc_value + prestations_services + ventes_produits + production_stockee + production_immobilisee
     
-    # Consommations = Achats + Autres charges externes
-    achats_matieres = get_montant_par_indicateur_sous_ind('VA', ['ACHATS', 'FOURNITURES'])
-    services_exterieurs = get_montant_par_indicateur_sous_ind('EBE', ['SERVICES EXTÉRIEURS', 'AUTRES SERVICES EXTÉRIEURS'])
+    # Consommations = Achats stockés + Achats non stockés + Fournitures + Services extérieurs + Autres services extérieurs
+    achats_stockes = get_montant_par_indicateur_sous_ind('VA', ['ACHATS STOCKES'])
+    achats_non_stockes = get_montant_par_indicateur_sous_ind('VA', ['ACHATS NON STOCKES'])
+    fournitures = get_montant_par_indicateur_sous_ind('VA', ['FOURNITURES'])
+    services_exterieurs = get_montant_par_indicateur_sous_ind('EBE', ['SERVICES EXTÉRIEURS'])
+    autres_services_exterieurs = get_montant_par_indicateur_sous_ind('EBE', ['AUTRES SERVICES EXTÉRIEURS'])
     
-    consommations_tiers = abs(achats_matieres) + abs(services_exterieurs)
+    consommations_tiers = abs(achats_stockes) + abs(achats_non_stockes) + abs(fournitures) + abs(services_exterieurs) + abs(autres_services_exterieurs)
     
-    # Si pas assez de détail, prendre VA directe + MC
-    va_direct = get_montant_par_indicateur('VA')
-    if production_exercice == mc_value and consommations_tiers == 0 and va_direct != 0:
-        result['VA'] = va_direct + mc_value
-    else:
-        va_calculee = production_exercice - consommations_tiers
-        if va_calculee != 0:
-            result['VA'] = va_calculee
+    # Calcul de la VA selon la formule SIG standard
+    va_calculee = production_exercice - consommations_tiers
+    if va_calculee != 0:
+        result['VA'] = va_calculee
+    elif production_exercice == 0 and consommations_tiers == 0:
+        # Si aucune donnée, essayer de récupérer la VA directe
+        va_direct = get_montant_par_indicateur('VA')
+        if va_direct != 0:
+            result['VA'] = va_direct
     
     # 3. EXCÉDENT BRUT D'EXPLOITATION (EBE)
     # EBE = VA + Subventions d'exploitation - Impôts et taxes - Charges de personnel
@@ -99,11 +104,13 @@ def calcul_sig_adapte(lignes):
     # 4. RÉSULTAT D'EXPLOITATION (RE)
     # RE = EBE + Autres produits - Autres charges
     ebe_value = result.get('EBE', 0)
-    autres_produits = get_montant_par_indicateur_sous_ind('RE', ['AUTRES PRODUITS DE GESTION COURANTE', 'REPRISES AMORTISSEMENTS'])
-    autres_charges = get_montant_par_indicateur_sous_ind('RE', ['AUTRES CHARGES DE GESTION COURANTE', 'DOTATIONS AMORTISSEMENTS'])
+    autres_produits = get_montant_par_indicateur_sous_ind('RE', ['AUTRES PRODUITS DE GESTION COURANTE'])
+    reprises_amortissements = get_montant_par_indicateur_sous_ind('RE', ['REPRISES AMORTISSEMENTS'])
+    autres_charges = get_montant_par_indicateur_sous_ind('RE', ['AUTRES CHARGES DE GESTION COURANTE'])
+    dotations_amortissements = get_montant_par_indicateur_sous_ind('RE', ['DOTATIONS AMORTISSEMENTS'])
     
-    if ebe_value != 0 or autres_produits != 0 or autres_charges != 0:
-        result['RE'] = ebe_value + autres_produits - abs(autres_charges)
+    if ebe_value != 0 or autres_produits != 0 or reprises_amortissements != 0 or autres_charges != 0 or dotations_amortissements != 0:
+        result['RE'] = ebe_value + autres_produits + reprises_amortissements - abs(autres_charges) - abs(dotations_amortissements)
     
     # 5. RÉSULTAT NET (R)
     # R = Produits - Charges (approche globale)
@@ -337,6 +344,8 @@ def get_indicateurs_global_valeurs(
                 ecart = 0
                 # MC
                 if code == "MC":
+                    # Utiliser uniquement les sous-indicateurs présents dans associe
+                    associe_list = associe_mapping.get(code, [])
                     ventes_marchandises = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["VENTES DE MARCHANDISES", "VENTES DE PRODUITS FINIS", "VENTES DE SERVICES", "PRESTATIONS DE SERVICES", "TVA COLLECTEE"]))
                     achats_marchandises = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS DE MARCHANDISES"]))
                     formule_text = f"MC = VENTES DE MARCHANDISES ({ventes_marchandises:.2f}) - ACHATS DE MARCHANDISES ({abs(achats_marchandises):.2f}) = {montant:.2f}"
@@ -345,13 +354,58 @@ def get_indicateurs_global_valeurs(
                 # VA
                 elif code == "VA":
                     mc_value = indicateurs_calcules.get('MC', 0)
+                    # Utiliser uniquement les sous-indicateurs présents dans associe
+                    associe_list = associe_mapping.get(code, [])
+                    
+                    # Calculer les montants selon les sous-indicateurs disponibles
                     prestations_services = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRESTATIONS DE SERVICES"]))
+                    ventes_produits = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["VENTES DE PRODUITS FINIS"]))
                     production_stockee = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRODUCTION STOCKÉE"]))
                     production_immobilisee = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRODUCTION IMMOBILISÉE"]))
-                    achats = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS", "FOURNITURES"]))
-                    charges_externes = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["SERVICES EXTÉRIEURS", "AUTRES SERVICES EXTÉRIEURS"]))
-                    formule_text = f"VA = MC ({mc_value:.2f}) + PRESTATIONS DE SERVICES ({prestations_services:.2f}) + PRODUCTION STOCKÉE ({production_stockee:.2f}) + PRODUCTION IMMOBILISÉE ({production_immobilisee:.2f}) - ACHATS ({abs(achats):.2f}) - CHARGES EXTERNES ({abs(charges_externes):.2f}) = {montant:.2f}"
-                    formule_numeric = f"VA = ({mc_value:.2f} + {prestations_services:.2f} + {production_stockee:.2f} + {production_immobilisee:.2f}) - ({abs(achats):.2f} + {abs(charges_externes):.2f}) = {montant:.2f}"
+                    achats_stockes = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS STOCKES"]))
+                    achats_non_stockes = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS NON STOCKES"]))
+                    fournitures = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["FOURNITURES"]))
+                    services_exterieurs = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["SERVICES EXTÉRIEURS"]))
+                    autres_services_exterieurs = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES SERVICES EXTÉRIEURS"]))
+                    
+                    # Construire la formule selon les sous-indicateurs disponibles
+                    partie_plus = []
+                    partie_moins = []
+                    
+                    # Partie positive : MC + Production
+                    if mc_value != 0:
+                        partie_plus.append(f"MC ({mc_value:.2f})")
+                    if prestations_services != 0:
+                        partie_plus.append(f"PRESTATIONS DE SERVICES ({prestations_services:.2f})")
+                    if ventes_produits != 0:
+                        partie_plus.append(f"VENTES DE PRODUITS FINIS ({ventes_produits:.2f})")
+                    if production_stockee != 0:
+                        partie_plus.append(f"PRODUCTION STOCKÉE ({production_stockee:.2f})")
+                    if production_immobilisee != 0:
+                        partie_plus.append(f"PRODUCTION IMMOBILISÉE ({production_immobilisee:.2f})")
+                    
+                    # Partie négative : Consommations
+                    if achats_stockes != 0:
+                        partie_moins.append(f"ACHATS STOCKES ({abs(achats_stockes):.2f})")
+                    if achats_non_stockes != 0:
+                        partie_moins.append(f"ACHATS NON STOCKES ({abs(achats_non_stockes):.2f})")
+                    if fournitures != 0:
+                        partie_moins.append(f"FOURNITURES ({abs(fournitures):.2f})")
+                    if services_exterieurs != 0:
+                        partie_moins.append(f"SERVICES EXTÉRIEURS ({abs(services_exterieurs):.2f})")
+                    if autres_services_exterieurs != 0:
+                        partie_moins.append(f"AUTRES SERVICES EXTÉRIEURS ({abs(autres_services_exterieurs):.2f})")
+                    
+                    # Gestion des cas où il n'y a que des négatifs
+                    if not partie_plus and partie_moins:
+                        formule_text = f"VA = - {' - '.join(partie_moins)} = {montant:.2f}"
+                        formule_numeric = f"VA = - ({' + '.join([f'{abs(v):.2f}' for v in [achats_stockes, achats_non_stockes, fournitures, services_exterieurs, autres_services_exterieurs] if v != 0])}) = {montant:.2f}"
+                    elif not partie_plus and not partie_moins:
+                        formule_text = f"VA = 0 = {montant:.2f}"
+                        formule_numeric = f"VA = 0 = {montant:.2f}"
+                    else:
+                        formule_text = f"VA = {' + '.join(partie_plus)} - {' - '.join(partie_moins)} = {montant:.2f}"
+                        formule_numeric = f"VA = ({' + '.join([f'{v:.2f}' for v in [mc_value, prestations_services, ventes_produits, production_stockee, production_immobilisee] if v != 0])}) - ({' + '.join([f'{abs(v):.2f}' for v in [achats_stockes, achats_non_stockes, fournitures, services_exterieurs, autres_services_exterieurs] if v != 0])}) = {montant:.2f}"
                     valeur_formule = montant
                 # EBE
                 elif code == "EBE":
@@ -365,10 +419,39 @@ def get_indicateurs_global_valeurs(
                 # RE
                 elif code == "RE":
                     ebe_value = indicateurs_calcules.get('EBE', 0)
-                    autres_produits = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES PRODUITS DE GESTION COURANTE", "REPRISES AMORTISSEMENTS"]))
-                    autres_charges = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES CHARGES DE GESTION COURANTE", "DOTATIONS AMORTISSEMENTS"]))
-                    formule_text = f"RE = EBE ({ebe_value:.2f}) + AUTRES PRODUITS ({autres_produits:.2f}) - AUTRES CHARGES ({abs(autres_charges):.2f}) = {montant:.2f}"
-                    formule_numeric = f"RE = ({ebe_value:.2f} + {autres_produits:.2f}) - ({abs(autres_charges):.2f}) = {montant:.2f}"
+                    autres_produits = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES PRODUITS DE GESTION COURANTE"]))
+                    reprises_amortissements = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["REPRISES AMORTISSEMENTS"]))
+                    autres_charges = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES CHARGES DE GESTION COURANTE"]))
+                    dotations_amortissements = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["DOTATIONS AMORTISSEMENTS"]))
+                    
+                    # Construire la formule selon les sous-indicateurs disponibles
+                    partie_plus = []
+                    partie_moins = []
+                    
+                    # Partie positive
+                    if ebe_value != 0:
+                        partie_plus.append(f"EBE ({ebe_value:.2f})")
+                    if autres_produits != 0:
+                        partie_plus.append(f"AUTRES PRODUITS DE GESTION COURANTE ({autres_produits:.2f})")
+                    if reprises_amortissements != 0:
+                        partie_plus.append(f"REPRISES AMORTISSEMENTS ({reprises_amortissements:.2f})")
+                    
+                    # Partie négative
+                    if autres_charges != 0:
+                        partie_moins.append(f"AUTRES CHARGES DE GESTION COURANTE ({abs(autres_charges):.2f})")
+                    if dotations_amortissements != 0:
+                        partie_moins.append(f"DOTATIONS AMORTISSEMENTS ({abs(dotations_amortissements):.2f})")
+                    
+                    # Gestion des cas où il n'y a que des négatifs ou rien
+                    if not partie_plus and partie_moins:
+                        formule_text = f"RE = - {' - '.join(partie_moins)} = {montant:.2f}"
+                        formule_numeric = f"RE = - ({' + '.join([f'{abs(v):.2f}' for v in [autres_charges, dotations_amortissements] if v != 0])}) = {montant:.2f}"
+                    elif not partie_plus and not partie_moins:
+                        formule_text = f"RE = 0 = {montant:.2f}"
+                        formule_numeric = f"RE = 0 = {montant:.2f}"
+                    else:
+                        formule_text = f"RE = {' + '.join(partie_plus)} - {' - '.join(partie_moins)} = {montant:.2f}"
+                        formule_numeric = f"RE = ({' + '.join([f'{v:.2f}' for v in [ebe_value, autres_produits, reprises_amortissements] if v != 0])}) - ({' + '.join([f'{abs(v):.2f}' for v in [autres_charges, dotations_amortissements] if v != 0])}) = {montant:.2f}"
                     valeur_formule = montant
                 # R
                 elif code == "R":
