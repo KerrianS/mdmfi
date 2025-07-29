@@ -144,43 +144,105 @@ class GlobalAccountDataTable extends StatelessWidget {
                                   context: context,
                                   builder: (_) {
                                     return AlertDialog(
-                                      title: Text('Détails du compte $codeCompte'),
+                                      title: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text('Infos : $codeCompte', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                          SizedBox(width: 12),
+                                          Text('-  Libellé : $libelle', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
-                                          Text('Formule : Débit - crédit', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                          SizedBox(height: 12),
+                                          // Années sur une seule ligne
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                ...annees.map((an) => Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                  child: Text(an, style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)),
+                                                ))
+                                              ],
+                                            ),
+                                          ),
                                           SizedBox(height: 8),
-                                          ...annees.map((an) {
-                                            final anneeData = montants[an];
-                                            double montant = 0.0;
-                                            double debit = 0.0;
-                                            double credit = 0.0;
-                                            if (anneeData != null && anneeData is Map<String, dynamic>) {
-                                              final map = anneeData;
-                                              final montantVal = map['montant'];
-                                              final debitVal = map['debit'];
-                                              final creditVal = map['credit'];
-                                              montant = (montantVal is num)
-                                                  ? montantVal.toDouble()
-                                                  : double.tryParse(montantVal?.toString() ?? '') ?? 0.0;
-                                              debit = (debitVal is num)
-                                                  ? debitVal.toDouble()
-                                                  : double.tryParse(debitVal?.toString() ?? '') ?? 0.0;
-                                              credit = (creditVal is num)
-                                                  ? creditVal.toDouble()
-                                                  : double.tryParse(creditVal?.toString() ?? '') ?? 0.0;
-                                            } else if (anneeData is double) {
-                                              montant = anneeData;
-                                            }
-                                            return Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 4),
-                                              child: Text(
-                                                '${an} : ${Currency.format(debit, isKEuros: isKEuros)} - ${Currency.format(credit, isKEuros: isKEuros)} = ${Currency.format(montant, isKEuros: isKEuros)}',
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                            );
-                                          }),
+                                          // Montants pour chaque année
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                ...annees.map((an) {
+                                                  final anneeData = montants[an];
+                                                  double montant = 0.0;
+                                                  double debit = 0.0;
+                                                  double credit = 0.0;
+                                                  if (anneeData != null && anneeData is Map<String, dynamic>) {
+                                                    final map = anneeData;
+                                                    final montantVal = map['montant'];
+                                                    final debitVal = map['debit'];
+                                                    final creditVal = map['credit'];
+                                                    montant = (montantVal is num)
+                                                        ? montantVal.toDouble()
+                                                        : double.tryParse(montantVal?.toString() ?? '') ?? 0.0;
+                                                    debit = (debitVal is num)
+                                                        ? debitVal.toDouble()
+                                                        : double.tryParse(debitVal?.toString() ?? '') ?? 0.0;
+                                                    credit = (creditVal is num)
+                                                        ? creditVal.toDouble()
+                                                        : double.tryParse(creditVal?.toString() ?? '') ?? 0.0;
+                                                  } else if (anneeData is double) {
+                                                    montant = anneeData;
+                                                  }
+                                                  return Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                    child: Text(Currency.format(montant, isKEuros: isKEuros), style: TextStyle(fontSize: 13)),
+                                                  );
+                                                }).toList(),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          // Crédit et Débit pour chaque année
+                                          SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                ...annees.map((an) {
+                                                  final anneeData = montants[an];
+                                                  double debit = 0.0;
+                                                  double credit = 0.0;
+                                                  if (anneeData != null && anneeData is Map<String, dynamic>) {
+                                                    final map = anneeData;
+                                                    final debitVal = map['debit'];
+                                                    final creditVal = map['credit'];
+                                                    debit = (debitVal is num)
+                                                        ? debitVal.toDouble()
+                                                        : double.tryParse(debitVal?.toString() ?? '') ?? 0.0;
+                                                    credit = (creditVal is num)
+                                                        ? creditVal.toDouble()
+                                                        : double.tryParse(creditVal?.toString() ?? '') ?? 0.0;
+                                                  }
+                                                  return Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                    child: Row(
+                                                      children: [
+                                                        Text('C: ${Currency.format(credit, isKEuros: isKEuros)}', style: TextStyle(fontSize: 12)),
+                                                        SizedBox(width: 4),
+                                                        Text('D: ${Currency.format(debit, isKEuros: isKEuros)}', style: TextStyle(fontSize: 12)),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              ],
+                                            ),
+                                          ),
                                         ],
                                       ),
                                       actions: [

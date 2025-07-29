@@ -145,7 +145,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 SizedBox(height: 16),
                 Text('Bienvenue, $userName', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                SizedBox(height: 32),
+                SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: Ajoutez ici la logique de mise à jour des données
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Mise à jour des données en cours...')),
+                    );
+                  },
+                  icon: Icon(Icons.refresh),
+                  label: Text('Mise à jour des données'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF00A9CA),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+                SizedBox(height: 16),
+                SizedBox(height: 16),
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final isMobile = constraints.maxWidth < 700;
@@ -218,7 +236,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Text('Connexion sécurisée', style: TextStyle(color: Colors.green[700], fontWeight: FontWeight.w500)),
                   ],
                 ),
-                SizedBox(height: 24),
+                SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: _logoutKeycloak,
                   icon: Icon(Icons.logout),
@@ -615,108 +633,104 @@ class _RolesAndCompaniesCard extends StatelessWidget {
     
     return Container(
       width: 340,
-      height: 300, // Hauteur fixe pour égaliser les cards
+      // height: 300, // Hauteur fixe supprimée
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section Rôles
-          Text('Rôles', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              if (isClient)
-                Chip(
-                  label: Text('Client', style: TextStyle(color: Colors.white)), 
-                  backgroundColor: Color(0xFF00A9CA) // Couleur Mobaitec #00a9ca
-                ),
-              if (isAdmin)
-                Chip(
-                  label: Text('Admin', style: TextStyle(color: Colors.white)), 
-                  backgroundColor: Colors.red
-                ),
-              if (hasMDMFi)
-                Chip(
-                  label: Text('MDM-Fi', style: TextStyle(color: Colors.white)), 
-                  backgroundColor: isDarkMode ? Color(0xFF2C5C4C) : Colors.teal
-                ),
-            ],
-          ),
-          
-          // Section Sociétés (si groupes disponibles)
-          if (userGroups != null && userGroups!.isNotEmpty) ...[
-            SizedBox(height: 20),
-            Divider(color: isDarkMode ? Colors.grey[600] : Colors.grey[400]),
-            SizedBox(height: 12),
-            Text('Groupe(s) utilisateur', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Section Rôles
+            Text('Rôles', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             SizedBox(height: 12),
             Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: userGroups!.map((g) {
-                // Afficher le groupe complet avec formatage amélioré
-                String displayName = g;
-                
-                // Si c'est un chemin avec des /, on peut le formater différemment
-                if (g.contains('/')) {
-                  // Garder le chemin complet mais l'afficher de manière plus lisible
-                  displayName = g.replaceAll('/', ' → ');
-                  // Supprimer le premier → si il commence par un /
-                  if (displayName.startsWith(' → ')) {
-                    displayName = displayName.substring(3);
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (isClient)
+                  Chip(
+                    label: Text('Client', style: TextStyle(color: Colors.white)), 
+                    backgroundColor: Color(0xFF00A9CA)
+                  ),
+                if (isAdmin)
+                  Chip(
+                    label: Text('Admin', style: TextStyle(color: Colors.white)), 
+                    backgroundColor: Colors.red
+                  ),
+                if (hasMDMFi)
+                  Chip(
+                    label: Text('MDM-Fi', style: TextStyle(color: Colors.white)), 
+                    backgroundColor: isDarkMode ? Color(0xFF2C5C4C) : Colors.teal
+                  ),
+              ],
+            ),
+            
+            // Section Sociétés (si groupes disponibles)
+            if (userGroups != null && userGroups!.isNotEmpty) ...[
+              SizedBox(height: 20),
+              Divider(color: isDarkMode ? Colors.grey[600] : Colors.grey[400]),
+              SizedBox(height: 12),
+              Text('Groupe(s) utilisateur', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              SizedBox(height: 12),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: userGroups!.map((g) {
+                  String displayName = g;
+                  if (g.contains('/')) {
+                    displayName = g.replaceAll('/', ' → ');
+                    if (displayName.startsWith(' → ')) {
+                      displayName = displayName.substring(3);
+                    }
                   }
-                }
-                
-                return Container(
-                  margin: EdgeInsets.symmetric(vertical: 2),
-                  child: Chip(
-                    label: Text(
-                      displayName,
-                      style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black87,
-                        fontSize: 12,
-                      )
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    child: Chip(
+                      label: Text(
+                        displayName,
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.black87,
+                          fontSize: 12,
+                        )
+                      ),
+                      backgroundColor: isDarkMode ? Color(0xFF404040) : Colors.grey[300],
                     ),
-                    backgroundColor: isDarkMode ? Color(0xFF404040) : Colors.grey[300],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-          
-          // Section Sociétés accessibles (depuis le provider)
-          if (keycloakProvider.accessibleCompanies.isNotEmpty) ...[
-            SizedBox(height: 16),
-            Text('Société(s) accessibles', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
-            SizedBox(height: 8),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: keycloakProvider.accessibleCompanies.map((company) {
-                return Container(
-                  margin: EdgeInsets.symmetric(vertical: 2),
-                  child: Chip(
-                    label: Text(
-                      company['name'] ?? '',
-                      style: TextStyle(
-                        color: isDarkMode ? Colors.white : Colors.black87,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      )
+                  );
+                }).toList(),
+              ),
+            ],
+            
+            // Section Sociétés accessibles (depuis le provider)
+            if (keycloakProvider.accessibleCompanies.isNotEmpty) ...[
+              SizedBox(height: 16),
+              Text('Société(s) accessibles', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
+              SizedBox(height: 8),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: keycloakProvider.accessibleCompanies.map((company) {
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    child: Chip(
+                      label: Text(
+                        company['name'] ?? '',
+                        style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.black87,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        )
+                      ),
+                      backgroundColor: isDarkMode ? Color(0xFF404040) : Colors.grey[300],
                     ),
-                    backgroundColor: isDarkMode ? Color(0xFF404040) : Colors.grey[300],
-                  ),
-                );
-              }).toList(),
-            ),
+                  );
+                }).toList(),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
