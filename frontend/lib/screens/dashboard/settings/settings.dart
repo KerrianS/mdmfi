@@ -6,6 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/swipe_provider.dart';
+import 'package:mobaitec_decision_making/services/cache/navision_service_cache.dart';
+import 'package:mobaitec_decision_making/services/cache/odoo_service_cache.dart';
+import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
+import 'package:mobaitec_decision_making/models/OdooSIGModel.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -237,6 +241,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
                 SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    // Exemple d'export des données du cache Navision et Odoo
+                    final navisionCache = NavisionServiceCache();
+                    final odooCache = OdooServiceCache();
+                    // Remplace 'societe' par la valeur réelle à exporter
+                    final societe = 'demo';
+                    final navisionData = await navisionCache.loadIndicateursMensuel(societe);
+                    final odooData = await odooCache.loadIndicateursMensuel(societe);
+                    // Affiche les données dans un SnackBar (ou adapte selon besoin)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Navision: ' + (navisionData?.toJson().toString() ?? 'Aucune donnée') + '\nOdoo: \n' + (odooData?.toJson().toString() ?? 'Aucune donnée'))),
+                    );
+                  },
+                  icon: Icon(Icons.download),
+                  label: Text('Exporter données cache'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueGrey,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
                 ElevatedButton.icon(
                   onPressed: _logoutKeycloak,
                   icon: Icon(Icons.logout),
@@ -574,6 +601,79 @@ class _PreferencesCard extends StatelessWidget {
         children: [
           Text('Préférences', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    // Test : Stocker des données dans le cache Navision et Odoo
+                    final navisionCache = NavisionServiceCache();
+                    final odooCache = OdooServiceCache();
+                    final societe = 'demo';
+                    // Création d'un objet NavisionIndicateursMensuelResponse
+                    final navisionTestData = NavisionIndicateursMensuelResponse(
+                      annee: DateTime.now().year,
+                      mois: {
+                        '07': [
+                          NavisionIndicateurMensuel(
+                            indicateur: 'CA',
+                            libelle: 'Chiffre d’Affaires',
+                            valeur: 12345.0,
+                            associe: [],
+                            formuleText: 'CA = ...',
+                            formuleNumeric: '12345',
+                            initiales: 'CA',
+                          ),
+                          NavisionIndicateurMensuel(
+                            indicateur: 'RES',
+                            libelle: 'Résultat',
+                            valeur: 6789.0,
+                            associe: [],
+                            formuleText: 'RES = ...',
+                            formuleNumeric: '6789',
+                            initiales: 'RES',
+                          ),
+                        ],
+                      },
+                    );
+                    // Création d'un objet OdooIndicateursMensuelResponse
+                    final odooTestData = OdooIndicateursMensuelResponse(
+                      annee: DateTime.now().year,
+                      mois: {
+                        '07': [
+                          OdooIndicateurMensuel(
+                            indicateur: 'CA',
+                            libelle: 'Chiffre d’Affaires',
+                            valeur: 54321.0,
+                            associe: [],
+                            formuleText: 'CA = ...',
+                            formuleNumeric: '54321',
+                            initiales: 'CA',
+                          ),
+                          OdooIndicateurMensuel(
+                            indicateur: 'RES',
+                            libelle: 'Résultat',
+                            valeur: 9876.0,
+                            associe: [],
+                            formuleText: 'RES = ...',
+                            formuleNumeric: '9876',
+                            initiales: 'RES',
+                          ),
+                        ],
+                      },
+                    );
+                    await navisionCache.saveIndicateursMensuel(societe, navisionTestData);
+                    await odooCache.saveIndicateursMensuel(societe, odooTestData);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Données de test stockées dans le cache !')),
+                    );
+                  },
+                  icon: Icon(Icons.save),
+                  label: Text('Stocker données test dans cache'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
           Row(
             children: [
               Icon(Icons.person, color: isDarkMode ? Colors.white70 : Colors.blueGrey),

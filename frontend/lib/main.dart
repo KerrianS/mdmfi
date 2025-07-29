@@ -7,7 +7,13 @@ import 'package:provider/provider.dart';
 import 'services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/swipe_provider.dart';
-void main() {
+import 'package:hive_flutter/hive_flutter.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  var box = await Hive.openBox('navision_cache');
+  print('Hive path: [32m${box.path}[0m');
   runApp(
     MultiProvider(
       providers: [
