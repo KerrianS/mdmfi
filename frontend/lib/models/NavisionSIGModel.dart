@@ -108,7 +108,7 @@ class NavisionIndicateurMensuel {
       indicateur: json['indicateur'],
       libelle: json['libelle'],
       initiales: json['initiales'] ?? '',
-      valeur: (json['valeur'] as num).toDouble(),
+      valeur: (json['valeur_calculee'] as num?)?.toDouble() ?? (json['valeur'] as num?)?.toDouble() ?? 0.0,
       associe: (json['associe'] as List?)?.map((e) => e.toString()).toList() ?? [],
       formuleText: json['formule_text'] ?? '',
       formuleNumeric: json['formule_numeric'] ?? '',

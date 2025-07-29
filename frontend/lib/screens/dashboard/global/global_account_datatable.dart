@@ -75,19 +75,25 @@ class GlobalAccountDataTable extends StatelessWidget {
         dataRowMinHeight: 28,
         dataRowMaxHeight: 32,
         columns: [
-          const DataColumn(label: SizedBox(width: 100, child: Text('Compte', style: TextStyle(fontSize: 13)))),
+          const DataColumn(
+              label: SizedBox(
+                  width: 100,
+                  child: Text('Compte', style: TextStyle(fontSize: 13)))),
           DataColumn(
             label: Container(
               width: 150,
               alignment: Alignment.centerLeft,
-              child: Text('Libellé', style: TextStyle(fontSize: 13), textAlign: TextAlign.left),
+              child: Text('Libellé',
+                  style: TextStyle(fontSize: 13), textAlign: TextAlign.left),
             ),
           ),
           ...annees.map((an) => DataColumn(
                 label: Container(
                   width: 120,
                   alignment: Alignment.centerRight,
-                  child: Text(an, style: TextStyle(fontSize: 13), textAlign: TextAlign.right),
+                  child: Text(an,
+                      style: TextStyle(fontSize: 13),
+                      textAlign: TextAlign.right),
                 ),
               )),
         ],
@@ -101,8 +107,11 @@ class GlobalAccountDataTable extends StatelessWidget {
 
                 return DataRow(
                   selected: isSelected,
-                  onSelectChanged: onSelectCompte != null ? (_) => onSelectCompte!(codeCompte) : null,
-                  color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+                  onSelectChanged: onSelectCompte != null
+                      ? (_) => onSelectCompte!(codeCompte)
+                      : null,
+                  color: MaterialStateProperty.resolveWith<Color?>(
+                      (Set<MaterialState> states) {
                     if (isSelected) {
                       return Colors.grey.shade300;
                     }
@@ -118,7 +127,8 @@ class GlobalAccountDataTable extends StatelessWidget {
                         padding: EdgeInsets.symmetric(vertical: 8),
                         child: Text(
                           codeCompte,
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -145,109 +155,173 @@ class GlobalAccountDataTable extends StatelessWidget {
                                   builder: (_) {
                                     return AlertDialog(
                                       title: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Text('Infos : $codeCompte', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                          Text('Infos : $codeCompte',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15)),
                                           SizedBox(width: 12),
-                                          Text('- Libellé : $libelle', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                                          Text('- Libellé : $libelle',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold)),
                                         ],
                                       ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          SizedBox(height: 12),
-                                          // Années sur une seule ligne
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                ...annees.map((an) => Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                  child: Text(an, style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)),
-                                                ))
+                                      content: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(height: 12),
+                                            // Tableau structuré pour un meilleur alignement
+                                            DataTable(
+                                              columnSpacing: 20,
+                                              headingRowHeight: 40,
+                                              dataRowHeight: 40,
+                                              columns: [
+                                                // En-tête avec les années
+                                                ...annees
+                                                    .map((an) => DataColumn(
+                                                          label: Container(
+                                                            width: 120,
+                                                            child: Text(
+                                                              an,
+                                                              style: TextStyle(
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                          ),
+                                                        )),
+                                              ],
+                                              rows: [
+                                                // Ligne des montants totaux
+                                                DataRow(
+                                                  cells: annees.map((an) {
+                                                    final anneeData =
+                                                        montants[an];
+                                                    double montant = 0.0;
+                                                    if (anneeData != null &&
+                                                        anneeData is Map<String,
+                                                            dynamic>) {
+                                                      final map = anneeData;
+                                                      final montantVal =
+                                                          map['montant'];
+                                                      montant = (montantVal
+                                                              is num)
+                                                          ? montantVal
+                                                              .toDouble()
+                                                          : double.tryParse(
+                                                                  montantVal
+                                                                          ?.toString() ??
+                                                                      '') ??
+                                                              0.0;
+                                                    } else if (anneeData
+                                                        is double) {
+                                                      montant = anneeData;
+                                                    }
+                                                    return DataCell(
+                                                      Container(
+                                                        width: 120,
+                                                        child: Text(
+                                                          Currency.format(
+                                                              montant,
+                                                              isKEuros:
+                                                                  isKEuros),
+                                                          style: TextStyle(
+                                                              fontSize: 13,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                ),
+                                                // Ligne des crédits et débits
+                                                DataRow(
+                                                  cells: annees.map((an) {
+                                                    final anneeData =
+                                                        montants[an];
+                                                    double debit = 0.0;
+                                                    double credit = 0.0;
+                                                    if (anneeData != null &&
+                                                        anneeData is Map<String,
+                                                            dynamic>) {
+                                                      final map = anneeData;
+                                                      final debitVal =
+                                                          map['debit'];
+                                                      final creditVal =
+                                                          map['credit'];
+                                                      debit = (debitVal is num)
+                                                          ? debitVal.toDouble()
+                                                          : double.tryParse(
+                                                                  debitVal?.toString() ??
+                                                                      '') ??
+                                                              0.0;
+                                                      credit = (creditVal
+                                                              is num)
+                                                          ? creditVal.toDouble()
+                                                          : double.tryParse(
+                                                                  creditVal
+                                                                          ?.toString() ??
+                                                                      '') ??
+                                                              0.0;
+                                                    }
+                                                    return DataCell(
+                                                      Container(
+                                                        width: 120,
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Text(
+                                                              'C: ${Currency.format(credit, isKEuros: isKEuros)}',
+                                                              style: TextStyle(
+                                                                  fontSize: 11,
+                                                                  color: Colors
+                                                                          .green[
+                                                                      700]),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                            SizedBox(height: 2),
+                                                            Text(
+                                                              'D: ${Currency.format(debit, isKEuros: isKEuros)}',
+                                                              style: TextStyle(
+                                                                  fontSize: 11,
+                                                                  color: Colors
+                                                                          .red[
+                                                                      700]),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                ),
                                               ],
                                             ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          // Montants pour chaque année
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                ...annees.map((an) {
-                                                  final anneeData = montants[an];
-                                                  double montant = 0.0;
-                                                  double debit = 0.0;
-                                                  double credit = 0.0;
-                                                  if (anneeData != null && anneeData is Map<String, dynamic>) {
-                                                    final map = anneeData;
-                                                    final montantVal = map['montant'];
-                                                    final debitVal = map['debit'];
-                                                    final creditVal = map['credit'];
-                                                    montant = (montantVal is num)
-                                                        ? montantVal.toDouble()
-                                                        : double.tryParse(montantVal?.toString() ?? '') ?? 0.0;
-                                                    debit = (debitVal is num)
-                                                        ? debitVal.toDouble()
-                                                        : double.tryParse(debitVal?.toString() ?? '') ?? 0.0;
-                                                    credit = (creditVal is num)
-                                                        ? creditVal.toDouble()
-                                                        : double.tryParse(creditVal?.toString() ?? '') ?? 0.0;
-                                                  } else if (anneeData is double) {
-                                                    montant = anneeData;
-                                                  }
-                                                  return Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                    child: Text(Currency.format(montant, isKEuros: isKEuros), style: TextStyle(fontSize: 13)),
-                                                  );
-                                                }).toList(),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          // Crédit et Débit pour chaque année
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                ...annees.map((an) {
-                                                  final anneeData = montants[an];
-                                                  double debit = 0.0;
-                                                  double credit = 0.0;
-                                                  if (anneeData != null && anneeData is Map<String, dynamic>) {
-                                                    final map = anneeData;
-                                                    final debitVal = map['debit'];
-                                                    final creditVal = map['credit'];
-                                                    debit = (debitVal is num)
-                                                        ? debitVal.toDouble()
-                                                        : double.tryParse(debitVal?.toString() ?? '') ?? 0.0;
-                                                    credit = (creditVal is num)
-                                                        ? creditVal.toDouble()
-                                                        : double.tryParse(creditVal?.toString() ?? '') ?? 0.0;
-                                                  }
-                                                  return Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                    child: Row(
-                                                      children: [
-                                                        Text('C: ${Currency.format(credit, isKEuros: isKEuros)}', style: TextStyle(fontSize: 12)),
-                                                        SizedBox(width: 4),
-                                                        Text('D: ${Currency.format(debit, isKEuros: isKEuros)}', style: TextStyle(fontSize: 12)),
-                                                      ],
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(context).pop(),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
                                           child: Text("Fermer"),
                                         )
                                       ],
@@ -255,7 +329,8 @@ class GlobalAccountDataTable extends StatelessWidget {
                                   },
                                 );
                               },
-                              child: Icon(Icons.info_outline, size: 18, color: Colors.blue),
+                              child: Icon(Icons.info_outline,
+                                  size: 18, color: Colors.blue),
                             ),
                           ],
                         ),
@@ -264,9 +339,12 @@ class GlobalAccountDataTable extends StatelessWidget {
                     ...annees.map((an) {
                       final anneeData = montants[an];
                       double montant = 0.0;
-                      if (anneeData is Map && anneeData.containsKey('montant')) {
+                      if (anneeData is Map &&
+                          anneeData.containsKey('montant')) {
                         final val = anneeData['montant'];
-                        montant = (val is num) ? val.toDouble() : double.tryParse(val?.toString() ?? '') ?? 0.0;
+                        montant = (val is num)
+                            ? val.toDouble()
+                            : double.tryParse(val?.toString() ?? '') ?? 0.0;
                       } else if (anneeData is num) {
                         montant = anneeData.toDouble();
                       }
@@ -291,11 +369,13 @@ class GlobalAccountDataTable extends StatelessWidget {
                   DataCell(
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text('Aucun compte à afficher', style: TextStyle(fontSize: 12)),
+                      child: Text('Aucun compte à afficher',
+                          style: TextStyle(fontSize: 12)),
                     ),
                   ),
                   const DataCell(Text('')),
-                  ...List.generate(annees.length, (index) => const DataCell(Text(''))),
+                  ...List.generate(
+                      annees.length, (index) => const DataCell(Text(''))),
                 ])
               ],
       ),

@@ -301,10 +301,178 @@ def get_indicateurs_mensuel_valeurs(societe: str, annee: int):
         }
         associe_mapping = MappingIndicateurSIG.get_associe_mapping()
         for code, montant in indicateurs_calcules.items():
+            # Construction des champs manquants
+            formule_text = ""
+            formule_numeric = ""
+            valeur_formule = montant
+            ecart = 0
+            
+            # MC
+            if code == "MC":
+                # Calculer tous les sous-indicateurs de MC
+                ventes_marchandises = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["VENTES DE MARCHANDISES"]))
+                ventes_produits_finis = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["VENTES DE PRODUITS FINIS"]))
+                ventes_services = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["VENTES DE SERVICES"]))
+                prestations_services = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["PRESTATIONS DE SERVICES"]))
+                tva_collectee = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["TVA COLLECTEE"]))
+                achats_marchandises = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS DE MARCHANDISES"]))
+                
+                # Construire la formule avec tous les sous-indicateurs disponibles
+                partie_plus = []
+                partie_moins = []
+                
+                # Partie positive : Ventes et prestations
+                if ventes_marchandises != 0:
+                    partie_plus.append(f"VENTES DE MARCHANDISES ({ventes_marchandises:.2f})")
+                if ventes_produits_finis != 0:
+                    partie_plus.append(f"VENTES DE PRODUITS FINIS ({ventes_produits_finis:.2f})")
+                if ventes_services != 0:
+                    partie_plus.append(f"VENTES DE SERVICES ({ventes_services:.2f})")
+                if prestations_services != 0:
+                    partie_plus.append(f"PRESTATIONS DE SERVICES ({prestations_services:.2f})")
+                if tva_collectee != 0:
+                    partie_plus.append(f"TVA COLLECTEE ({tva_collectee:.2f})")
+                
+                # Partie négative : Achats
+                if achats_marchandises != 0:
+                    partie_moins.append(f"ACHATS DE MARCHANDISES ({abs(achats_marchandises):.2f})")
+                
+                # Construire la formule
+                if not partie_plus and partie_moins:
+                    formule_text = f"MC = - {' - '.join(partie_moins)} = {montant:.2f}"
+                    formule_numeric = f"MC = - ({' + '.join([f'{abs(achats_marchandises):.2f}' for v in [achats_marchandises] if v != 0])}) = {montant:.2f}"
+                elif not partie_plus and not partie_moins:
+                    formule_text = f"MC = 0 = {montant:.2f}"
+                    formule_numeric = f"MC = 0 = {montant:.2f}"
+                else:
+                    formule_text = f"MC = {' + '.join(partie_plus)} - {' - '.join(partie_moins)} = {montant:.2f}"
+                    formule_numeric = f"MC = ({' + '.join([f'{v:.2f}' for v in [ventes_marchandises, ventes_produits_finis, ventes_services, prestations_services, tva_collectee] if v != 0])}) - ({' + '.join([f'{abs(v):.2f}' for v in [achats_marchandises] if v != 0])}) = {montant:.2f}"
+                
+                valeur_formule = montant
+            
+            # VA
+            elif code == "VA":
+                mc_value = indicateurs_calcules.get('MC', 0)
+                
+                # Calculer les montants selon les sous-indicateurs disponibles
+                prestations_services = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRESTATIONS DE SERVICES"]))
+                ventes_produits = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["VENTES DE PRODUITS FINIS"]))
+                production_stockee = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRODUCTION STOCKÉE"]))
+                production_immobilisee = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRODUCTION IMMOBILISÉE"]))
+                achats_stockes = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS STOCKES"]))
+                achats_non_stockes = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS NON STOCKES"]))
+                fournitures = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["FOURNITURES"]))
+                services_exterieurs = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["SERVICES EXTÉRIEURS"]))
+                autres_services_exterieurs = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES SERVICES EXTÉRIEURS"]))
+                
+                # Construire la formule selon les sous-indicateurs disponibles
+                partie_plus = []
+                partie_moins = []
+                
+                # Partie positive : MC + Production
+                if mc_value != 0:
+                    partie_plus.append(f"MC ({mc_value:.2f})")
+                if prestations_services != 0:
+                    partie_plus.append(f"PRESTATIONS DE SERVICES ({prestations_services:.2f})")
+                if ventes_produits != 0:
+                    partie_plus.append(f"VENTES DE PRODUITS FINIS ({ventes_produits:.2f})")
+                if production_stockee != 0:
+                    partie_plus.append(f"PRODUCTION STOCKÉE ({production_stockee:.2f})")
+                if production_immobilisee != 0:
+                    partie_plus.append(f"PRODUCTION IMMOBILISÉE ({production_immobilisee:.2f})")
+                
+                # Partie négative : Consommations
+                if achats_stockes != 0:
+                    partie_moins.append(f"ACHATS STOCKES ({abs(achats_stockes):.2f})")
+                if achats_non_stockes != 0:
+                    partie_moins.append(f"ACHATS NON STOCKES ({abs(achats_non_stockes):.2f})")
+                if fournitures != 0:
+                    partie_moins.append(f"FOURNITURES ({abs(fournitures):.2f})")
+                if services_exterieurs != 0:
+                    partie_moins.append(f"SERVICES EXTÉRIEURS ({abs(services_exterieurs):.2f})")
+                if autres_services_exterieurs != 0:
+                    partie_moins.append(f"AUTRES SERVICES EXTÉRIEURS ({abs(autres_services_exterieurs):.2f})")
+                
+                # Gestion des cas où il n'y a que des négatifs
+                if not partie_plus and partie_moins:
+                    formule_text = f"VA = - {' - '.join(partie_moins)} = {montant:.2f}"
+                    formule_numeric = f"VA = - ({' + '.join([f'{abs(v):.2f}' for v in [achats_stockes, achats_non_stockes, fournitures, services_exterieurs, autres_services_exterieurs] if v != 0])}) = {montant:.2f}"
+                elif not partie_plus and not partie_moins:
+                    formule_text = f"VA = 0 = {montant:.2f}"
+                    formule_numeric = f"VA = 0 = {montant:.2f}"
+                else:
+                    formule_text = f"VA = {' + '.join(partie_plus)} - {' - '.join(partie_moins)} = {montant:.2f}"
+                    formule_numeric = f"VA = ({' + '.join([f'{v:.2f}' for v in [mc_value, prestations_services, ventes_produits, production_stockee, production_immobilisee] if v != 0])}) - ({' + '.join([f'{abs(v):.2f}' for v in [achats_stockes, achats_non_stockes, fournitures, services_exterieurs, autres_services_exterieurs] if v != 0])}) = {montant:.2f}"
+                valeur_formule = montant
+            
+            # EBE
+            elif code == "EBE":
+                va_value = indicateurs_calcules.get('VA', 0)
+                subventions = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["SUBVENTIONS D'EXPLOITATION"]))
+                impots_taxes = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["IMPÔTS ET TAXES"]))
+                charges_personnel = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES DE PERSONNEL"]))
+                formule_text = f"EBE = VA ({va_value:.2f}) + SUBVENTIONS D'EXPLOITATION ({subventions:.2f}) - IMPÔTS ET TAXES ({abs(impots_taxes):.2f}) - CHARGES DE PERSONNEL ({abs(charges_personnel):.2f}) = {montant:.2f}"
+                formule_numeric = f"EBE = ({va_value:.2f} + {subventions:.2f}) - ({abs(impots_taxes):.2f} + {abs(charges_personnel):.2f}) = {montant:.2f}"
+                valeur_formule = montant
+            
+            # RE
+            elif code == "RE":
+                ebe_value = indicateurs_calcules.get('EBE', 0)
+                autres_produits = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES PRODUITS DE GESTION COURANTE"]))
+                reprises_amortissements = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["REPRISES AMORTISSEMENTS"]))
+                autres_charges = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES CHARGES DE GESTION COURANTE"]))
+                dotations_amortissements = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["DOTATIONS AMORTISSEMENTS"]))
+                
+                # Construire la formule selon les sous-indicateurs disponibles
+                partie_plus = []
+                partie_moins = []
+                
+                # Partie positive
+                if ebe_value != 0:
+                    partie_plus.append(f"EBE ({ebe_value:.2f})")
+                if autres_produits != 0:
+                    partie_plus.append(f"AUTRES PRODUITS DE GESTION COURANTE ({autres_produits:.2f})")
+                if reprises_amortissements != 0:
+                    partie_plus.append(f"REPRISES AMORTISSEMENTS ({reprises_amortissements:.2f})")
+                
+                # Partie négative
+                if autres_charges != 0:
+                    partie_moins.append(f"AUTRES CHARGES DE GESTION COURANTE ({abs(autres_charges):.2f})")
+                if dotations_amortissements != 0:
+                    partie_moins.append(f"DOTATIONS AMORTISSEMENTS ({abs(dotations_amortissements):.2f})")
+                
+                # Gestion des cas où il n'y a que des négatifs ou rien
+                if not partie_plus and partie_moins:
+                    formule_text = f"RE = - {' - '.join(partie_moins)} = {montant:.2f}"
+                    formule_numeric = f"RE = - ({' + '.join([f'{abs(v):.2f}' for v in [autres_charges, dotations_amortissements] if v != 0])}) = {montant:.2f}"
+                elif not partie_plus and not partie_moins:
+                    formule_text = f"RE = 0 = {montant:.2f}"
+                    formule_numeric = f"RE = 0 = {montant:.2f}"
+                else:
+                    formule_text = f"RE = {' + '.join(partie_plus)} - {' - '.join(partie_moins)} = {montant:.2f}"
+                    formule_numeric = f"RE = ({' + '.join([f'{v:.2f}' for v in [ebe_value, autres_produits, reprises_amortissements] if v != 0])}) - ({' + '.join([f'{abs(v):.2f}' for v in [autres_charges, dotations_amortissements] if v != 0])}) = {montant:.2f}"
+                valeur_formule = montant
+            
+            # R
+            elif code == "R":
+                re_value = indicateurs_calcules.get('RE', 0)
+                produits_financiers = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["PRODUITS FINANCIERS"]))
+                charges_financieres = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES FINANCIÈRES"]))
+                produits_exceptionnels = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["PRODUITS EXCEPTIONNELS"]))
+                charges_exceptionnelles = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES EXCEPTIONNELLES"]))
+                impots_benefices = sum(l.get('montant', 0) for l in lignes if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["IMPÔTS SUR LES BÉNÉFICES"]))
+                formule_text = f"R = RE ({re_value:.2f}) + PRODUITS FINANCIERS ({produits_financiers:.2f}) + PRODUITS EXCEPTIONNELS ({produits_exceptionnels:.2f}) - CHARGES FINANCIÈRES ({abs(charges_financieres):.2f}) - CHARGES EXCEPTIONNELLES ({abs(charges_exceptionnelles):.2f}) - IMPÔTS SUR LES BÉNÉFICES ({abs(impots_benefices):.2f}) = {montant:.2f}"
+                formule_numeric = f"R = ({re_value:.2f} + {produits_financiers:.2f} + {produits_exceptionnels:.2f}) - ({abs(charges_financieres):.2f} + {abs(charges_exceptionnelles):.2f} + {abs(impots_benefices):.2f}) = {montant:.2f}"
+                valeur_formule = montant
+            
             indicateurs_list.append({
                 "indicateur": code,
                 "libelle": libelles.get(code, code),
-                "valeur": montant,
+                "valeur_calculee": montant,
+                "formule_text": formule_text,
+                "formule_numeric": formule_numeric,
+                "valeur_formule": valeur_formule,
+                "ecart": ecart,
                 "associe": associe_mapping.get(code, [])
             })
         result[mois] = indicateurs_list

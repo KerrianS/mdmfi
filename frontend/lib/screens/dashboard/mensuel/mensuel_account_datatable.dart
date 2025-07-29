@@ -26,7 +26,8 @@ class MensuelAccountDataTable extends StatefulWidget {
   });
 
   @override
-  State<MensuelAccountDataTable> createState() => _MensuelAccountDataTableState();
+  State<MensuelAccountDataTable> createState() =>
+      _MensuelAccountDataTableState();
 }
 
 class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
@@ -72,13 +73,17 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
         final isSelected = widget.selectedRowIndex == i;
         return DataRow(
           selected: isSelected,
-          color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+          color: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
             final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-            if (isSelected) return isDarkMode ? Color(0xFF404040) : Colors.grey.shade300;
-            if (states.contains(MaterialState.hovered)) return isDarkMode ? Color(0xFF2C2C2C) : Colors.grey.shade200;
+            if (isSelected)
+              return isDarkMode ? Color(0xFF404040) : Colors.grey.shade300;
+            if (states.contains(MaterialState.hovered))
+              return isDarkMode ? Color(0xFF2C2C2C) : Colors.grey.shade200;
             return null;
           }),
-          onSelectChanged: widget.onRowSelect != null ? (_) => widget.onRowSelect!(i) : null,
+          onSelectChanged:
+              widget.onRowSelect != null ? (_) => widget.onRowSelect!(i) : null,
           cells: [
             DataCell(
               Container(
@@ -89,7 +94,9 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).brightness == Brightness.dark ? Color(0xFFE0E0E0) : Colors.black,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Color(0xFFE0E0E0)
+                        : Colors.black,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -99,22 +106,129 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
               Container(
                 width: 150,
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  compte.libelleCompte,
-                  style: TextStyle(fontSize: 13, color: Theme.of(context).brightness == Brightness.dark ? Color(0xFFE0E0E0) : Colors.black),
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        compte.libelleCompte,
+                        style: TextStyle(
+                            fontSize: 13,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color(0xFFE0E0E0)
+                                    : Colors.black),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) {
+                            return AlertDialog(
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('Infos : ${compte.codeCompte}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15)),
+                                  SizedBox(width: 12),
+                                  Text('- Libellé : ${compte.libelleCompte}',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                              content: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(height: 12),
+                                    // Tableau structuré pour un meilleur alignement
+                                    DataTable(
+                                      columnSpacing: 20,
+                                      headingRowHeight: 40,
+                                      dataRowHeight: 40,
+                                      columns: [
+                                        // En-tête avec les mois
+                                        ...widget.mois.map((mois) => DataColumn(
+                                              label: Container(
+                                                width: 120,
+                                                child: Text(
+                                                  mois,
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            )),
+                                      ],
+                                      rows: [
+                                        // Ligne des montants totaux
+                                        DataRow(
+                                          cells: widget.mois.map((mois) {
+                                            final montant = widget
+                                                        .montantsParMois[
+                                                    compte.codeCompte]?[mois] ??
+                                                0.0;
+                                            return DataCell(
+                                              Container(
+                                                width: 120,
+                                                child: Text(
+                                                  montant.format(),
+                                                  style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: Text("Fermer"),
+                                )
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Icon(Icons.info_outline,
+                          size: 18, color: Colors.blue),
+                    ),
+                  ],
                 ),
               ),
             ),
             ...widget.mois.map((mois) {
-              final montant = widget.montantsParMois[compte.codeCompte]?[mois] ?? 0.0;
+              final montant =
+                  widget.montantsParMois[compte.codeCompte]?[mois] ?? 0.0;
               return DataCell(
                 Container(
                   width: 100,
                   alignment: Alignment.centerRight,
                   child: Text(
                     montant.format(),
-                    style: TextStyle(fontSize: 13, color: Theme.of(context).brightness == Brightness.dark ? Color(0xFFE0E0E0) : Colors.black),
+                    style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Color(0xFFE0E0E0)
+                            : Colors.black),
                     textAlign: TextAlign.right,
                     overflow: TextOverflow.ellipsis,
                   ),

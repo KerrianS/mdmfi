@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/utils/shimmer_utils.dart';
 
-
 class Mensuel extends StatefulWidget {
   static String lastSelectedAnnee = (DateTime.now().year - 1).toString();
   @override
@@ -34,19 +33,123 @@ class _MensuelState extends State<Mensuel> {
   int comptesTotal = 0;
   int currentPage = 0;
 
-  Set<String> expandedSousIndicateurs = {}; // Gardé pour compatibilité mais non utilisé
+  Set<String> expandedSousIndicateurs =
+      {}; // Gardé pour compatibilité mais non utilisé
   Map<String, dynamic> comptesResponses = {};
   Map<String, bool> isLoadingComptes = {};
   // _isInitialized supprimé, on utilise le Provider pour écouter les changements
   bool isKEuros = false; // Variable pour gérer l'affichage en KEuros
 
+  // Helper pour obtenir les formules textuelles par mois pour l'indicateur sélectionné
+  Map<String, String> getFormuleTextParMois() {
+    final Map<String, String> formules = {};
+    if (indicateursResponse == null || selectedIndicateur == null)
+      return formules;
+
+    print(
+        '[DEBUG] getFormuleTextParMois - indicateursResponse.mois.keys: ${indicateursResponse.mois.keys}');
+    print(
+        '[DEBUG] getFormuleTextParMois - selectedIndicateur: $selectedIndicateur');
+
+    for (final moisEntry in indicateursResponse.mois.entries) {
+      final mois = moisEntry.key;
+      final indicateursList = moisEntry.value;
+      print(
+          '[DEBUG] getFormuleTextParMois - Processing mois: $mois with ${indicateursList.length} indicateurs');
+
+      for (final ind in indicateursList) {
+        print(
+            '[DEBUG] getFormuleTextParMois - Checking indicateur: ${ind.indicateur} with formuleText: ${ind.formuleText}');
+        if (ind.indicateur == selectedIndicateur &&
+            ind.formuleText.isNotEmpty) {
+          formules[mois] = ind.formuleText;
+          print(
+              '[DEBUG] getFormuleTextParMois - Found formule for mois $mois: ${ind.formuleText}');
+          break;
+        }
+      }
+    }
+
+    print('[DEBUG] getFormuleTextParMois - Final formules: $formules');
+    return formules;
+  }
+
+  // Helper pour obtenir la liste des sous-indicateurs associés à l'indicateur sélectionné
+  List<String> getSousIndicateursAssocies() {
+    // On extrait les sous-indicateurs depuis formule_text de l'indicateur sélectionné
+    List<String> sousIndicateursFromFormule = [];
+    if (indicateursResponse == null ||
+        selectedIndicateur == null ||
+        sousIndicsResponse == null) return [];
+
+    // Récupérer formule_text de l'indicateur sélectionné
+    String? formuleText;
+    for (final moisEntry in indicateursResponse.mois.entries) {
+      final indicateursList = moisEntry.value;
+      for (final ind in indicateursList) {
+        if (ind.indicateur == selectedIndicateur) {
+          formuleText = ind.formuleText;
+          break;
+        }
+      }
+      if (formuleText != null && formuleText.isNotEmpty) break;
+    }
+
+    if (formuleText == null || formuleText.isEmpty) return [];
+
+    // Extraire les sous-indicateurs depuis formule_text
+    // Exemple: "VA = MC (1234.56) + PRESTATIONS DE SERVICES (5678.90) - ACHATS STOCKES (2345.67) = 4567.79"
+    final Set<String> sousIndicateursTrouves = {};
+
+    // Pattern pour capturer les sous-indicateurs dans la formule
+    // Cherche les patterns comme "MC (1234.56)", "PRESTATIONS DE SERVICES (5678.90)", etc.
+    final pattern = RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
+    final matches = pattern.allMatches(formuleText);
+
+    for (final match in matches) {
+      final sousIndicateur = match.group(1)?.trim();
+      if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
+        sousIndicateursTrouves.add(sousIndicateur);
+      }
+    }
+
+    // Maintenant, chercher les sous-indicateurs dans la réponse qui correspondent
+    final Set<String> sousIndicateurLibelles = {};
+    for (final moisEntry in sousIndicsResponse.mois.entries) {
+      final sousIndicateursList = moisEntry.value.values
+          .where((v) => v is List)
+          .expand((list) => list as List)
+          .toList();
+      for (final sous in sousIndicateursList) {
+        final libelleNorm = sous.libelle.trim().toUpperCase();
+        // Vérifier si le libellé du sous-indicateur correspond à un des sous-indicateurs trouvés dans la formule
+        for (final sousIndFromFormule in sousIndicateursTrouves) {
+          if (libelleNorm == sousIndFromFormule.toUpperCase()) {
+            sousIndicateurLibelles.add(sous.libelle);
+            break;
+          }
+        }
+      }
+    }
+
+    print('[DEBUG] Formule text: $formuleText');
+    print(
+        '[DEBUG] Sous-indicateurs trouvés dans formule: ${sousIndicateursTrouves.toList()}');
+    print(
+        '[DEBUG] Sous-indicateurs à surligner: ${sousIndicateurLibelles.toList()}');
+
+    return sousIndicateurLibelles.toList();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: true);
+    final keycloakProvider =
+        Provider.of<KeycloakProvider>(context, listen: true);
     final societe = keycloakProvider.selectedCompany;
     if (societe != null && societe != _lastSociete) {
-      print('[Mensuel] Changement de société détecté: $_lastSociete -> $societe');
+      print(
+          '[Mensuel] Changement de société détecté: $_lastSociete -> $societe');
       _lastSociete = societe;
       indicateursResponse = null;
       sousIndicsResponse = null;
@@ -71,9 +174,11 @@ class _MensuelState extends State<Mensuel> {
 
   Future<void> _loadAnnees(String societe) async {
     print('[Mensuel] Début du chargement pour $societe');
-    
-    setState(() { isLoading = true; });
-    
+
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       // Générer les années de l'année actuelle jusqu'à 2020
       final currentYear = DateTime.now().year;
@@ -81,41 +186,76 @@ class _MensuelState extends State<Mensuel> {
       for (int year = currentYear; year >= 2020; year--) {
         allAnnees.add(year.toString());
       }
-      
+
       if (!mounted) return;
       setState(() {
-        selectedAnnee = allAnnees.first; // Sélectionner l'année actuelle par défaut
+        selectedAnnee =
+            allAnnees.first; // Sélectionner l'année actuelle par défaut
         isLoading = false;
       });
       _loadData();
     } catch (e) {
       print('[Mensuel] Erreur lors du chargement des années: $e');
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   Future<void> _loadData() async {
     if (_lastSociete == null) return;
     if (!mounted) return;
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
     try {
       final anneeInt = int.parse(selectedAnnee);
-      print('[Mensuel] Chargement des données pour $_lastSociete, année: $anneeInt');
-      final isOdoo = Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
+      print(
+          '[Mensuel] Chargement des données pour $_lastSociete, année: $anneeInt');
+      final isOdoo =
+          Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
       if (isOdoo) {
-        indicateursResponse = await OdooSIGService().fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
-        sousIndicsResponse = await OdooSIGService().fetchSousIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
+        indicateursResponse = await OdooSIGService()
+            .fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
+        sousIndicsResponse = await OdooSIGService().fetchSousIndicateursMensuel(
+            societe: _lastSociete!, annee: anneeInt);
       } else {
-        indicateursResponse = await NavisionSIGService().fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
-        sousIndicsResponse = await NavisionSIGService().fetchSousIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
+        indicateursResponse = await NavisionSIGService()
+            .fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
+        sousIndicsResponse = await NavisionSIGService()
+            .fetchSousIndicateursMensuel(
+                societe: _lastSociete!, annee: anneeInt);
       }
+
+      // Debug: Afficher la structure des données reçues
+      print(
+          '[Mensuel] indicateursResponse reçu: ${indicateursResponse != null}');
+      if (indicateursResponse != null) {
+        print(
+            '[Mensuel] Structure indicateursResponse: ${indicateursResponse.toString()}');
+        print('[Mensuel] Nombre de mois: ${indicateursResponse.mois.length}');
+        for (final entry in indicateursResponse.mois.entries) {
+          print(
+              '[Mensuel] Mois ${entry.key}: ${entry.value.length} indicateurs');
+          if (entry.value.isNotEmpty) {
+            print(
+                '[Mensuel] Premier indicateur: ${entry.value.first.toString()}');
+          }
+        }
+      }
+
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
       print('[Mensuel] Erreur lors du chargement: $e');
+      print('[Mensuel] Stack trace: ${StackTrace.current}');
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -126,7 +266,8 @@ class _MensuelState extends State<Mensuel> {
       isLoadingComptes[selectedSousIndicateur!] = true;
     });
     try {
-      final isOdoo = Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
+      final isOdoo =
+          Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
       final comptesPage = isOdoo
           ? await OdooSIGService().fetchComptesMensuel(
               societe: _lastSociete!,
@@ -183,14 +324,22 @@ class _MensuelState extends State<Mensuel> {
               children: [
                 Icon(Icons.functions, color: Color(0xFF00A9CA)),
                 SizedBox(width: 8),
-                Text('Détails des formules SIG', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF00A9CA))),
+                Text('Détails des formules SIG',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF00A9CA))),
               ],
             ),
             SizedBox(height: 10),
-            _buildFormulaItem('MC (Marge commerciale)', 'Ventes de marchandises - Coût d\'achat des marchandises vendues'),
-            _buildFormulaItem('VA (Valeur ajoutée)', 'Production de l\'exercice + Marge commerciale - Consommations de l\'exercice'),
-            _buildFormulaItem('EBE (Excédent brut d\'exploitation)', 'VA + Subventions d\'exploitation - Impôts et taxes - Charges de personnel'),
-            _buildFormulaItem('RE (Résultat d\'exploitation)', 'EBE + Autres produits - Autres charges'),
+            _buildFormulaItem('MC (Marge commerciale)',
+                'Ventes de marchandises - Coût d\'achat des marchandises vendues'),
+            _buildFormulaItem('VA (Valeur ajoutée)',
+                'Production de l\'exercice + Marge commerciale - Consommations de l\'exercice'),
+            _buildFormulaItem('EBE (Excédent brut d\'exploitation)',
+                'VA + Subventions d\'exploitation - Impôts et taxes - Charges de personnel'),
+            _buildFormulaItem('RE (Résultat d\'exploitation)',
+                'EBE + Autres produits - Autres charges'),
             _buildFormulaItem('R (Résultat)', 'Produits - Charges'),
           ],
         ),
@@ -224,7 +373,7 @@ class _MensuelState extends State<Mensuel> {
 
   Widget _buildAnneeButtons() {
     if (allAnnees.isEmpty) return SizedBox.shrink();
-    
+
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8, top: 0),
       child: Row(
@@ -236,11 +385,13 @@ class _MensuelState extends State<Mensuel> {
               padding: const EdgeInsets.only(right: 8),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
+                  backgroundColor:
+                      isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   elevation: isSelected ? 2 : 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
                 ),
                 onPressed: () {
                   setState(() {
@@ -253,7 +404,10 @@ class _MensuelState extends State<Mensuel> {
                     comptesResponses.clear();
                   });
                 },
-                child: Text(annee, style: TextStyle(fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                child: Text(annee,
+                    style: TextStyle(
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal)),
               ),
             );
           }).toList(),
@@ -264,7 +418,8 @@ class _MensuelState extends State<Mensuel> {
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               elevation: 1,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
             ),
             onPressed: () {
               setState(() {
@@ -272,7 +427,8 @@ class _MensuelState extends State<Mensuel> {
               });
             },
             icon: Icon(Icons.euro, size: 16),
-            label: Text(isKEuros ? 'Euros' : 'KEuros', style: TextStyle(fontWeight: FontWeight.w500)),
+            label: Text(isKEuros ? 'Euros' : 'KEuros',
+                style: TextStyle(fontWeight: FontWeight.w500)),
           ),
           // Bouton info jaune (yellow.shade200)
           Padding(
@@ -283,7 +439,8 @@ class _MensuelState extends State<Mensuel> {
                 foregroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 elevation: 1,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
               ),
               onPressed: () {
                 showDialog(
@@ -296,7 +453,8 @@ class _MensuelState extends State<Mensuel> {
                         Text('Information'),
                       ],
                     ),
-                    content: Text('Chaque élément surligné en jaune est relié au calcul de l\'indicateur que vous avez sélectionné !'),
+                    content: Text(
+                        'Chaque élément surligné en jaune est relié au calcul de l\'indicateur que vous avez sélectionné !'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(),
@@ -318,7 +476,8 @@ class _MensuelState extends State<Mensuel> {
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               elevation: 1,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
             ),
             onPressed: () {
               setState(() {
@@ -326,7 +485,9 @@ class _MensuelState extends State<Mensuel> {
               });
             },
             icon: Icon(Icons.info_outline, size: 16),
-            label: Text(showFormulas ? 'Masquer les formules' : 'Détails des formules', style: TextStyle(fontWeight: FontWeight.w500)),
+            label: Text(
+                showFormulas ? 'Masquer les formules' : 'Détails des formules',
+                style: TextStyle(fontWeight: FontWeight.w500)),
           ),
         ],
       ),
@@ -336,20 +497,34 @@ class _MensuelState extends State<Mensuel> {
   // --- MAPPING POUR LES DATATABLES CUSTOM ---
   Map<String, Map<String, double>> getIndicateurData() {
     final Map<String, Map<String, double>> data = {};
-    print('[Mensuel] getIndicateurData() - indicateursResponse: ${indicateursResponse != null}');
+    print(
+        '[Mensuel] getIndicateurData() - indicateursResponse: ${indicateursResponse != null}');
     if (indicateursResponse == null) return data;
-    
-    for (final moisEntry in indicateursResponse!.mois.entries) {
-      final mois = moisEntry.key;
-      final indicateurs = moisEntry.value;
-      final moisFormatted = '$selectedAnnee${mois.padLeft(2, '0')}';
-      print('[Mensuel] getIndicateurData() - Processing mois: $mois ($moisFormatted) with ${indicateurs.length} indicateurs');
-      
-      for (final ind in indicateurs) {
-        data.putIfAbsent(ind.indicateur, () => {});
-        data[ind.indicateur]![moisFormatted] = ind.valeur;
-        print('[Mensuel] getIndicateurData() - Added ${ind.indicateur}: ${ind.valeur} for $moisFormatted');
+
+    try {
+      for (final moisEntry in indicateursResponse!.mois.entries) {
+        final mois = moisEntry.key;
+        final indicateurs = moisEntry.value;
+        final moisFormatted = '$selectedAnnee${mois.padLeft(2, '0')}';
+        print(
+            '[Mensuel] getIndicateurData() - Processing mois: $mois ($moisFormatted) with ${indicateurs.length} indicateurs');
+
+        for (final ind in indicateurs) {
+          try {
+            data.putIfAbsent(ind.indicateur, () => {});
+            data[ind.indicateur]![moisFormatted] = ind.valeur;
+            print(
+                '[Mensuel] getIndicateurData() - Added ${ind.indicateur}: ${ind.valeur} for $moisFormatted');
+          } catch (e) {
+            print(
+                '[Mensuel] getIndicateurData() - Error processing indicateur: $e');
+            print(
+                '[Mensuel] getIndicateurData() - Indicateur data: ${ind.toString()}');
+          }
+        }
       }
+    } catch (e) {
+      print('[Mensuel] getIndicateurData() - Error in main loop: $e');
     }
     print('[Mensuel] getIndicateurData() - Final data keys: ${data.keys}');
     return data;
@@ -358,12 +533,12 @@ class _MensuelState extends State<Mensuel> {
   Map<String, Map<String, double>> getSousIndicateurData() {
     final Map<String, Map<String, double>> data = {};
     if (sousIndicsResponse == null || selectedIndicateur == null) return data;
-    
+
     for (final moisEntry in sousIndicsResponse!.mois.entries) {
       final mois = moisEntry.key;
       final indicateurs = moisEntry.value[selectedIndicateur!] ?? [];
       final moisFormatted = '$selectedAnnee${mois.padLeft(2, '0')}';
-      
+
       for (final sousInd in indicateurs) {
         data.putIfAbsent(sousInd.sousIndicateur, () => {});
         data[sousInd.sousIndicateur]![moisFormatted] = sousInd.montant;
@@ -373,7 +548,8 @@ class _MensuelState extends State<Mensuel> {
   }
 
   List<String> getMois() {
-    print('[Mensuel] getMois() - indicateursResponse: ${indicateursResponse != null}');
+    print(
+        '[Mensuel] getMois() - indicateursResponse: ${indicateursResponse != null}');
     if (indicateursResponse == null) return <String>[];
     final moisList = indicateursResponse!.mois.keys
         .map((mois) => '$selectedAnnee${mois.padLeft(2, '0')}')
@@ -389,13 +565,15 @@ class _MensuelState extends State<Mensuel> {
     return [];
   }
 
-  Map<String, Map<String, double>> getComptesMontantsParMoisForResp(List<String> mois, dynamic resp) {
+  Map<String, Map<String, double>> getComptesMontantsParMoisForResp(
+      List<String> mois, dynamic resp) {
     final Map<String, Map<String, double>> map = {};
     if (resp == null || resp.comptes == null) return map;
     for (final compte in resp.comptes) {
       map.putIfAbsent(compte.codeCompte, () => {});
       final dateEcriture = compte.dateEcriture;
-      final moisCompte = '${dateEcriture.year}${dateEcriture.month.toString().padLeft(2, '0')}';
+      final moisCompte =
+          '${dateEcriture.year}${dateEcriture.month.toString().padLeft(2, '0')}';
       map[compte.codeCompte]![moisCompte] = compte.montant;
     }
     return map;
@@ -406,7 +584,8 @@ class _MensuelState extends State<Mensuel> {
     final mois = getMois();
     final indicateurData = getIndicateurData();
     final sousIndicateurData = getSousIndicateurData();
-    final TextEditingController searchController = TextEditingController(text: searchText);
+    final TextEditingController searchController =
+        TextEditingController(text: searchText);
 
     return ListView(
       padding: EdgeInsets.zero,
@@ -421,7 +600,10 @@ class _MensuelState extends State<Mensuel> {
             children: [
               Text(
                 'Sélectionner un indicateur pour voir les détails mensuels',
-                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12, color: Colors.grey.shade700),
+                style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                    color: Colors.grey.shade700),
               ),
             ],
           ),
@@ -438,7 +620,7 @@ class _MensuelState extends State<Mensuel> {
             child: Text(
               'Indicateurs SIG Mensuels (Navision)',
               style: TextStyle(
-                fontWeight: FontWeight.bold, 
+                fontWeight: FontWeight.bold,
                 fontSize: 14,
                 color: Color(0xFFFF8C00),
               ),
@@ -514,6 +696,8 @@ class _MensuelState extends State<Mensuel> {
                 indicateursResponse: indicateursResponse,
                 selectedIndicateur: selectedIndicateur,
                 isKEuros: isKEuros,
+                associeLibelles: getSousIndicateursAssocies(),
+                formuleTextParMois: getFormuleTextParMois(),
               ),
             ),
           ),
@@ -551,25 +735,35 @@ class _MensuelState extends State<Mensuel> {
                         },
                         decoration: InputDecoration(
                           hintText: 'Rechercher N° compte ou libellé',
-                          hintStyle: TextStyle(color: Color(0xFF65887a).withOpacity(0.7), fontSize: 14),
-                          prefixIcon: Icon(Icons.search, color: Color(0xFF65887a), size: 20),
-                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                          hintStyle: TextStyle(
+                              color: Color(0xFF65887a).withOpacity(0.7),
+                              fontSize: 14),
+                          prefixIcon: Icon(Icons.search,
+                              color: Color(0xFF65887a), size: 20),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 12),
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Color(0xFF65887a), width: 2),
+                            borderSide:
+                                BorderSide(color: Color(0xFF65887a), width: 2),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Color(0xFF65887a), width: 2),
+                            borderSide:
+                                BorderSide(color: Color(0xFF65887a), width: 2),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Color(0xFF00A9CA), width: 2),
+                            borderSide:
+                                BorderSide(color: Color(0xFF00A9CA), width: 2),
                           ),
                         ),
-                        style: TextStyle(color: Color(0xFF222222), fontSize: 14, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: Color(0xFF222222),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500),
                       ),
                     ),
                   ],
@@ -588,17 +782,26 @@ class _MensuelState extends State<Mensuel> {
                     )
                   : AdaptiveTableContainer(
                       child: MensuelAccountDataTable(
-                        comptes: getComptesForResp(comptesResponses[selectedSousIndicateur])
+                        comptes: getComptesForResp(
+                                comptesResponses[selectedSousIndicateur])
                             .where((compte) =>
                                 searchText.isEmpty ||
-                                compte.codeCompte.toLowerCase().contains(searchText.toLowerCase()) ||
-                                compte.libelleCompte.toLowerCase().contains(searchText.toLowerCase()))
+                                compte.codeCompte
+                                    .toLowerCase()
+                                    .contains(searchText.toLowerCase()) ||
+                                compte.libelleCompte
+                                    .toLowerCase()
+                                    .contains(searchText.toLowerCase()))
                             .toList(),
                         mois: mois.cast<String>(),
-                        montantsParMois: getComptesMontantsParMoisForResp(mois.cast<String>(), comptesResponses[selectedSousIndicateur]),
+                        montantsParMois: getComptesMontantsParMoisForResp(
+                            mois.cast<String>(),
+                            comptesResponses[selectedSousIndicateur]),
                         selectedRowIndex: null,
                         onRowSelect: null,
-                        total: comptesResponses[selectedSousIndicateur]?.total ?? 0,
+                        total:
+                            comptesResponses[selectedSousIndicateur]?.total ??
+                                0,
                         currentPage: currentPage,
                         pageSize: comptesLimit,
                         onPageChanged: _onPageChanged,

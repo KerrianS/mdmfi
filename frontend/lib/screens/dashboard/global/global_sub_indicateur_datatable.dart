@@ -35,9 +35,12 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
       dataRowMinHeight: 28,
       dataRowMaxHeight: 32,
       columns: [
-        const DataColumn(label: Text('Sous-indicateur', style: TextStyle(fontSize: 13))),
-        const DataColumn(label: Text('Libellé', style: TextStyle(fontSize: 13))),
-        ...annees.map((an) => DataColumn(label: Text(an, style: TextStyle(fontSize: 13)))),
+        const DataColumn(
+            label: Text('Sous-indicateur', style: TextStyle(fontSize: 13))),
+        const DataColumn(
+            label: Text('Libellé', style: TextStyle(fontSize: 13))),
+        ...annees.map((an) =>
+            DataColumn(label: Text(an, style: TextStyle(fontSize: 13)))),
       ],
       rows: data.entries.map((entry) {
         final sousInd = entry.key;
@@ -73,14 +76,20 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
         String? formuleText;
         // Récupérer la formule textuelle de l'indicateur sélectionné pour l'année courante
         if (formuleTextParAnnee.isNotEmpty && selectedIndicateur != null) {
-          final anneeRef = annees.isNotEmpty ? annees.last : formuleTextParAnnee.keys.first;
+          final anneeRef =
+              annees.isNotEmpty ? annees.last : formuleTextParAnnee.keys.first;
           formuleText = formuleTextParAnnee[anneeRef];
           // DEBUG
           print('[DEBUG] formuleText utilisée: ' + (formuleText ?? ''));
           if (formuleText != null && formuleText.isNotEmpty) {
-            // Cherche le signe pour le libellé (pas le code)
-            final plusPattern = RegExp(r"\+\s*" + RegExp.escape(libelle ?? sousInd), caseSensitive: false);
-            final minusPattern = RegExp(r"-\s*" + RegExp.escape(libelle ?? sousInd), caseSensitive: false);
+            // Cherche le signe pour le libellé dans la formule
+            final libelleToSearch = libelle ?? sousInd;
+            final plusPattern = RegExp(
+                r"\+\s*" + RegExp.escape(libelleToSearch) + r"\s*\(",
+                caseSensitive: false);
+            final minusPattern = RegExp(
+                r"-\s*" + RegExp.escape(libelleToSearch) + r"\s*\(",
+                caseSensitive: false);
             if (plusPattern.hasMatch(formuleText)) {
               signe = '+';
             } else if (minusPattern.hasMatch(formuleText)) {
@@ -92,7 +101,8 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
         return DataRow(
           selected: isSelected,
           onSelectChanged: (_) => onSelectSousIndicateur(sousInd),
-          color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+          color: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
             if (isAssocie) {
               return Colors.yellow.shade200;
             }
@@ -126,8 +136,49 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                       child: Row(
                         children: [
                           if (isAssocie && signe.isNotEmpty)
-                            Text(signe, style: TextStyle(fontWeight: FontWeight.bold, color: signe == '+' ? Colors.green : Colors.red)),
-                          SizedBox(width: 2),
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: signe == '+'
+                                      ? [
+                                          Color(0xFF4CAF50),
+                                          Color(0xFF45A049)
+                                        ] // Vert dégradé
+                                      : [
+                                          Color(0xFFF44336),
+                                          Color(0xFFD32F2F)
+                                        ], // Rouge dégradé
+                                ),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: (signe == '+'
+                                            ? Color(0xFF4CAF50)
+                                            : Color(0xFFF44336))
+                                        .withOpacity(0.4),
+                                    spreadRadius: 2,
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  signe == '+' ? Icons.add : Icons.remove,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                          SizedBox(width: 4),
                           Flexible(
                             child: Text(
                               libelle ?? sousInd,
@@ -143,16 +194,21 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                         builder: (context) {
                           String? formule;
                           try {
-                            final sousIndicsMap = sousIndicsResponse.sousIndicateurs;
+                            final sousIndicsMap =
+                                sousIndicsResponse.sousIndicateurs;
                             outerLoop:
                             for (final annee in sousIndicsMap.keys) {
                               final indicMap = sousIndicsMap[annee];
                               if (indicMap == null) continue;
                               for (final indicateurKey in indicMap.keys) {
-                                final sousIndicateursList = indicMap[indicateurKey] ?? [];
-                                for (final sousIndicateurObj in sousIndicateursList) {
-                                  if (sousIndicateurObj.sousIndicateur == sousInd) {
-                                    if (sousIndicateurObj.formule != null && sousIndicateurObj.formule.isNotEmpty) {
+                                final sousIndicateursList =
+                                    indicMap[indicateurKey] ?? [];
+                                for (final sousIndicateurObj
+                                    in sousIndicateursList) {
+                                  if (sousIndicateurObj.sousIndicateur ==
+                                      sousInd) {
+                                    if (sousIndicateurObj.formule != null &&
+                                        sousIndicateurObj.formule.isNotEmpty) {
                                       formule = sousIndicateurObj.formule;
                                     }
                                     break outerLoop;
@@ -173,7 +229,8 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                                     builder: (ctx) => AlertDialog(
                                       title: Row(
                                         children: [
-                                          Icon(Icons.info_outline, color: Colors.blue),
+                                          Icon(Icons.info_outline,
+                                              color: Colors.blue),
                                           SizedBox(width: 8),
                                           Text('Formule'),
                                         ],
@@ -181,14 +238,16 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                                       content: Text(formule!),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(ctx).pop(),
+                                          onPressed: () =>
+                                              Navigator.of(ctx).pop(),
                                           child: Text('Fermer'),
                                         ),
                                       ],
                                     ),
                                   );
                                 },
-                                child: Icon(Icons.info_outline, size: 18, color: Colors.blue),
+                                child: Icon(Icons.info_outline,
+                                    size: 18, color: Colors.blue),
                               ),
                             );
                           return SizedBox.shrink();
@@ -199,14 +258,17 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
               ),
             ),
             ...annees.map((an) => DataCell(
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text(montants[an]?.format(isKEuros: isKEuros) ?? '0,00 €', style: TextStyle(fontSize: 12)),
-              ),
-            )),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                        montants[an]?.format(isKEuros: isKEuros) ?? '0,00 €',
+                        style: TextStyle(fontSize: 12)),
+                  ),
+                )),
           ],
         );
       }).toList(),
     );
-}}
+  }
+}

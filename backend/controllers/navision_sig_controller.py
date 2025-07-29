@@ -32,6 +32,27 @@ class NavisionSIGController:
             return f"date_ecriture.gte.{annee}-01-01&date_ecriture.lte.{annee}-12-31"
         return ""
 
+    def get_nature_compte(self, code_compte):
+        """
+        Détermine la nature du compte selon le plan comptable français.
+        Retourne 'actif' pour les comptes d'actif et de charge, 'passif' pour les comptes de passif et de produit.
+        """
+        if not code_compte:
+            return 'actif'  # Par défaut
+        
+        classe = code_compte[:1]
+        
+        # Comptes d'actif et de charge (solde = Débit - Crédit)
+        if classe in ['1', '2', '3', '4', '5', '6']:
+            return 'actif'
+        
+        # Comptes de passif et de produit (solde = Crédit - Débit)
+        elif classe in ['7', '8']:
+            return 'passif'
+        
+        # Par défaut
+        return 'actif'
+
     def get_lines(self, periode, annee=None, trimestre=None, mois=None):
         table = self.vue
         fields = "id,date_ecriture,code_compte,description,document,montant,utilisateur,source,dimension_1,dimension_2,debit,credit,trimestre"
@@ -83,7 +104,16 @@ class NavisionSIGController:
                 l['indicateur'] = None
                 l['sous_indicateur'] = []
             l['libelle_compte'] = l.get('description', '')
-            l['montant'] = l.get('credit', 0) - l.get('debit', 0)
+            
+            # Calcul du solde selon la nature du compte
+            nature = self.get_nature_compte(code)
+            if nature == 'actif':
+                # Comptes d'actif et de charge : Solde = Débit - Crédit
+                l['montant'] = l.get('debit', 0) - l.get('credit', 0)
+            else:
+                # Comptes de passif et de produit : Solde = Crédit - Débit
+                l['montant'] = l.get('credit', 0) - l.get('debit', 0)
+            
             try:
                 l['annee'] = int(str(l.get('date_ecriture', ''))[:4])
             except Exception:
@@ -228,7 +258,14 @@ class NavisionSIGController:
             mapping = MappingIndicateurSIG.find_best_mapping(line["code_compte"])
             if mapping:
                 ind = mapping.indicateur
-                montant = line["debit"] - line["credit"]
+                # Calcul du solde selon la nature du compte
+                nature = self.get_nature_compte(line["code_compte"])
+                if nature == 'actif':
+                    # Comptes d'actif et de charge : Solde = Débit - Crédit
+                    montant = line["debit"] - line["credit"]
+                else:
+                    # Comptes de passif et de produit : Solde = Crédit - Débit
+                    montant = line["credit"] - line["debit"]
                 indicateurs.setdefault(ind, 0)
                 indicateurs[ind] += montant
         return [
@@ -245,7 +282,14 @@ class NavisionSIGController:
             mapping = MappingIndicateurSIG.find_best_mapping(line["code_compte"])
             if mapping and mapping.indicateur == indicateur:
                 sous_ind = mapping.sous_indicateur
-                montant = line["debit"] - line["credit"]
+                # Calcul du solde selon la nature du compte
+                nature = self.get_nature_compte(line["code_compte"])
+                if nature == 'actif':
+                    # Comptes d'actif et de charge : Solde = Débit - Crédit
+                    montant = line["debit"] - line["credit"]
+                else:
+                    # Comptes de passif et de produit : Solde = Crédit - Débit
+                    montant = line["credit"] - line["debit"]
                 sous.setdefault(sous_ind, 0)
                 sous[sous_ind] += montant
                 
@@ -262,7 +306,22 @@ class NavisionSIGController:
             comptes_utilises = comptes_par_sous_ind.get(k, [])
             if comptes_utilises:
                 codes_comptes = sorted(list(set([c["code"] for c in comptes_utilises])))
-                formule_detaillee = f"Σ (Crédit - Débit) des comptes: {', '.join(codes_comptes)}"
+                # Déterminer la nature du compte pour la formule
+                nature_comptes = set()
+                for compte in comptes_utilises:
+                    nature = self.get_nature_compte(compte["code"])
+                    nature_comptes.add(nature)
+                
+                # Si tous les comptes ont la même nature, utiliser la formule appropriée
+                if len(nature_comptes) == 1:
+                    nature = list(nature_comptes)[0]
+                    if nature == 'actif':
+                        formule_detaillee = f"Σ (Débit - Crédit) des comptes: {', '.join(codes_comptes)}"
+                    else:
+                        formule_detaillee = f"Σ (Crédit - Débit) des comptes: {', '.join(codes_comptes)}"
+                else:
+                    # Si mélange de comptes actif/passif, utiliser une formule générique
+                    formule_detaillee = f"Σ (Solde selon nature) des comptes: {', '.join(codes_comptes)}"
             else:
                 formule_detaillee = MappingIndicateurSIG.get_formule_pour_sous_indicateur(k)
             
@@ -284,7 +343,14 @@ class NavisionSIGController:
             mapping = MappingIndicateurSIG.find_best_mapping(line["code_compte"])
             if mapping and mapping.indicateur == indicateur:
                 sous_ind = mapping.sous_indicateur
-                montant = line["debit"] - line["credit"]
+                # Calcul du solde selon la nature du compte
+                nature = self.get_nature_compte(line["code_compte"])
+                if nature == 'actif':
+                    # Comptes d'actif et de charge : Solde = Débit - Crédit
+                    montant = line["debit"] - line["credit"]
+                else:
+                    # Comptes de passif et de produit : Solde = Crédit - Débit
+                    montant = line["credit"] - line["debit"]
                 sous.setdefault(sous_ind, 0)
                 sous[sous_ind] += montant
                 
@@ -302,7 +368,22 @@ class NavisionSIGController:
                 comptes_utilises = comptes_par_sous_ind.get(k, [])
                 if comptes_utilises:
                     codes_comptes = sorted(list(set([c["code"] for c in comptes_utilises])))
-                    formule_detaillee = f"Σ (Crédit - Débit) des comptes: {', '.join(codes_comptes)}"
+                    # Déterminer la nature du compte pour la formule
+                    nature_comptes = set()
+                    for compte in comptes_utilises:
+                        nature = self.get_nature_compte(compte["code"])
+                        nature_comptes.add(nature)
+                    
+                    # Si tous les comptes ont la même nature, utiliser la formule appropriée
+                    if len(nature_comptes) == 1:
+                        nature = list(nature_comptes)[0]
+                        if nature == 'actif':
+                            formule_detaillee = f"Σ (Débit - Crédit) des comptes: {', '.join(codes_comptes)}"
+                        else:
+                            formule_detaillee = f"Σ (Crédit - Débit) des comptes: {', '.join(codes_comptes)}"
+                    else:
+                        # Si mélange de comptes actif/passif, utiliser une formule générique
+                        formule_detaillee = f"Σ (Solde selon nature) des comptes: {', '.join(codes_comptes)}"
                 else:
                     formule_detaillee = MappingIndicateurSIG.get_formule_pour_sous_indicateur(k)
                 
@@ -323,7 +404,14 @@ class NavisionSIGController:
             mapping = MappingIndicateurSIG.find_best_mapping(line["code_compte"])
             if mapping and mapping.sous_indicateur == sous_indicateur:
                 code = line["code_compte"]
-                montant = line["debit"] - line["credit"]
+                # Calcul du solde selon la nature du compte
+                nature = self.get_nature_compte(line["code_compte"])
+                if nature == 'actif':
+                    # Comptes d'actif et de charge : Solde = Débit - Crédit
+                    montant = line["debit"] - line["credit"]
+                else:
+                    # Comptes de passif et de produit : Solde = Crédit - Débit
+                    montant = line["credit"] - line["debit"]
                 comptes.setdefault(code, {"libelle": line["libelle_compte"], "montant": 0})
                 comptes[code]["montant"] += montant
         return [

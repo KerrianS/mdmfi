@@ -3,14 +3,20 @@ import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/utils/currency.dart';
 
 class MensuelSubIndicateurDataTable extends StatelessWidget {
-  final Map<String, Map<String, double>> sousIndicateurs; // sousIndicateur -> {mois: montant}
-  final List<String> mois; // tous les mois à afficher en colonnes (format YYYYMM)
+  final Map<String, Map<String, double>>
+      sousIndicateurs; // sousIndicateur -> {mois: montant}
+  final List<String>
+      mois; // tous les mois à afficher en colonnes (format YYYYMM)
   final String? selectedSousIndicateur;
   final void Function(String) onSelectSousIndicateur;
   final dynamic sousIndicsResponse; // Pour accéder aux libellés et initiales
-  final dynamic indicateursResponse; // Pour accéder au champ associe de l'indicateur sélectionné
-  final String? selectedIndicateur; // Pour savoir quel indicateur est sélectionné
+  final dynamic
+      indicateursResponse; // Pour accéder au champ formule_text de l'indicateur sélectionné
+  final String?
+      selectedIndicateur; // Pour savoir quel indicateur est sélectionné
   final bool isKEuros; // Paramètre pour affichage en KEuros
+  final List<String> associeLibelles; // Liste des sous-indicateurs associés
+  final Map<String, String> formuleTextParMois; // Formules textuelles par mois
 
   MensuelSubIndicateurDataTable({
     super.key,
@@ -22,25 +28,13 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
     this.indicateursResponse,
     this.selectedIndicateur,
     this.isKEuros = false,
+    required this.associeLibelles,
+    this.formuleTextParMois = const {},
   });
 
   @override
   Widget build(BuildContext context) {
-    // Récupérer la liste des libellés associés à l'indicateur sélectionné (via le champ associe de l'indicateur sélectionné)
-    List<String> associeLibelles = [];
-    if (indicateursResponse != null && selectedIndicateur != null) {
-      for (final moisEntry in indicateursResponse.mois.entries) {
-        final indicateursList = moisEntry.value;
-        dynamic indObj = indicateursList.cast<dynamic>().firstWhere(
-          (i) => i.indicateur == selectedIndicateur,
-          orElse: () => null,
-        );
-        if (indObj != null && indObj.associe != null && indObj.associe.isNotEmpty) {
-          associeLibelles = List<String>.from(indObj.associe);
-          break;
-        }
-      }
-    }
+    // Les associeLibelles sont maintenant passées en paramètre
 
     return DataTable(
       showCheckboxColumn: false,
@@ -64,12 +58,12 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
           ),
         ),
         ...mois.map((m) => DataColumn(
-          label: Container(
-            width: 100,
-            alignment: Alignment.centerRight,
-            child: Text(m, style: TextStyle(fontSize: 13)),
-          ),
-        )),
+              label: Container(
+                width: 100,
+                alignment: Alignment.centerRight,
+                child: Text(m, style: TextStyle(fontSize: 13)),
+              ),
+            )),
       ],
       rows: sousIndicateurs.entries.map((entry) {
         final sousInd = entry.key;
@@ -94,10 +88,58 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
         final isSelected = sousInd == selectedSousIndicateur;
         // Jaune si le libellé du sous-indicateur est dans la liste associe de l'indicateur sélectionné
         final isAssocie = associeLibelles.contains(libelle ?? sousInd);
+
+        // Déterminer le signe (+/-) pour les sous-indicateurs associés
+        String signe = '';
+        String? formuleText;
+        // Récupérer la formule textuelle de l'indicateur sélectionné pour le mois courant
+        if (formuleTextParMois.isNotEmpty && selectedIndicateur != null) {
+          // Essayer de trouver la formule pour le mois correspondant
+          String? formuleTextFound;
+
+          // Si on a des mois dans la liste, prendre le dernier mois disponible
+          if (mois.isNotEmpty) {
+            final dernierMois = mois.last;
+            final moisSimple = int.parse(dernierMois.substring(4)).toString();
+            formuleTextFound = formuleTextParMois[moisSimple];
+          }
+
+          // Si pas trouvé, prendre le premier disponible
+          if (formuleTextFound == null || formuleTextFound.isEmpty) {
+            for (final moisKey in formuleTextParMois.keys) {
+              if (formuleTextParMois[moisKey] != null &&
+                  formuleTextParMois[moisKey]!.isNotEmpty) {
+                formuleTextFound = formuleTextParMois[moisKey];
+                break;
+              }
+            }
+          }
+          formuleText = formuleTextFound;
+          // DEBUG
+          print('[DEBUG] formuleText utilisée: ' + (formuleText ?? ''));
+          print('[DEBUG] formuleTextParMois keys: ${formuleTextParMois.keys}');
+          print('[DEBUG] formuleTextParMois: $formuleTextParMois');
+          if (formuleText != null && formuleText.isNotEmpty) {
+            // Cherche le signe pour le libellé dans la formule
+            final libelleToSearch = libelle ?? sousInd;
+            final plusPattern = RegExp(
+                r"\+\s*" + RegExp.escape(libelleToSearch) + r"\s*\(",
+                caseSensitive: false);
+            final minusPattern = RegExp(
+                r"-\s*" + RegExp.escape(libelleToSearch) + r"\s*\(",
+                caseSensitive: false);
+            if (plusPattern.hasMatch(formuleText)) {
+              signe = '+';
+            } else if (minusPattern.hasMatch(formuleText)) {
+              signe = '-';
+            }
+          }
+        }
         return DataRow(
           selected: isSelected,
           onSelectChanged: (_) => onSelectSousIndicateur(sousInd),
-          color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+          color: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
             if (isAssocie) {
               return Colors.yellow.shade200;
             }
@@ -133,6 +175,50 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: Row(
                   children: [
+                    if (isAssocie && signe.isNotEmpty)
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: signe == '+'
+                                ? [
+                                    Color(0xFF4CAF50),
+                                    Color(0xFF45A049)
+                                  ] // Vert dégradé
+                                : [
+                                    Color(0xFFF44336),
+                                    Color(0xFFD32F2F)
+                                  ], // Rouge dégradé
+                          ),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (signe == '+'
+                                      ? Color(0xFF4CAF50)
+                                      : Color(0xFFF44336))
+                                  .withOpacity(0.4),
+                              spreadRadius: 2,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Icon(
+                            signe == '+' ? Icons.add : Icons.remove,
+                            color: Colors.white,
+                            size: 14,
+                          ),
+                        ),
+                      ),
+                    SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         libelle ?? sousInd,
@@ -150,7 +236,8 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                       Builder(
                         builder: (context) {
                           String? formule;
-                          for (final moisEntry in sousIndicsResponse.mois.entries) {
+                          for (final moisEntry
+                              in sousIndicsResponse.mois.entries) {
                             final sousIndicateursList = moisEntry.value.values
                                 .where((v) => v is List)
                                 .expand((list) => list as List)
@@ -171,7 +258,8 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                                     builder: (ctx) => AlertDialog(
                                       title: Row(
                                         children: [
-                                          Icon(Icons.info_outline, color: Colors.blue),
+                                          Icon(Icons.info_outline,
+                                              color: Colors.blue),
                                           SizedBox(width: 8),
                                           Text('Formule'),
                                         ],
@@ -179,14 +267,16 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                                       content: Text(formule!),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(ctx).pop(),
+                                          onPressed: () =>
+                                              Navigator.of(ctx).pop(),
                                           child: Text('Fermer'),
                                         ),
                                       ],
                                     ),
                                   );
                                 },
-                                child: Icon(Icons.info_outline, size: 18, color: Colors.blue),
+                                child: Icon(Icons.info_outline,
+                                    size: 18, color: Colors.blue),
                               ),
                             );
                           return SizedBox.shrink();
@@ -196,25 +286,61 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                 ),
               ),
             ),
-            ...mois.map((m) => DataCell(
-              Container(
-                width: 100,
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  montants[m] != null
-                      ? montants[m]!.format(isKEuros: isKEuros)
-                      : '0,00 €',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Color(0xFFE0E0E0)
-                        : Colors.black,
+            ...mois.map((m) {
+              // Déterminer le signe pour ce sous-indicateur dans ce mois
+              String? signeMois;
+              if (isAssocie && formuleText?.isNotEmpty == true) {
+                // Chercher le signe dans la formule pour ce sous-indicateur
+                final pattern = RegExp(r'([+-])\s*$sousInd\s*\(');
+                final match = pattern.firstMatch(formuleText!);
+                if (match != null) {
+                  signeMois = match.group(1);
+                }
+              }
+
+              return DataCell(
+                Container(
+                  width: 100,
+                  alignment: Alignment.centerRight,
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (signeMois != null)
+                        Container(
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: signeMois == '+' ? Colors.green : Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            signeMois == '+' ? Icons.add : Icons.remove,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          montants[m] != null
+                              ? montants[m]!.format(isKEuros: isKEuros)
+                              : '0,00 €',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color(0xFFE0E0E0)
+                                    : Colors.black,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.right,
                 ),
-              ),
-            )),
+              );
+            }),
           ],
         );
       }).toList(),
