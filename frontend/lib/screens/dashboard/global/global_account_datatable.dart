@@ -75,13 +75,19 @@ class GlobalAccountDataTable extends StatelessWidget {
         dataRowMinHeight: 28,
         dataRowMaxHeight: 32,
         columns: [
-          const DataColumn(label: SizedBox(width: 100, child: Text('Compte', style: TextStyle(fontSize: 12)))),
-          const DataColumn(label: SizedBox(width: 200, child: Text('Libellé', style: TextStyle(fontSize: 12)))),
+          const DataColumn(label: SizedBox(width: 100, child: Text('Compte', style: TextStyle(fontSize: 13)))),
+          DataColumn(
+            label: Container(
+              width: 150,
+              alignment: Alignment.centerLeft,
+              child: Text('Libellé', style: TextStyle(fontSize: 13), textAlign: TextAlign.left),
+            ),
+          ),
           ...annees.map((an) => DataColumn(
                 label: Container(
                   width: 120,
                   alignment: Alignment.centerRight,
-                  child: Text(an, style: TextStyle(fontSize: 12), textAlign: TextAlign.right),
+                  child: Text(an, style: TextStyle(fontSize: 13), textAlign: TextAlign.right),
                 ),
               )),
         ],
