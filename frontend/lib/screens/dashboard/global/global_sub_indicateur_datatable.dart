@@ -8,7 +8,7 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
   final String? selectedSousIndicateur;
   final String? selectedIndicateur;
   final void Function(String) onSelectSousIndicateur;
-  final NavisionSousIndicateursGlobalResponse? sousIndicsResponse;
+  final dynamic sousIndicsResponse; // Peut être Navision ou Odoo
   final bool isKEuros;
   final List<String> associeLibelles;
 
@@ -46,18 +46,25 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
           String? initiales;
           String? libelle;
           if (sousIndicsResponse != null) {
-            outerLoop:
-            for (final annee in sousIndicsResponse!.sousIndicateurs.keys) {
-              for (final indicateurKey in sousIndicsResponse!.sousIndicateurs[annee]!.keys) {
-                final sousIndicateursList = sousIndicsResponse!.sousIndicateurs[annee]![indicateurKey] ?? [];
-                for (final sousIndicateurObj in sousIndicateursList) {
-                  if (sousIndicateurObj.sousIndicateur == sousInd) {
-                    initiales = sousIndicateurObj.initiales;
-                    libelle = sousIndicateurObj.libelle;
-                    break outerLoop;
+            try {
+              final sousIndicsMap = sousIndicsResponse.sousIndicateurs;
+              outerLoop:
+              for (final annee in sousIndicsMap.keys) {
+                final indicMap = sousIndicsMap[annee];
+                if (indicMap == null) continue;
+                for (final indicateurKey in indicMap.keys) {
+                  final sousIndicateursList = indicMap[indicateurKey] ?? [];
+                  for (final sousIndicateurObj in sousIndicateursList) {
+                    if (sousIndicateurObj.sousIndicateur == sousInd) {
+                      initiales = sousIndicateurObj.initiales;
+                      libelle = sousIndicateurObj.libelle;
+                      break outerLoop;
+                    }
                   }
                 }
               }
+            } catch (e) {
+              // ignore, fallback null
             }
           }
 
@@ -108,19 +115,26 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                         Builder(
                           builder: (context) {
                             String? formule;
-                            outerLoop:
-                            for (final annee in sousIndicsResponse!.sousIndicateurs.keys) {
-                              for (final indicateurKey in sousIndicsResponse!.sousIndicateurs[annee]!.keys) {
-                                final sousIndicateursList = sousIndicsResponse!.sousIndicateurs[annee]![indicateurKey] ?? [];
-                                for (final sousIndicateurObj in sousIndicateursList) {
-                                  if (sousIndicateurObj.sousIndicateur == sousInd) {
-                                    if (sousIndicateurObj.formule.isNotEmpty) {
-                                      formule = sousIndicateurObj.formule;
+                            try {
+                              final sousIndicsMap = sousIndicsResponse.sousIndicateurs;
+                              outerLoop:
+                              for (final annee in sousIndicsMap.keys) {
+                                final indicMap = sousIndicsMap[annee];
+                                if (indicMap == null) continue;
+                                for (final indicateurKey in indicMap.keys) {
+                                  final sousIndicateursList = indicMap[indicateurKey] ?? [];
+                                  for (final sousIndicateurObj in sousIndicateursList) {
+                                    if (sousIndicateurObj.sousIndicateur == sousInd) {
+                                      if (sousIndicateurObj.formule != null && sousIndicateurObj.formule.isNotEmpty) {
+                                        formule = sousIndicateurObj.formule;
+                                      }
+                                      break outerLoop;
                                     }
-                                    break outerLoop;
                                   }
                                 }
                               }
+                            } catch (e) {
+                              // ignore
                             }
                             if (formule != null && formule.isNotEmpty)
                               return Padding(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobaitec_decision_making/components/adaptive_table_container.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
+import 'package:mobaitec_decision_making/services/indicateur/odoo_service_sig.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/mensuel/mensuel_account_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/mensuel/mensuel_indicateur_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/mensuel/mensuel_sub_indicateur_datatable.dart';
@@ -26,16 +26,16 @@ class _MensuelState extends State<Mensuel> {
   List<String> allAnnees = [];
   bool isLoading = false;
 
-  NavisionIndicateursMensuelResponse? indicateursResponse;
-  NavisionSousIndicateursMensuelResponse? sousIndicsResponse;
-  NavisionComptesMensuelPage? comptesPage;
+  dynamic indicateursResponse;
+  dynamic sousIndicsResponse;
+  dynamic comptesPage;
   int comptesOffset = 0;
   int comptesLimit = 50;
   int comptesTotal = 0;
   int currentPage = 0;
 
   Set<String> expandedSousIndicateurs = {}; // Gardé pour compatibilité mais non utilisé
-  Map<String, NavisionComptesMensuelPage?> comptesResponses = {};
+  Map<String, dynamic> comptesResponses = {};
   Map<String, bool> isLoadingComptes = {};
   bool _isInitialized = false; // Flag pour éviter les réinitialisations multiples
   bool isKEuros = false; // Variable pour gérer l'affichage en KEuros
@@ -108,19 +108,19 @@ class _MensuelState extends State<Mensuel> {
 
   Future<void> _loadData() async {
     if (_lastSociete == null) return;
-    
     if (!mounted) return;
     setState(() { isLoading = true; });
     try {
       final anneeInt = int.parse(selectedAnnee);
       print('[Mensuel] Chargement des données pour $_lastSociete, année: $anneeInt');
-      
-      indicateursResponse = await NavisionSIGService().fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
-      print('[Mensuel] Indicateurs chargés: ${indicateursResponse?.mois.length} mois');
-      
-      sousIndicsResponse = await NavisionSIGService().fetchSousIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
-      print('[Mensuel] Sous-indicateurs chargés');
-      
+      final isOdoo = Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
+      if (isOdoo) {
+        indicateursResponse = await OdooSIGService().fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
+        sousIndicsResponse = await OdooSIGService().fetchSousIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
+      } else {
+        indicateursResponse = await NavisionSIGService().fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
+        sousIndicsResponse = await NavisionSIGService().fetchSousIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
+      }
       if (!mounted) return;
       setState(() { isLoading = false; });
     } catch (e) {
@@ -137,15 +137,24 @@ class _MensuelState extends State<Mensuel> {
       isLoadingComptes[selectedSousIndicateur!] = true;
     });
     try {
-      // Pour le mensuel, on charge les comptes pour tous les mois de l'année
-      final comptesPage = await NavisionSIGService().fetchComptesMensuel(
-        societe: _lastSociete!,
-        annee: int.parse(selectedAnnee),
-        mois: 1, // On peut prendre le premier mois comme référence
-        sousIndicateur: selectedSousIndicateur!,
-        limit: comptesLimit,
-        offset: comptesOffset,
-      );
+      final isOdoo = Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
+      final comptesPage = isOdoo
+          ? await OdooSIGService().fetchComptesMensuel(
+              societe: _lastSociete!,
+              annee: int.parse(selectedAnnee),
+              mois: 1,
+              sousIndicateur: selectedSousIndicateur!,
+              limit: comptesLimit,
+              offset: comptesOffset,
+            )
+          : await NavisionSIGService().fetchComptesMensuel(
+              societe: _lastSociete!,
+              annee: int.parse(selectedAnnee),
+              mois: 1,
+              sousIndicateur: selectedSousIndicateur!,
+              limit: comptesLimit,
+              offset: comptesOffset,
+            );
       if (!mounted) return;
       setState(() {
         comptesResponses[selectedSousIndicateur!] = comptesPage;
@@ -376,27 +385,26 @@ class _MensuelState extends State<Mensuel> {
 
   List<String> getMois() {
     print('[Mensuel] getMois() - indicateursResponse: ${indicateursResponse != null}');
-    if (indicateursResponse == null) return [];
+    if (indicateursResponse == null) return <String>[];
     final moisList = indicateursResponse!.mois.keys
         .map((mois) => '$selectedAnnee${mois.padLeft(2, '0')}')
-        .toList()
-        ..sort();
+        .toList();
+    moisList.sort();
     print('[Mensuel] getMois() - moisList: $moisList');
-    return moisList;
+    return List<String>.from(moisList);
   }
 
-  List<NavisionCompteMensuel> getComptesForResp(NavisionComptesMensuelPage? resp) {
+  List<dynamic> getComptesForResp(dynamic resp) {
     if (resp == null) return [];
-    return resp.comptes;
+    if (resp.comptes != null) return resp.comptes;
+    return [];
   }
 
-  Map<String, Map<String, double>> getComptesMontantsParMoisForResp(List<String> mois, NavisionComptesMensuelPage? resp) {
+  Map<String, Map<String, double>> getComptesMontantsParMoisForResp(List<String> mois, dynamic resp) {
     final Map<String, Map<String, double>> map = {};
-    if (resp == null) return map;
-    
+    if (resp == null || resp.comptes == null) return map;
     for (final compte in resp.comptes) {
       map.putIfAbsent(compte.codeCompte, () => {});
-      // Pour le mensuel, on récupère l'année et le mois depuis la date
       final dateEcriture = compte.dateEcriture;
       final moisCompte = '${dateEcriture.year}${dateEcriture.month.toString().padLeft(2, '0')}';
       map[compte.codeCompte]![moisCompte] = compte.montant;
@@ -462,7 +470,7 @@ class _MensuelState extends State<Mensuel> {
                 : AdaptiveTableContainer(
                     child: MensuelIndicateurDataTable(
                       data: indicateurData,
-                      mois: mois,
+                      mois: mois.cast<String>(),
                       selectedIndicateur: selectedIndicateur,
                       onSelectIndicateur: (ind) {
                         setState(() {
@@ -503,7 +511,7 @@ class _MensuelState extends State<Mensuel> {
             child: AdaptiveTableContainer(
               child: MensuelSubIndicateurDataTable(
                 sousIndicateurs: sousIndicateurData,
-                mois: mois,
+                mois: mois.cast<String>(),
                 selectedSousIndicateur: selectedSousIndicateur,
                 onSelectSousIndicateur: (sousInd) {
                   setState(() {
@@ -597,8 +605,8 @@ class _MensuelState extends State<Mensuel> {
                                 compte.codeCompte.toLowerCase().contains(searchText.toLowerCase()) ||
                                 compte.libelleCompte.toLowerCase().contains(searchText.toLowerCase()))
                             .toList(),
-                        mois: mois,
-                        montantsParMois: getComptesMontantsParMoisForResp(mois, comptesResponses[selectedSousIndicateur]),
+                        mois: mois.cast<String>(),
+                        montantsParMois: getComptesMontantsParMoisForResp(mois.cast<String>(), comptesResponses[selectedSousIndicateur]),
                         selectedRowIndex: null,
                         onRowSelect: null,
                         total: comptesResponses[selectedSousIndicateur]?.total ?? 0,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class KeycloakProvider extends ChangeNotifier {
+  bool get isOdooSelected => _selectedCompany?.toLowerCase() == 'aitecservice';
   String? _accessToken;
   String? _userName;
   List<String>? _userGroups;

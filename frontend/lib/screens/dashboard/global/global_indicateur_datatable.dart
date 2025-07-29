@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/utils/currency.dart';
 
 class GlobalIndicateurDataTable extends StatelessWidget {
@@ -26,18 +25,13 @@ class GlobalIndicateurDataTable extends StatelessWidget {
     List<String> associeLibelles = [];
     if (sigResult != null && selectedIndicateur != null) {
       for (final annee in sigResult.indicateurs.keys) {
-        final indicateursList = sigResult.indicateurs[annee] as List<NavisionIndicateurGlobal>;
-        final indObj = indicateursList.firstWhere(
-          (i) => i.indicateur == selectedIndicateur,
-          orElse: () => NavisionIndicateurGlobal(
-            indicateur: '',
-            libelle: '',
-            valeur: 0.0,
-            associe: [],
-          ),
+        final indicateursList = sigResult.indicateurs[annee] as List<dynamic>;
+        final indObj = indicateursList.cast<dynamic>().firstWhere(
+          (i) => i != null && i.indicateur == selectedIndicateur,
+          orElse: () => null,
         );
-        if (indObj.associe.isNotEmpty) {
-          associeLibelles = indObj.associe;
+        if (indObj != null && indObj.associe != null && indObj.associe.isNotEmpty) {
+          associeLibelles = List<String>.from(indObj.associe);
           break;
         }
       }
@@ -70,17 +64,12 @@ class GlobalIndicateurDataTable extends StatelessWidget {
           String libelle = ind;
           if (sigResult != null) {
             for (final annee in sigResult.indicateurs.keys) {
-              final indicateursList = sigResult.indicateurs[annee] as List<NavisionIndicateurGlobal>;
-              final indObj = indicateursList.firstWhere(
-                (i) => i.indicateur == ind,
-                orElse: () => NavisionIndicateurGlobal(
-                  indicateur: '',
-                  libelle: '',
-                  valeur: 0.0,
-                  associe: [],
-                ),
+              final indicateursList = sigResult.indicateurs[annee] as List<dynamic>;
+              final indObj = indicateursList.cast<dynamic>().firstWhere(
+                (i) => i != null && i.indicateur == ind,
+                orElse: () => null,
               );
-              if (indObj.libelle.isNotEmpty) {
+              if (indObj != null && indObj.libelle != null && indObj.libelle.isNotEmpty) {
                 libelle = indObj.libelle;
                 break;
               }

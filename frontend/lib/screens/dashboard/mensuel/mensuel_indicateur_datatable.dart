@@ -27,18 +27,12 @@ class MensuelIndicateurDataTable extends StatelessWidget {
     if (indicateursResponse != null && selectedIndicateur != null) {
       for (final moisEntry in indicateursResponse.mois.entries) {
         final indicateursList = moisEntry.value;
-        final indObj = indicateursList.firstWhere(
+        dynamic indObj = indicateursList.cast<dynamic>().firstWhere(
           (i) => i.indicateur == selectedIndicateur,
-          orElse: () => NavisionIndicateurMensuel(
-            indicateur: '',
-            libelle: '',
-            initiales: '',
-            valeur: 0.0,
-            associe: [],
-          ),
+          orElse: () => null,
         );
-        if (indObj.associe.isNotEmpty) {
-          associeLibelles = indObj.associe;
+        if (indObj != null && indObj.associe != null && indObj.associe.isNotEmpty) {
+          associeLibelles = List<String>.from(indObj.associe);
           break;
         }
       }
@@ -81,11 +75,11 @@ class MensuelIndicateurDataTable extends StatelessWidget {
         if (indicateursResponse != null) {
           for (final moisEntry in indicateursResponse.mois.entries) {
             final indicateursList = moisEntry.value;
-            final indicateurObj = indicateursList.firstWhere(
+            dynamic indicateurObj = indicateursList.cast<dynamic>().firstWhere(
               (i) => i.indicateur == ind,
-              orElse: () => NavisionIndicateurMensuel(indicateur: ind, libelle: '', initiales: '', valeur: 0.0),
+              orElse: () => null,
             );
-            if (indicateurObj.libelle.isNotEmpty) {
+            if (indicateurObj != null && indicateurObj.libelle != null && indicateurObj.libelle.isNotEmpty) {
               initiales = indicateurObj.initiales;
               libelle = indicateurObj.libelle;
               break;

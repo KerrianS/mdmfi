@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/utils/currency.dart';
 
 class MensuelAccountDataTable extends StatefulWidget {
-  final List<NavisionCompteMensuel> comptes;
+  final List<dynamic> comptes;
   final List<String> mois;
   final int? selectedRowIndex;
   final void Function(int)? onRowSelect;

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
+import 'package:mobaitec_decision_making/models/OdooSIGModel.dart';
 import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
+import 'package:mobaitec_decision_making/services/indicateur/odoo_service_sig.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_account_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_indicateur_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_sub_indicateur_datatable.dart';
@@ -25,16 +29,16 @@ class _GlobalState extends State<Global> {
   bool isLoading = false;
   bool _isInitialized = false; // Flag pour éviter les réinitialisations multiples
 
-  NavisionIndicateursGlobalResponse? indicateursResponse;
-  NavisionSousIndicateursGlobalResponse? sousIndicsResponse;
-  NavisionComptesGlobalResponse? comptesResponse;
+  dynamic indicateursResponse;
+  dynamic sousIndicsResponse;
+  dynamic comptesResponse;
   int comptesOffset = 0;
   int comptesLimit = 50;
   int comptesTotal = 0;
   int currentPage = 0;
 
   Set<String> expandedSousIndicateurs = {};
-  Map<String, NavisionComptesGlobalResponse?> comptesResponses = {};
+  Map<String, dynamic> comptesResponses = {};
   Map<String, bool> isLoadingComptes = {};
   bool isKEuros = false; 
   bool showFormulas = false; 
@@ -78,26 +82,37 @@ class _GlobalState extends State<Global> {
   Future<void> _loadData() async {
     if (_lastSociete == null) return;
     print('[Global] Début du chargement des données pour $_lastSociete');
-    
     if (!mounted) return;
     setState(() { isLoading = true; });
-    
     try {
-      indicateursResponse = await NavisionSIGService().fetchIndicateursGlobal(
-        societe: _lastSociete!,
-        periode: _getPeriodeParam(),
-        trimestre: selectedTrimestre,
-      );
-      sousIndicsResponse = await NavisionSIGService().fetchSousIndicateursGlobal(
-        societe: _lastSociete!,
-        periode: _getPeriodeParam(),
-        trimestre: selectedTrimestre,
-      );
+      final isOdoo = Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
+      if (isOdoo) {
+        indicateursResponse = await OdooSIGService().fetchIndicateursGlobal(
+          societe: _lastSociete!,
+          periode: _getPeriodeParam(),
+          trimestre: selectedTrimestre,
+        );
+        sousIndicsResponse = await OdooSIGService().fetchSousIndicateursGlobal(
+          societe: _lastSociete!,
+          periode: _getPeriodeParam(),
+          trimestre: selectedTrimestre,
+        );
+      } else {
+        indicateursResponse = await NavisionSIGService().fetchIndicateursGlobal(
+          societe: _lastSociete!,
+          periode: _getPeriodeParam(),
+          trimestre: selectedTrimestre,
+        );
+        sousIndicsResponse = await NavisionSIGService().fetchSousIndicateursGlobal(
+          societe: _lastSociete!,
+          periode: _getPeriodeParam(),
+          trimestre: selectedTrimestre,
+        );
+      }
       if (indicateursResponse!.indicateurs.isNotEmpty) {
         selectedAnnee = indicateursResponse!.indicateurs.keys.first;
       }
       print('[Global] Données chargées avec succès');
-      
       if (mounted) {
         setState(() { isLoading = false; });
       }
@@ -116,20 +131,30 @@ class _GlobalState extends State<Global> {
     if (!mounted) return;
     setState(() { isLoadingComptes[sousIndicateur] = true; });
     try {
-      final comptesResp = await NavisionSIGService().fetchComptesGlobal(
-        societe: _lastSociete!,
-        sousIndicateur: sousIndicateur,
-        periode: _getPeriodeParam(),
-        trimestre: selectedTrimestre,
-        limit: comptesLimit,
-        offset: comptesOffset,
-      );
+      final isOdoo = Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
+      final comptesResp = isOdoo
+          ? await OdooSIGService().fetchComptesGlobal(
+              societe: _lastSociete!,
+              sousIndicateur: sousIndicateur,
+              periode: _getPeriodeParam(),
+              trimestre: selectedTrimestre,
+              limit: comptesLimit,
+              offset: comptesOffset,
+            )
+          : await NavisionSIGService().fetchComptesGlobal(
+              societe: _lastSociete!,
+              sousIndicateur: sousIndicateur,
+              periode: _getPeriodeParam(),
+              trimestre: selectedTrimestre,
+              limit: comptesLimit,
+              offset: comptesOffset,
+            );
       comptesResponses[sousIndicateur] = comptesResp;
-      comptesResponse = comptesResp; 
+      comptesResponse = comptesResp;
       if (mounted) {
         setState(() { isLoadingComptes[sousIndicateur] = false; });
       }
-    } catch (e, stack) {
+    } catch (e) {
       print('[Global] Erreur lors du chargement des comptes: $e');
       if (mounted) {
         setState(() { isLoadingComptes[sousIndicateur] = false; });
@@ -501,12 +526,11 @@ class _GlobalState extends State<Global> {
   }
 
   // Ajoute ces helpers pour utiliser la bonne réponse comptes par sous-indicateur
-  List<String> getAnneesComptesFromResp(NavisionComptesGlobalResponse resp) {
-    // Filtrer les clés nulles ou non String
+  List<String> getAnneesComptesFromResp(dynamic resp) {
     return resp.comptes.keys.toList();
   }
 
-  List<NavisionCompteGlobal> getComptesGlobalTableForResp(List<String> annees, NavisionComptesGlobalResponse resp) {
+  List<NavisionCompteGlobal> getComptesGlobalTableForResp(List<String> annees, dynamic resp) {
     final Map<String, String> keyToLibelle = {};
     final Set<String> allKeys = {};
     for (final an in annees) {
@@ -533,19 +557,17 @@ class _GlobalState extends State<Global> {
     }).toList();
   }
 
-  Map<String, Map<String, double>> getComptesMontantsParAnneeForResp(List<String> annees, NavisionComptesGlobalResponse resp) {
+  Map<String, Map<String, double>> getComptesMontantsParAnneeForResp(List<String> annees, dynamic resp) {
     final Map<String, Map<String, double>> map = {};
     for (final an in annees) {
       final comptesAnnee = resp.comptes[an]?.comptes ?? [];
       for (final c in comptesAnnee) {
-        final code = c.codeCompte;
-        final libelle = c.libelleCompte;
-        if (code == null || libelle == null) {
+        final codeStr = c.codeCompte.toString();
+        final libelleStr = c.libelleCompte.toString();
+        if (codeStr.isEmpty || libelleStr.isEmpty) {
           print('[DEBUG-FR] codeCompte ou libelleCompte est null pour le compte: $c (année: $an)');
           continue;
         }
-        final codeStr = code is String ? code : code.toString();
-        final libelleStr = libelle is String ? libelle : libelle.toString();
         if (codeStr == 'null' || libelleStr == 'null' || codeStr.isEmpty || libelleStr.isEmpty) {
           print('[DEBUG-FR] codeCompte ou libelleCompte vide ou "null" (année: $an): code="$codeStr", libelle="$libelleStr", compte: $c');
           continue;
@@ -562,7 +584,7 @@ class _GlobalState extends State<Global> {
   @override
   Widget build(BuildContext context) {
     final annees = getAnnees();
-    final indicateurData = getIndicateurData();
+    // final indicateurData = getIndicateurData();
     final sousIndicateurData = getSousIndicateurData();
     
     return ListView(
