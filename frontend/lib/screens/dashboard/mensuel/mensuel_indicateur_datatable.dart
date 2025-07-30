@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/utils/currency.dart';
 
 class MensuelIndicateurDataTable extends StatelessWidget {
@@ -10,6 +9,7 @@ class MensuelIndicateurDataTable extends StatelessWidget {
   final void Function(String) onSelectIndicateur;
   final dynamic indicateursResponse; // pour accéder aux libellés
   final bool isKEuros; // Paramètre pour affichage en KEuros
+  final Map<String, String> formuleTextParMois; // Formules textuelles par mois
 
   const MensuelIndicateurDataTable({
     super.key,
@@ -19,7 +19,63 @@ class MensuelIndicateurDataTable extends StatelessWidget {
     required this.onSelectIndicateur,
     this.indicateursResponse,
     this.isKEuros = false,
+    this.formuleTextParMois = const {},
   });
+
+  // Fonction pour déterminer le signe d'un indicateur
+  String getSigneIndicateur(String ind, String? libelle) {
+    if (formuleTextParMois.isEmpty) return '+'; // Par défaut positif
+
+    final libelleToSearch = libelle ?? ind;
+
+    // Debug: afficher la formule pour comprendre le format
+    print('[DEBUG] Recherche signe indicateur pour: $libelleToSearch');
+    print('[DEBUG] Formules disponibles: $formuleTextParMois');
+
+    // Chercher le signe dans toutes les formules disponibles
+    for (final formuleText in formuleTextParMois.values) {
+      if (formuleText.isNotEmpty) {
+        print('[DEBUG] Vérification formule indicateur: $formuleText');
+
+        // Chercher avec le libellé
+        if (formuleText.contains('-$libelleToSearch')) {
+          print(
+              '[DEBUG] Signe négatif détecté pour indicateur $libelleToSearch');
+          return '-';
+        } else if (formuleText.contains('+$libelleToSearch')) {
+          print(
+              '[DEBUG] Signe positif détecté pour indicateur $libelleToSearch');
+          return '+';
+        }
+
+        // Chercher avec le code de l'indicateur
+        if (formuleText.contains('-$ind')) {
+          print('[DEBUG] Signe négatif détecté pour indicateur $ind');
+          return '-';
+        } else if (formuleText.contains('+$ind')) {
+          print('[DEBUG] Signe positif détecté pour indicateur $ind');
+          return '+';
+        }
+
+        // Chercher avec des espaces autour du signe
+        if (formuleText.contains(' - $libelleToSearch') ||
+            formuleText.contains(' - $ind')) {
+          print(
+              '[DEBUG] Signe négatif détecté (avec espaces) pour indicateur $libelleToSearch');
+          return '-';
+        } else if (formuleText.contains(' + $libelleToSearch') ||
+            formuleText.contains(' + $ind')) {
+          print(
+              '[DEBUG] Signe positif détecté (avec espaces) pour indicateur $libelleToSearch');
+          return '+';
+        }
+      }
+    }
+
+    print(
+        '[DEBUG] Aucun signe détecté pour indicateur $libelleToSearch, défaut: +');
+    return '+'; // Par défaut positif si aucun signe détecté
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +110,7 @@ class MensuelIndicateurDataTable extends StatelessWidget {
 
     return DataTable(
       showCheckboxColumn: false,
-      columnSpacing: 12,
+      columnSpacing: 16,
       headingRowHeight: 32,
       dataRowMinHeight: 28,
       dataRowMaxHeight: 32,
@@ -84,7 +140,6 @@ class MensuelIndicateurDataTable extends StatelessWidget {
       rows: data.entries.map((entry) {
         final ind = entry.key;
         final montants = entry.value;
-        String? initiales;
         String? libelle;
         if (indicateursResponse != null) {
           for (final moisEntry in indicateursResponse.mois.entries) {
@@ -96,7 +151,6 @@ class MensuelIndicateurDataTable extends StatelessWidget {
             if (indicateurObj != null &&
                 indicateurObj.libelle != null &&
                 indicateurObj.libelle.isNotEmpty) {
-              initiales = indicateurObj.initiales;
               libelle = indicateurObj.libelle;
               break;
             }
@@ -108,44 +162,22 @@ class MensuelIndicateurDataTable extends StatelessWidget {
 
         // Calculer le signe pour la colonne libellé
         String? signeLibelle;
-        if (indicateursResponse != null &&
-            selectedIndicateur != null &&
-            isAssocie) {
-          // Prendre le premier mois disponible pour calculer le signe
-          if (mois.isNotEmpty) {
-            final premierMois = mois.first;
-            final moisSimple = int.parse(premierMois.substring(4)).toString();
-            final indicateursList = indicateursResponse.mois[moisSimple] ?? [];
-            final indObj = indicateursList.cast<dynamic>().firstWhere(
-                  (i) => i != null && i.indicateur == selectedIndicateur,
-                  orElse: () => null,
-                );
-            if (indObj != null && indObj.formuleText != null) {
-              final formuleText = indObj.formuleText;
-              if (formuleText.contains('$ind ') ||
-                  formuleText.contains('$ind(')) {
-                final pattern = RegExp(r'([+-])\s*$ind\s*\(');
-                final match = pattern.firstMatch(formuleText);
-                if (match != null) {
-                  signeLibelle = match.group(1);
-                }
-              }
-            }
-          }
+        if (isAssocie) {
+          signeLibelle = getSigneIndicateur(ind, libelle);
         }
 
         return DataRow(
           selected: isSelected,
           onSelectChanged: (_) => onSelectIndicateur(ind),
-          color: MaterialStateProperty.resolveWith<Color?>(
-              (Set<MaterialState> states) {
+          color: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
             if (isAssocie) {
               return Colors.yellow.shade200;
             }
             if (isSelected) {
               return Colors.grey.shade300;
             }
-            if (states.contains(MaterialState.hovered)) {
+            if (states.contains(WidgetState.hovered)) {
               return Colors.grey.withOpacity(0.1);
             }
             return null;
@@ -168,9 +200,16 @@ class MensuelIndicateurDataTable extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Row(
                   children: [
-                    if (isAssocie && signeLibelle?.isNotEmpty == true)
+                    Expanded(
+                      child: Text(
+                        libelle ?? ind,
+                        style: TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (isAssocie)
                       Container(
-                        width: 24,
+                        width: 17,
                         height: 24,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -207,18 +246,10 @@ class MensuelIndicateurDataTable extends StatelessWidget {
                           child: Icon(
                             signeLibelle == '+' ? Icons.add : Icons.remove,
                             color: Colors.white,
-                            size: 14,
+                            size: 13,
                           ),
                         ),
                       ),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        libelle ?? ind,
-                        style: TextStyle(fontSize: 12),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.only(left: 4.0),
                       child: GestureDetector(
@@ -328,64 +359,16 @@ class MensuelIndicateurDataTable extends StatelessWidget {
               ),
             ),
             ...mois.map((m) {
-              // Déterminer le signe basé sur la formule de l'indicateur sélectionné
-              String? signe;
-              if (indicateursResponse != null &&
-                  selectedIndicateur != null &&
-                  isAssocie) {
-                final moisSimple = int.parse(m.substring(4)).toString();
-                final indicateursList =
-                    indicateursResponse.mois[moisSimple] ?? [];
-                final indObj = indicateursList.cast<dynamic>().firstWhere(
-                      (i) => i != null && i.indicateur == selectedIndicateur,
-                      orElse: () => null,
-                    );
-                if (indObj != null && indObj.formuleText != null) {
-                  // Chercher le signe dans la formule pour cet indicateur dans la ligne actuelle
-                  final formuleText = indObj.formuleText;
-                  if (formuleText.contains('$ind ') ||
-                      formuleText.contains('$ind(')) {
-                    // Chercher le signe avant cet indicateur dans la formule
-                    final pattern = RegExp(r'([+-])\s*$ind\s*\(');
-                    final match = pattern.firstMatch(formuleText);
-                    if (match != null) {
-                      signe = match.group(1);
-                    }
-                  }
-                }
-              }
-
               return DataCell(
                 Container(
                   width: 100,
                   alignment: Alignment.centerRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      if (signe != null)
-                        Container(
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: signe == '+' ? Colors.green : Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            signe == '+' ? Icons.add : Icons.remove,
-                            size: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                      SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          montants[m]?.format(isKEuros: isKEuros) ?? '0,00 €',
-                          style: TextStyle(fontSize: 12),
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    montants[m]?.format(isKEuros: isKEuros) ?? '0,00 €',
+                    style: TextStyle(fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
                   ),
                 ),
               );

@@ -508,12 +508,25 @@ class _MensuelState extends State<Mensuel> {
       List<String> mois, dynamic resp) {
     final Map<String, Map<String, double>> map = {};
     if (resp == null || resp.comptes == null) return map;
+
+    // Initialiser tous les mois avec 0.0 pour chaque compte
     for (final compte in resp.comptes) {
       map.putIfAbsent(compte.codeCompte, () => {});
+      for (final m in mois) {
+        map[compte.codeCompte]![m] = 0.0;
+      }
+    }
+
+    // Remplir avec les vraies données
+    for (final compte in resp.comptes) {
       final dateEcriture = compte.dateEcriture;
       final moisCompte =
           '${dateEcriture.year}${dateEcriture.month.toString().padLeft(2, '0')}';
-      map[compte.codeCompte]![moisCompte] = compte.montant;
+
+      // Vérifier si le mois existe dans la liste des mois affichés
+      if (mois.contains(moisCompte)) {
+        map[compte.codeCompte]![moisCompte] = compte.montant;
+      }
     }
     return map;
   }
@@ -590,6 +603,7 @@ class _MensuelState extends State<Mensuel> {
                       },
                       indicateursResponse: indicateursResponse,
                       isKEuros: isKEuros,
+                      formuleTextParMois: getFormuleTextParMois(),
                     ),
                   ),
           ),
@@ -743,6 +757,8 @@ class _MensuelState extends State<Mensuel> {
                         currentPage: currentPage,
                         pageSize: comptesLimit,
                         onPageChanged: _onPageChanged,
+                        formuleTextParMois: getFormuleTextParMois(),
+                        isKEuros: isKEuros,
                       ),
                     ),
             ),
