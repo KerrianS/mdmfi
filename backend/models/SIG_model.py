@@ -110,7 +110,7 @@ class SIGCalculator:
     def calculer_valeur_ajoutee(self, mc_value: float = 0) -> float:
         """
         Calcule la Valeur Ajoutée (VA)
-        VA = Production de l'exercice - Consommations de l'exercice en provenance de tiers
+        VA = Production de l'exercice + Marge commerciale - Consommations de l'exercice
         
         Args:
             mc_value: Valeur de la marge commerciale (si déjà calculée)
@@ -118,27 +118,31 @@ class SIGCalculator:
         Returns:
             Valeur de la valeur ajoutée
         """
-        # Production = MC + Production vendue + Production stockée + Production immobilisée
+        # Production de l'exercice = Prestations + Ventes produits + Production stockée + Production immobilisée
         prestations_services = self._get_montant_par_indicateur_sous_ind('VA', ['PRESTATIONS DE SERVICES'])
         ventes_produits = self._get_montant_par_indicateur_sous_ind('VA', ['VENTES DE PRODUITS FINIS'])
         production_stockee = self._get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION STOCKÉE'])
         production_immobilisee = self._get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION IMMOBILISÉE'])
         
-        production_exercice = mc_value + prestations_services + ventes_produits + production_stockee + production_immobilisee
+        production_exercice = prestations_services + ventes_produits + production_stockee + production_immobilisee
         
-        # Consommations = Achats stockés + Achats non stockés + Fournitures + Services extérieurs
+        # Marge commerciale (si pas fournie, la calculer)
+        if mc_value == 0:
+            mc_value = self.calculer_marge_commerciale()
+        
+        # Consommations de l'exercice = Achats stockés + Achats non stockés + Fournitures + Services extérieurs
         achats_stockes = self._get_montant_par_indicateur_sous_ind('VA', ['ACHATS STOCKES'])
         achats_non_stockes = self._get_montant_par_indicateur_sous_ind('VA', ['ACHATS NON STOCKES'])
         fournitures = self._get_montant_par_indicateur_sous_ind('VA', ['FOURNITURES'])
         services_exterieurs = self._get_montant_par_indicateur_sous_ind('VA', ['SERVICES EXTÉRIEURS'])
         autres_services_exterieurs = self._get_montant_par_indicateur_sous_ind('VA', ['AUTRES SERVICES EXTÉRIEURS'])
         
-        consommations_tiers = abs(achats_stockes) + abs(achats_non_stockes) + abs(fournitures) + abs(services_exterieurs) + abs(autres_services_exterieurs)
+        consommations_exercice = abs(achats_stockes) + abs(achats_non_stockes) + abs(fournitures) + abs(services_exterieurs) + abs(autres_services_exterieurs)
         
-        va_calculee = production_exercice - consommations_tiers
+        va_calculee = production_exercice + mc_value - consommations_exercice
         
         # Si aucune donnée calculée, essayer de récupérer la VA directe
-        if va_calculee == 0 and production_exercice == 0 and consommations_tiers == 0:
+        if va_calculee == 0 and production_exercice == 0 and consommations_exercice == 0:
             va_direct = self._get_montant_par_indicateur('VA')
             return va_direct if va_direct != 0 else 0
         
@@ -155,8 +159,17 @@ class SIGCalculator:
         Returns:
             Valeur de l'excédent brut d'exploitation
         """
+        # Valeur ajoutée (si pas fournie, la calculer)
+        if va_value == 0:
+            va_value = self.calculer_valeur_ajoutee()
+        
+        # Subventions d'exploitation
         subventions_exploitation = self._get_montant_par_indicateur_sous_ind('EBE', ['SUBVENTIONS D\'EXPLOITATION'])
+        
+        # Impôts et taxes
         impots_taxes = self._get_montant_par_indicateur_sous_ind('EBE', ['IMPÔTS ET TAXES'])
+        
+        # Charges de personnel
         charges_personnel = self._get_montant_par_indicateur_sous_ind('EBE', ['CHARGES DE PERSONNEL'])
         
         if va_value != 0 or subventions_exploitation != 0 or impots_taxes != 0 or charges_personnel != 0:
@@ -175,8 +188,15 @@ class SIGCalculator:
         Returns:
             Valeur du résultat d'exploitation
         """
+        # EBE (si pas fourni, le calculer)
+        if ebe_value == 0:
+            ebe_value = self.calculer_excedent_brut_exploitation()
+        
+        # Autres produits
         autres_produits = self._get_montant_par_indicateur_sous_ind('RE', ['AUTRES PRODUITS DE GESTION COURANTE'])
         reprises_amortissements = self._get_montant_par_indicateur_sous_ind('RE', ['REPRISES AMORTISSEMENTS'])
+        
+        # Autres charges
         autres_charges = self._get_montant_par_indicateur_sous_ind('RE', ['AUTRES CHARGES DE GESTION COURANTE'])
         dotations_amortissements = self._get_montant_par_indicateur_sous_ind('RE', ['DOTATIONS AMORTISSEMENTS'])
         
@@ -196,6 +216,10 @@ class SIGCalculator:
         Returns:
             Valeur du résultat net
         """
+        # RE (si pas fourni, le calculer)
+        if re_value == 0:
+            re_value = self.calculer_resultat_exploitation()
+        
         # Résultat financier
         produits_financiers = self._get_montant_par_indicateur_sous_ind('R', ['PRODUITS FINANCIERS'])
         charges_financieres = self._get_montant_par_indicateur_sous_ind('R', ['CHARGES FINANCIÈRES'])
@@ -253,6 +277,7 @@ class SIGCalculator:
     def get_composantes_formule(self, indicateur: str) -> Tuple[List[str], List[str]]:
         """
         Récupère les composantes positives et négatives d'un indicateur pour la construction de formule
+        Respecte les formules SIG officielles françaises
         
         Args:
             indicateur: Code de l'indicateur
@@ -261,7 +286,7 @@ class SIGCalculator:
             Tuple (composantes_positives, composantes_negatives)
         """
         if indicateur == 'MC':
-            # MC = Ventes - Achats
+            # MC = Ventes de marchandises - Coût d'achat des marchandises vendues
             composantes_positives = []
             composantes_negatives = []
             
@@ -282,9 +307,7 @@ class SIGCalculator:
             return composantes_positives, composantes_negatives
             
         elif indicateur == 'VA':
-            # VA = Production - Consommations
-            # Production = MC + Prestations + Ventes produits + Production stockée + Production immobilisée
-            # Consommations = Achats stockés + Achats non stockés + Fournitures + Services extérieurs
+            # VA = Production de l'exercice + Marge commerciale - Consommations de l'exercice
             composantes_positives = []
             composantes_negatives = []
             
@@ -295,7 +318,7 @@ class SIGCalculator:
                 if montant > 0:
                     composantes_positives.append(comp)
             
-            # Ajouter MC si elle contribue positivement
+            # Ajouter MC comme composante positive (selon la formule officielle)
             mc_value = self.calculer_marge_commerciale()
             if mc_value > 0:
                 composantes_positives.append('MC')
@@ -310,11 +333,11 @@ class SIGCalculator:
             return composantes_positives, composantes_negatives
             
         elif indicateur == 'EBE':
-            # EBE = VA + Subventions - Impôts - Charges personnel
+            # EBE = VA + Subventions d'exploitation - Impôts et taxes - Charges de personnel
             composantes_positives = []
             composantes_negatives = []
             
-            # Ajouter VA comme composante positive si elle existe
+            # Ajouter VA comme composante positive (selon la formule officielle)
             va_value = self.calculer_valeur_ajoutee()
             if va_value > 0:
                 composantes_positives.append('VA')
@@ -335,7 +358,7 @@ class SIGCalculator:
             composantes_positives = []
             composantes_negatives = []
             
-            # Ajouter EBE comme composante positive si elle existe
+            # Ajouter EBE comme composante positive (selon la formule officielle)
             ebe_value = self.calculer_excedent_brut_exploitation()
             if ebe_value > 0:
                 composantes_positives.append('EBE')
@@ -352,11 +375,11 @@ class SIGCalculator:
             return composantes_positives, composantes_negatives
             
         elif indicateur == 'R':
-            # R = RE + Résultat financier + Résultat exceptionnel - Impôts
+            # R = RE + Résultat financier + Résultat exceptionnel - Impôts sur les bénéfices
             composantes_positives = []
             composantes_negatives = []
             
-            # Ajouter RE comme composante positive si elle existe
+            # Ajouter RE comme composante positive (selon la formule officielle)
             re_value = self.calculer_resultat_exploitation()
             if re_value > 0:
                 composantes_positives.append('RE')
@@ -389,13 +412,13 @@ class SIGCalculator:
             
             return composantes_positives, composantes_negatives
     
-    def construire_formule_text(self, indicateur: str, valeur: float) -> str:
+    def construire_formule_text(self, indicateur: str, valeur: float = 0) -> str:
         """
         Construit la formule textuelle d'un indicateur
         
         Args:
             indicateur: Code de l'indicateur
-            valeur: Valeur calculée de l'indicateur
+            valeur: Valeur calculée de l'indicateur (ignorée, recalculée)
             
         Returns:
             Formule textuelle formatée
@@ -463,13 +486,13 @@ class SIGCalculator:
         
         return formule
     
-    def construire_formule_numeric(self, indicateur: str, valeur: float) -> str:
+    def construire_formule_numeric(self, indicateur: str, valeur: float = 0) -> str:
         """
         Construit la formule numérique d'un indicateur
         
         Args:
             indicateur: Code de l'indicateur
-            valeur: Valeur calculée de l'indicateur
+            valeur: Valeur calculée de l'indicateur (ignorée, recalculée)
             
         Returns:
             Formule numérique formatée

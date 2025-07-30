@@ -193,38 +193,44 @@ def get_indicateurs_mensuel_valeurs(societe: str, annee: int):
             indicateurs_list = []
             
             for code, libelle in libelles.items():
-                montant = calculator.calculer_valeur_par_formule(code)
-                if montant == 0:
+                # Construction des formules avec le nouveau modèle
+                formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+                formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
+                
+                # Extraire la valeur finale de la formule numérique
+                # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+                try:
+                    valeur_finale = float(formule_numeric.split(' = ')[-1])
+                except (IndexError, ValueError):
+                    valeur_finale = 0
+                
+                if valeur_finale == 0:
                     continue
-            
-            # Calcul de l'écart par rapport à l'année précédente
-            lignes_annee_precedente = [l for l in lignes if l.get('annee') == annee - 1 and l.get('mois') == mois]
-            calculator_annee_precedente = SIGCalculator(lignes_annee_precedente)
-            montant_annee_precedente = calculator_annee_precedente.calculer_valeur_par_formule(code)
-            ecart = montant - montant_annee_precedente if montant_annee_precedente != 0 else 0
-            
-            # Construction des formules avec le nouveau modèle
-            formule_text = calculator.construire_formule_text(code, montant)
-            formule_numeric = calculator.construire_formule_numeric(code, montant)
-            
-            # Récupération des sous-indicateurs avec montants non-nuls
-            sous_indicateurs_avec_montants = calculator.get_sous_indicateurs_avec_montants(code)
-            sous_indicateurs = [
-                {
-                    "sous_indicateur": si["sous_indicateur"],
-                    "montant": si["montant"]
-                }
-                for si in sous_indicateurs_avec_montants
-                if si["montant"] != 0
-            ]
+                
+                # Récupération des sous-indicateurs avec montants non-nuls
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(code)
+                tous_composantes = composantes_positives + composantes_negatives
+                
+                sous_indicateurs = []
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(code, [composante])
+                    if montant != 0:
+                        sous_indicateurs.append({
+                            "sous_indicateur": composante,
+                            "montant": montant
+                        })
             
             indicateurs_list.append({
                 "indicateur": code,
                 "libelle": libelle,
-                "valeur": montant,
+                "valeur": valeur_finale,
                 "formule_text": formule_text,
                 "formule_numeric": formule_numeric,
-                "ecart": ecart,
                 "sous_indicateurs": sous_indicateurs
             })
         result[mois] = indicateurs_list
@@ -260,38 +266,44 @@ def get_indicateurs_global_valeurs(
             indicateurs_list = []
             
             for code, libelle in libelles.items():
-                montant = calculator.calculer_valeur_par_formule(code)
-                if montant == 0:
+                # Construction des formules avec le nouveau modèle
+                formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+                formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
+                
+                # Extraire la valeur finale de la formule numérique
+                # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+                try:
+                    valeur_finale = float(formule_numeric.split(' = ')[-1])
+                except (IndexError, ValueError):
+                    valeur_finale = 0
+                
+                if valeur_finale == 0:
                     continue
                 
-                # Calcul de l'écart par rapport à l'année précédente
-                lignes_annee_precedente = [l for l in lignes if l.get('annee') == a - 1]
-                calculator_annee_precedente = SIGCalculator(lignes_annee_precedente)
-                montant_annee_precedente = calculator_annee_precedente.calculer_valeur_par_formule(code)
-                ecart = montant - montant_annee_precedente if montant_annee_precedente != 0 else 0
-                
-                # Construction des formules avec le nouveau modèle
-                formule_text = calculator.construire_formule_text(code, montant)
-                formule_numeric = calculator.construire_formule_numeric(code, montant)
-                
                 # Récupération des sous-indicateurs avec montants non-nuls
-                sous_indicateurs_avec_montants = calculator.get_sous_indicateurs_avec_montants(code)
-                sous_indicateurs = [
-                    {
-                        "sous_indicateur": si["sous_indicateur"],
-                        "montant": si["montant"]
-                    }
-                    for si in sous_indicateurs_avec_montants
-                    if si["montant"] != 0
-                ]
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(code)
+                tous_composantes = composantes_positives + composantes_negatives
+                
+                sous_indicateurs = []
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(code, [composante])
+                    if montant != 0:
+                        sous_indicateurs.append({
+                            "sous_indicateur": composante,
+                            "montant": montant
+                        })
                 
                 indicateurs_list.append({
                     "indicateur": code,
                     "libelle": libelle,
-                    "valeur": montant,
+                    "valeur": valeur_finale,
                     "formule_text": formule_text,
                     "formule_numeric": formule_numeric,
-                    "ecart": ecart,
                     "sous_indicateurs": sous_indicateurs
                 })
             result[a] = indicateurs_list
@@ -314,38 +326,44 @@ def get_indicateurs_global_valeurs(
             indicateurs_list = []
             
             for code, libelle in libelles.items():
-                montant = calculator.calculer_valeur_par_formule(code)
-                if montant == 0:
+                # Construction des formules avec le nouveau modèle
+                formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+                formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
+                
+                # Extraire la valeur finale de la formule numérique
+                # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+                try:
+                    valeur_finale = float(formule_numeric.split(' = ')[-1])
+                except (IndexError, ValueError):
+                    valeur_finale = 0
+                
+                if valeur_finale == 0:
                     continue
                 
-                # Calcul de l'écart par rapport à l'année précédente
-                lignes_annee_precedente = [l for l in lignes if l.get('annee') == a - 1]
-                calculator_annee_precedente = SIGCalculator(lignes_annee_precedente)
-                montant_annee_precedente = calculator_annee_precedente.calculer_valeur_par_formule(code)
-                ecart = montant - montant_annee_precedente if montant_annee_precedente != 0 else 0
-                
-                # Construction des formules avec le nouveau modèle
-                formule_text = calculator.construire_formule_text(code, montant)
-                formule_numeric = calculator.construire_formule_numeric(code, montant)
-                
                 # Récupération des sous-indicateurs avec montants non-nuls
-                sous_indicateurs_avec_montants = calculator.get_sous_indicateurs_avec_montants(code)
-                sous_indicateurs = [
-                    {
-                        "sous_indicateur": si["sous_indicateur"],
-                        "montant": si["montant"]
-                    }
-                    for si in sous_indicateurs_avec_montants
-                    if si["montant"] != 0
-                ]
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(code)
+                tous_composantes = composantes_positives + composantes_negatives
+                
+                sous_indicateurs = []
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(code, [composante])
+                    if montant != 0:
+                        sous_indicateurs.append({
+                            "sous_indicateur": composante,
+                            "montant": montant
+                        })
                 
                 indicateurs_list.append({
                     "indicateur": code,
                     "libelle": libelle,
-                    "valeur": montant,
+                    "valeur": valeur_finale,
                     "formule_text": formule_text,
                     "formule_numeric": formule_numeric,
-                    "ecart": ecart,
                     "sous_indicateurs": sous_indicateurs
                 })
             result[a] = indicateurs_list
@@ -415,17 +433,27 @@ def get_sous_indicateurs_global(
             
             # Pour chaque indicateur calculé, récupérer ses sous-indicateurs
             for ind_key in indicateurs_calcules.keys():
-                sous_indicateurs_avec_montants = calculator.get_sous_indicateurs_avec_montants(ind_key)
+                # Utiliser get_composantes_formule pour récupérer seulement les sous-indicateurs utilisés dans la formule
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(ind_key)
+                tous_composantes = composantes_positives + composantes_negatives
+                
                 sous_indicateurs_list = []
                 
-                for si_data in sous_indicateurs_avec_montants:
-                    sous_indicateur_name = si_data["sous_indicateur"]
+                # Pour chaque composante de la formule, récupérer ses informations
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(ind_key, [composante])
+                    
                     sous_indicateurs_list.append({
-                        "sousIndicateur": sous_indicateur_name,
-                        "libelle": MappingIndicateurSIG.get_libelle(sous_indicateur_name),
-                        "initiales": MappingIndicateurSIG.get_initiales(sous_indicateur_name),
-                        "formule": MappingIndicateurSIG.get_formule(sous_indicateur_name),
-                        "montant": si_data["montant"]
+                        "sousIndicateur": composante,
+                        "libelle": MappingIndicateurSIG.get_libelle(composante),
+                        "initiales": MappingIndicateurSIG.get_initiales(composante),
+                        "formule": MappingIndicateurSIG.get_formule(composante),
+                        "montant": montant
                     })
                 
                 sous_indicateurs[ind_key] = sous_indicateurs_list
@@ -451,17 +479,27 @@ def get_sous_indicateurs_global(
             
             # Pour chaque indicateur calculé, récupérer ses sous-indicateurs
             for ind_key in indicateurs_calcules.keys():
-                sous_indicateurs_avec_montants = calculator.get_sous_indicateurs_avec_montants(ind_key)
+                # Utiliser get_composantes_formule pour récupérer seulement les sous-indicateurs utilisés dans la formule
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(ind_key)
+                tous_composantes = composantes_positives + composantes_negatives
+                
                 sous_indicateurs_list = []
                 
-                for si_data in sous_indicateurs_avec_montants:
-                    sous_indicateur_name = si_data["sous_indicateur"]
+                # Pour chaque composante de la formule, récupérer ses informations
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(ind_key, [composante])
+                    
                     sous_indicateurs_list.append({
-                        "sousIndicateur": sous_indicateur_name,
-                        "libelle": MappingIndicateurSIG.get_libelle(sous_indicateur_name),
-                        "initiales": MappingIndicateurSIG.get_initiales(sous_indicateur_name),
-                        "formule": MappingIndicateurSIG.get_formule(sous_indicateur_name),
-                        "montant": si_data["montant"]
+                        "sousIndicateur": composante,
+                        "libelle": MappingIndicateurSIG.get_libelle(composante),
+                        "initiales": MappingIndicateurSIG.get_initiales(composante),
+                        "formule": MappingIndicateurSIG.get_formule(composante),
+                        "montant": montant
                     })
                 
                 sous_indicateurs[ind_key] = sous_indicateurs_list
