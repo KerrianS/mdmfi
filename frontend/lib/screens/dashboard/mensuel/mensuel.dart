@@ -46,31 +46,19 @@ class _MensuelState extends State<Mensuel> {
     if (indicateursResponse == null || selectedIndicateur == null)
       return formules;
 
-    print(
-        '[DEBUG] getFormuleTextParMois - indicateursResponse.mois.keys: ${indicateursResponse.mois.keys}');
-    print(
-        '[DEBUG] getFormuleTextParMois - selectedIndicateur: $selectedIndicateur');
-
     for (final moisEntry in indicateursResponse.mois.entries) {
       final mois = moisEntry.key;
       final indicateursList = moisEntry.value;
-      print(
-          '[DEBUG] getFormuleTextParMois - Processing mois: $mois with ${indicateursList.length} indicateurs');
 
       for (final ind in indicateursList) {
-        print(
-            '[DEBUG] getFormuleTextParMois - Checking indicateur: ${ind.indicateur} with formuleText: ${ind.formuleText}');
         if (ind.indicateur == selectedIndicateur &&
             ind.formuleText.isNotEmpty) {
           formules[mois] = ind.formuleText;
-          print(
-              '[DEBUG] getFormuleTextParMois - Found formule for mois $mois: ${ind.formuleText}');
           break;
         }
       }
     }
 
-    print('[DEBUG] getFormuleTextParMois - Final formules: $formules');
     return formules;
   }
 
@@ -87,8 +75,6 @@ class _MensuelState extends State<Mensuel> {
         Provider.of<KeycloakProvider>(context, listen: true);
     final societe = keycloakProvider.selectedCompany;
     if (societe != null && societe != _lastSociete) {
-      print(
-          '[Mensuel] Changement de société détecté: $_lastSociete -> $societe');
       _lastSociete = societe;
       indicateursResponse = null;
       sousIndicsResponse = null;
@@ -112,8 +98,6 @@ class _MensuelState extends State<Mensuel> {
   }
 
   Future<void> _loadAnnees(String societe) async {
-    print('[Mensuel] Début du chargement pour $societe');
-
     setState(() {
       isLoading = true;
     });
@@ -134,7 +118,6 @@ class _MensuelState extends State<Mensuel> {
       });
       _loadData();
     } catch (e) {
-      print('[Mensuel] Erreur lors du chargement des années: $e');
       if (!mounted) return;
       setState(() {
         isLoading = false;
@@ -150,8 +133,6 @@ class _MensuelState extends State<Mensuel> {
     });
     try {
       final anneeInt = int.parse(selectedAnnee);
-      print(
-          '[Mensuel] Chargement des données pour $_lastSociete, année: $anneeInt');
       final isOdoo =
           Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
       if (isOdoo) {
@@ -167,30 +148,11 @@ class _MensuelState extends State<Mensuel> {
                 societe: _lastSociete!, annee: anneeInt);
       }
 
-      // Debug: Afficher la structure des données reçues
-      print(
-          '[Mensuel] indicateursResponse reçu: ${indicateursResponse != null}');
-      if (indicateursResponse != null) {
-        print(
-            '[Mensuel] Structure indicateursResponse: ${indicateursResponse.toString()}');
-        print('[Mensuel] Nombre de mois: ${indicateursResponse.mois.length}');
-        for (final entry in indicateursResponse.mois.entries) {
-          print(
-              '[Mensuel] Mois ${entry.key}: ${entry.value.length} indicateurs');
-          if (entry.value.isNotEmpty) {
-            print(
-                '[Mensuel] Premier indicateur: ${entry.value.first.toString()}');
-          }
-        }
-      }
-
       if (!mounted) return;
       setState(() {
         isLoading = false;
       });
     } catch (e) {
-      print('[Mensuel] Erreur lors du chargement: $e');
-      print('[Mensuel] Stack trace: ${StackTrace.current}');
       if (!mounted) return;
       setState(() {
         isLoading = false;
@@ -199,7 +161,14 @@ class _MensuelState extends State<Mensuel> {
   }
 
   Future<void> _loadComptes() async {
-    if (_lastSociete == null || selectedSousIndicateur == null) return;
+    print('[DEBUG] _loadComptes - Début de la fonction');
+    print('[DEBUG] _loadComptes - _lastSociete: $_lastSociete');
+    print(
+        '[DEBUG] _loadComptes - selectedSousIndicateur: $selectedSousIndicateur');
+    if (_lastSociete == null || selectedSousIndicateur == null) {
+      print('[DEBUG] _loadComptes - Conditions non remplies, sortie');
+      return;
+    }
     if (!mounted) return;
     setState(() {
       isLoadingComptes[selectedSousIndicateur!] = true;
@@ -207,26 +176,74 @@ class _MensuelState extends State<Mensuel> {
     try {
       final isOdoo =
           Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
-      final comptesPage = isOdoo
-          ? await OdooSIGService().fetchComptesMensuel(
-              societe: _lastSociete!,
-              annee: int.parse(selectedAnnee),
-              mois: 1,
-              sousIndicateur: selectedSousIndicateur!,
-              limit: comptesLimit,
-              offset: comptesOffset,
-            )
-          : await NavisionSIGService().fetchComptesMensuel(
-              societe: _lastSociete!,
-              annee: int.parse(selectedAnnee),
-              mois: 1,
-              sousIndicateur: selectedSousIndicateur!,
-              limit: comptesLimit,
-              offset: comptesOffset,
-            );
+
+      // Récupérer les mois qui ont des données pour ce sous-indicateur
+      List<int> moisAvecDonnees = [];
+      if (sousIndicsResponse != null) {
+        for (final moisEntry in sousIndicsResponse.mois.entries) {
+          final mois = int.parse(moisEntry.key);
+          final sousIndicateurs = moisEntry.value[selectedIndicateur] ?? [];
+          for (final sousInd in sousIndicateurs) {
+            if (sousInd.sousIndicateur == selectedSousIndicateur) {
+              moisAvecDonnees.add(mois);
+              break;
+            }
+          }
+        }
+      }
+
+      print('[DEBUG] _loadComptes - Mois avec données: $moisAvecDonnees');
+
+      // Charger les données uniquement pour les mois qui ont des données
+      List<dynamic> allComptes = [];
+      for (int mois in moisAvecDonnees) {
+        try {
+          final comptesPage = isOdoo
+              ? await OdooSIGService().fetchComptesMensuel(
+                  societe: _lastSociete!,
+                  annee: int.parse(selectedAnnee),
+                  mois: mois,
+                  sousIndicateur: selectedSousIndicateur!,
+                  limit: comptesLimit,
+                  offset: comptesOffset,
+                )
+              : await NavisionSIGService().fetchComptesMensuel(
+                  societe: _lastSociete!,
+                  annee: int.parse(selectedAnnee),
+                  mois: mois,
+                  sousIndicateur: selectedSousIndicateur!,
+                  limit: comptesLimit,
+                  offset: comptesOffset,
+                );
+
+          if (comptesPage != null &&
+              comptesPage is Map &&
+              comptesPage['comptes'] != null) {
+            print(
+                '[DEBUG] _loadComptes - Month $mois: ${comptesPage['comptes'].length} comptes');
+            allComptes.addAll(comptesPage['comptes']);
+          } else {
+            print('[DEBUG] _loadComptes - Month $mois: No comptes found');
+          }
+        } catch (e) {
+          print(
+              '[Mensuel] Erreur lors du chargement des comptes pour le mois $mois: $e');
+        }
+      }
+
+      // Créer un objet de réponse combiné
+      final combinedResponse = {
+        'comptes': allComptes,
+        'total': allComptes.length,
+      };
+
+      print(
+          '[DEBUG] _loadComptes - Total comptes loaded: ${allComptes.length}');
+      print('[DEBUG] _loadComptes - combinedResponse: $combinedResponse');
+
       if (!mounted) return;
       setState(() {
-        comptesResponses[selectedSousIndicateur!] = comptesPage;
+        comptesResponses[selectedSousIndicateur!] = combinedResponse;
         isLoadingComptes[selectedSousIndicateur!] = false;
       });
     } catch (e) {
@@ -436,8 +453,6 @@ class _MensuelState extends State<Mensuel> {
   // --- MAPPING POUR LES DATATABLES CUSTOM ---
   Map<String, Map<String, double>> getIndicateurData() {
     final Map<String, Map<String, double>> data = {};
-    print(
-        '[Mensuel] getIndicateurData() - indicateursResponse: ${indicateursResponse != null}');
     if (indicateursResponse == null) return data;
 
     try {
@@ -445,27 +460,19 @@ class _MensuelState extends State<Mensuel> {
         final mois = moisEntry.key;
         final indicateurs = moisEntry.value;
         final moisFormatted = '$selectedAnnee${mois.padLeft(2, '0')}';
-        print(
-            '[Mensuel] getIndicateurData() - Processing mois: $mois ($moisFormatted) with ${indicateurs.length} indicateurs');
 
         for (final ind in indicateurs) {
           try {
             data.putIfAbsent(ind.indicateur, () => {});
             data[ind.indicateur]![moisFormatted] = ind.valeur;
-            print(
-                '[Mensuel] getIndicateurData() - Added ${ind.indicateur}: ${ind.valeur} for $moisFormatted');
           } catch (e) {
-            print(
-                '[Mensuel] getIndicateurData() - Error processing indicateur: $e');
-            print(
-                '[Mensuel] getIndicateurData() - Indicateur data: ${ind.toString()}');
+            // Erreur silencieuse
           }
         }
       }
     } catch (e) {
-      print('[Mensuel] getIndicateurData() - Error in main loop: $e');
+      // Erreur silencieuse
     }
-    print('[Mensuel] getIndicateurData() - Final data keys: ${data.keys}');
     return data;
   }
 
@@ -487,30 +494,31 @@ class _MensuelState extends State<Mensuel> {
   }
 
   List<String> getMois() {
-    print(
-        '[Mensuel] getMois() - indicateursResponse: ${indicateursResponse != null}');
     if (indicateursResponse == null) return <String>[];
     final moisList = indicateursResponse!.mois.keys
         .map((mois) => '$selectedAnnee${mois.padLeft(2, '0')}')
         .toList();
     moisList.sort();
-    print('[Mensuel] getMois() - moisList: $moisList');
     return List<String>.from(moisList);
   }
 
   List<dynamic> getComptesForResp(dynamic resp) {
-    if (resp == null) return [];
-    if (resp.comptes != null) return resp.comptes;
+    if (resp == null) {
+      return [];
+    }
+    if (resp is Map && resp['comptes'] != null) {
+      return resp['comptes'];
+    }
     return [];
   }
 
   Map<String, Map<String, double>> getComptesMontantsParMoisForResp(
       List<String> mois, dynamic resp) {
     final Map<String, Map<String, double>> map = {};
-    if (resp == null || resp.comptes == null) return map;
+    if (resp == null || resp is! Map || resp['comptes'] == null) return map;
 
     // Initialiser tous les mois avec 0.0 pour chaque compte
-    for (final compte in resp.comptes) {
+    for (final compte in resp['comptes']) {
       map.putIfAbsent(compte.codeCompte, () => {});
       for (final m in mois) {
         map[compte.codeCompte]![m] = 0.0;
@@ -518,14 +526,15 @@ class _MensuelState extends State<Mensuel> {
     }
 
     // Remplir avec les vraies données
-    for (final compte in resp.comptes) {
+    for (final compte in resp['comptes']) {
       final dateEcriture = compte.dateEcriture;
       final moisCompte =
           '${dateEcriture.year}${dateEcriture.month.toString().padLeft(2, '0')}';
 
       // Vérifier si le mois existe dans la liste des mois affichés
       if (mois.contains(moisCompte)) {
-        map[compte.codeCompte]![moisCompte] = compte.montant;
+        map[compte.codeCompte]![moisCompte] =
+            (map[compte.codeCompte]![moisCompte] ?? 0.0) + compte.montant;
       }
     }
     return map;
@@ -596,6 +605,7 @@ class _MensuelState extends State<Mensuel> {
                       mois: mois.cast<String>(),
                       selectedIndicateur: selectedIndicateur,
                       onSelectIndicateur: (ind) {
+                        print('[DEBUG] onSelectIndicateur - Selected: $ind');
                         setState(() {
                           selectedIndicateur = ind;
                           selectedSousIndicateur = null;
@@ -638,6 +648,7 @@ class _MensuelState extends State<Mensuel> {
                 mois: mois.cast<String>(),
                 selectedSousIndicateur: selectedSousIndicateur,
                 onSelectSousIndicateur: (sousInd) {
+                  print('[DEBUG] onSelectSousIndicateur - Selected: $sousInd');
                   setState(() {
                     selectedSousIndicateur = sousInd;
                     currentPage = 0;
@@ -751,9 +762,11 @@ class _MensuelState extends State<Mensuel> {
                             comptesResponses[selectedSousIndicateur]),
                         selectedRowIndex: null,
                         onRowSelect: null,
-                        total:
-                            comptesResponses[selectedSousIndicateur]?.total ??
-                                0,
+                        total: comptesResponses[selectedSousIndicateur] is Map
+                            ? comptesResponses[selectedSousIndicateur]
+                                    ['total'] ??
+                                0
+                            : 0,
                         currentPage: currentPage,
                         pageSize: comptesLimit,
                         onPageChanged: _onPageChanged,
