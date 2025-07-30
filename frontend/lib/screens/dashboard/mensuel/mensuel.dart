@@ -76,69 +76,8 @@ class _MensuelState extends State<Mensuel> {
 
   // Helper pour obtenir la liste des sous-indicateurs associés à l'indicateur sélectionné
   List<String> getSousIndicateursAssocies() {
-    // On extrait les sous-indicateurs depuis formule_text de l'indicateur sélectionné
-    List<String> sousIndicateursFromFormule = [];
-    if (indicateursResponse == null ||
-        selectedIndicateur == null ||
-        sousIndicsResponse == null) return [];
-
-    // Récupérer formule_text de l'indicateur sélectionné
-    String? formuleText;
-    for (final moisEntry in indicateursResponse.mois.entries) {
-      final indicateursList = moisEntry.value;
-      for (final ind in indicateursList) {
-        if (ind.indicateur == selectedIndicateur) {
-          formuleText = ind.formuleText;
-          break;
-        }
-      }
-      if (formuleText != null && formuleText.isNotEmpty) break;
-    }
-
-    if (formuleText == null || formuleText.isEmpty) return [];
-
-    // Extraire les sous-indicateurs depuis formule_text
-    // Exemple: "VA = MC (1234.56) + PRESTATIONS DE SERVICES (5678.90) - ACHATS STOCKES (2345.67) = 4567.79"
-    final Set<String> sousIndicateursTrouves = {};
-
-    // Pattern pour capturer les sous-indicateurs dans la formule
-    // Cherche les patterns comme "MC (1234.56)", "PRESTATIONS DE SERVICES (5678.90)", etc.
-    final pattern = RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
-    final matches = pattern.allMatches(formuleText);
-
-    for (final match in matches) {
-      final sousIndicateur = match.group(1)?.trim();
-      if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
-        sousIndicateursTrouves.add(sousIndicateur);
-      }
-    }
-
-    // Maintenant, chercher les sous-indicateurs dans la réponse qui correspondent
-    final Set<String> sousIndicateurLibelles = {};
-    for (final moisEntry in sousIndicsResponse.mois.entries) {
-      final sousIndicateursList = moisEntry.value.values
-          .where((v) => v is List)
-          .expand((list) => list as List)
-          .toList();
-      for (final sous in sousIndicateursList) {
-        final libelleNorm = sous.libelle.trim().toUpperCase();
-        // Vérifier si le libellé du sous-indicateur correspond à un des sous-indicateurs trouvés dans la formule
-        for (final sousIndFromFormule in sousIndicateursTrouves) {
-          if (libelleNorm == sousIndFromFormule.toUpperCase()) {
-            sousIndicateurLibelles.add(sous.libelle);
-            break;
-          }
-        }
-      }
-    }
-
-    print('[DEBUG] Formule text: $formuleText');
-    print(
-        '[DEBUG] Sous-indicateurs trouvés dans formule: ${sousIndicateursTrouves.toList()}');
-    print(
-        '[DEBUG] Sous-indicateurs à surligner: ${sousIndicateurLibelles.toList()}');
-
-    return sousIndicateurLibelles.toList();
+    // Retourner une liste vide car nous supprimons la fonctionnalité associe
+    return [];
   }
 
   @override
@@ -696,7 +635,6 @@ class _MensuelState extends State<Mensuel> {
                 indicateursResponse: indicateursResponse,
                 selectedIndicateur: selectedIndicateur,
                 isKEuros: isKEuros,
-                associeLibelles: getSousIndicateursAssocies(),
                 formuleTextParMois: getFormuleTextParMois(),
               ),
             ),

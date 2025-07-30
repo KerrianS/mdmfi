@@ -107,7 +107,6 @@ def get_odoo_indicateurs_global(
         'R': 'Résultat net',
     }
     from models.PlanComptable import MappingIndicateurSIG
-    associe_mapping = MappingIndicateurSIG.get_associe_mapping()
 
     lignes = odoo_sig.get_lines("annee")
     annees = sorted({l.get('annee') for l in lignes if l.get('annee')}, reverse=True)[:3]
@@ -122,8 +121,7 @@ def get_odoo_indicateurs_global(
                 indicateurs_list.append({
                     "indicateur": code,
                     "libelle": libelles.get(code, code),
-                    "valeur": montant,
-                    "associe": associe_mapping.get(code, [])
+                    "valeur": montant
                 })
             result[annee] = indicateurs_list
         return {"periode": "annee", "indicateurs": result}
@@ -141,8 +139,7 @@ def get_odoo_indicateurs_global(
                 indicateurs_list.append({
                     "indicateur": code,
                     "libelle": libelles.get(code, code),
-                    "valeur": montant,
-                    "associe": associe_mapping.get(code, [])
+                    "valeur": montant
                 })
             result[annee] = indicateurs_list
         return {"periode": "trimestre", "trimestre": trimestre, "indicateurs": result}
@@ -205,8 +202,6 @@ def get_odoo_sous_indicateurs_global(
                     sous_indicateurs_list = odoo_sig.get_sous_indicateurs(lignes_trim, ind_key)
                     for si in sous_indicateurs_list:
                         si["formules"] = MappingIndicateurSIG.get_formule(si.get("sousIndicateur", ""))
-                        if "associe" in si:
-                            del si["associe"]
                     sous_indicateurs[ind_key] = sous_indicateurs_list
 
             result[a] = sous_indicateurs
@@ -247,7 +242,6 @@ def get_indicateurs_mensuel_odoo(societe: str, annee: int):
         'R': 'Résultat net',
     }
     from models.PlanComptable import MappingIndicateurSIG
-    associe_mapping = MappingIndicateurSIG.get_associe_mapping()
     result = {}
     for mois in range(1, 13):
         lignes = odoo_sig.get_lines("mois", (annee, mois))
@@ -257,8 +251,7 @@ def get_indicateurs_mensuel_odoo(societe: str, annee: int):
             indicateurs_list.append({
                 "indicateur": code,
                 "libelle": libelles.get(code, code),
-                "valeur": montant,
-                "associe": associe_mapping.get(code, [])
+                "valeur": montant
             })
         result[mois] = indicateurs_list
     return {"annee": annee, "mois": result}

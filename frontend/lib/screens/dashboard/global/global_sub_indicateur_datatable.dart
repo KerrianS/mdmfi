@@ -10,7 +10,7 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
   final void Function(String) onSelectSousIndicateur;
   final dynamic sousIndicsResponse; // Peut être Navision ou Odoo
   final bool isKEuros;
-  final List<String> associeLibelles;
+
   final Map<String, String> formuleTextParAnnee;
 
   const GlobalSubIndicateurDataTable({
@@ -22,7 +22,6 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
     required this.onSelectSousIndicateur,
     this.sousIndicsResponse,
     this.isKEuros = false,
-    required this.associeLibelles,
     this.formuleTextParAnnee = const {},
   });
 
@@ -71,9 +70,14 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
         }
         final isSelected = sousInd == selectedSousIndicateur;
         final libelleOriginal = libelle ?? '';
-        final isAssocie = associeLibelles.contains(libelleOriginal);
         String signe = '';
         String? formuleText;
+        // Récupérer la formule textuelle de l'indicateur sélectionné pour l'année courante
+        if (formuleTextParAnnee.isNotEmpty && selectedIndicateur != null) {
+          final anneeRef =
+              annees.isNotEmpty ? annees.last : formuleTextParAnnee.keys.first;
+          formuleText = formuleTextParAnnee[anneeRef];
+        }
         // Récupérer la formule textuelle de l'indicateur sélectionné pour l'année courante
         if (formuleTextParAnnee.isNotEmpty && selectedIndicateur != null) {
           final anneeRef =
@@ -97,6 +101,11 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
             }
           }
         }
+        // Restauration de la fonctionnalité associe
+        final isAssocie = formuleText != null &&
+            formuleText.isNotEmpty &&
+            (formuleText.contains(libelle ?? sousInd) ||
+                formuleText.contains(initiales ?? sousInd));
         // ...existing code...
         return DataRow(
           selected: isSelected,
@@ -133,6 +142,14 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
+                      child: Text(
+                        libelle ?? sousInd,
+                        style: TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
                       child: Row(
                         children: [
                           if (isAssocie && signe.isNotEmpty)
@@ -174,85 +191,77 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                                 child: Icon(
                                   signe == '+' ? Icons.add : Icons.remove,
                                   color: Colors.white,
-                                  size: 14,
+                                  size: 13,
                                 ),
                               ),
                             ),
                           SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              libelle ?? sousInd,
-                              style: TextStyle(fontSize: 12),
-                              overflow: TextOverflow.ellipsis,
+                          if (sousIndicsResponse != null)
+                            Builder(
+                              builder: (context) {
+                                String? formule;
+                                try {
+                                  final sousIndicsMap =
+                                      sousIndicsResponse.sousIndicateurs;
+                                  outerLoop:
+                                  for (final annee in sousIndicsMap.keys) {
+                                    final indicMap = sousIndicsMap[annee];
+                                    if (indicMap == null) continue;
+                                    for (final indicateurKey in indicMap.keys) {
+                                      final sousIndicateursList =
+                                          indicMap[indicateurKey] ?? [];
+                                      for (final sousIndicateurObj
+                                          in sousIndicateursList) {
+                                        if (sousIndicateurObj.sousIndicateur ==
+                                            sousInd) {
+                                          if (sousIndicateurObj.formule !=
+                                                  null &&
+                                              sousIndicateurObj
+                                                  .formule.isNotEmpty) {
+                                            formule = sousIndicateurObj.formule;
+                                          }
+                                          break outerLoop;
+                                        }
+                                      }
+                                    }
+                                  }
+                                } catch (e) {
+                                  // ignore
+                                }
+                                if (formule != null && formule.isNotEmpty)
+                                  return GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          title: Row(
+                                            children: [
+                                              Icon(Icons.info_outline,
+                                                  color: Colors.blue),
+                                              SizedBox(width: 8),
+                                              Text('Formule'),
+                                            ],
+                                          ),
+                                          content: Text(formule!),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(ctx).pop(),
+                                              child: Text('Fermer'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                    child: Icon(Icons.info_outline,
+                                        size: 18, color: Colors.blue),
+                                  );
+                                return SizedBox.shrink();
+                              },
                             ),
-                          ),
                         ],
                       ),
                     ),
-                    if (sousIndicsResponse != null)
-                      Builder(
-                        builder: (context) {
-                          String? formule;
-                          try {
-                            final sousIndicsMap =
-                                sousIndicsResponse.sousIndicateurs;
-                            outerLoop:
-                            for (final annee in sousIndicsMap.keys) {
-                              final indicMap = sousIndicsMap[annee];
-                              if (indicMap == null) continue;
-                              for (final indicateurKey in indicMap.keys) {
-                                final sousIndicateursList =
-                                    indicMap[indicateurKey] ?? [];
-                                for (final sousIndicateurObj
-                                    in sousIndicateursList) {
-                                  if (sousIndicateurObj.sousIndicateur ==
-                                      sousInd) {
-                                    if (sousIndicateurObj.formule != null &&
-                                        sousIndicateurObj.formule.isNotEmpty) {
-                                      formule = sousIndicateurObj.formule;
-                                    }
-                                    break outerLoop;
-                                  }
-                                }
-                              }
-                            }
-                          } catch (e) {
-                            // ignore
-                          }
-                          if (formule != null && formule.isNotEmpty)
-                            return Padding(
-                              padding: const EdgeInsets.only(left: 4.0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: Row(
-                                        children: [
-                                          Icon(Icons.info_outline,
-                                              color: Colors.blue),
-                                          SizedBox(width: 8),
-                                          Text('Formule'),
-                                        ],
-                                      ),
-                                      content: Text(formule!),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(ctx).pop(),
-                                          child: Text('Fermer'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                child: Icon(Icons.info_outline,
-                                    size: 18, color: Colors.blue),
-                              ),
-                            );
-                          return SizedBox.shrink();
-                        },
-                      ),
                   ],
                 ),
               ),

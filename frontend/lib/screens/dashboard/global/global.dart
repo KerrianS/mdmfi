@@ -5,6 +5,7 @@ import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/models/OdooSIGModel.dart';
 import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
 import 'package:mobaitec_decision_making/services/indicateur/odoo_service_sig.dart';
+import 'package:mobaitec_decision_making/services/indicateur/indicateur_service.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_account_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_indicateur_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_sub_indicateur_datatable.dart';
@@ -83,6 +84,10 @@ class _GlobalState extends State<Global> {
       isLoading = true;
     });
     try {
+      // Exemple d'utilisation du nouveau service avec mode cache/webservice
+      final dataModeInfo = IndicateurService.getModeInfo(context);
+      print('[Global] Mode de données: $dataModeInfo');
+
       final isOdoo =
           Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
       if (isOdoo) {
@@ -387,18 +392,7 @@ class _GlobalState extends State<Global> {
         annees: getAnnees(),
         selectedIndicateur: selectedIndicateur,
         onSelectIndicateur: (ind) {
-          // Ajout debug : afficher la liste associe dès la sélection
-          if (indicateursResponse != null) {
-            for (final an in indicateursResponse!.indicateurs.keys) {
-              final indics = indicateursResponse!.indicateurs[an] ?? [];
-              for (final indic in indics) {
-                if (indic.indicateur == ind) {
-                  print(
-                      '[DEBUG] (onSelectIndicateur) Liste associe (libellés) pour $ind : ${indic.associe}');
-                }
-              }
-            }
-          }
+          // Suppression de la fonctionnalité associe
           setState(() {
             if (selectedIndicateur == ind) {
               selectedIndicateur = null;
@@ -441,7 +435,6 @@ class _GlobalState extends State<Global> {
         },
         sousIndicsResponse: sousIndicsResponse,
         isKEuros: isKEuros,
-        associeLibelles: getSousIndicateursAssocies(),
         formuleTextParAnnee: getFormuleTextParAnnee(),
       ),
     );
@@ -450,18 +443,20 @@ class _GlobalState extends State<Global> {
   // Helper pour obtenir les formules textuelles par année pour l'indicateur sélectionné
   Map<String, String> getFormuleTextParAnnee() {
     final Map<String, String> formules = {};
-    if (indicateursResponse == null || selectedIndicateur == null) return formules;
-    
+    if (indicateursResponse == null || selectedIndicateur == null)
+      return formules;
+
     for (final an in indicateursResponse!.indicateurs.keys) {
       final indics = indicateursResponse!.indicateurs[an] ?? [];
       for (final ind in indics) {
-        if (ind.indicateur == selectedIndicateur && ind.formuleText.isNotEmpty) {
+        if (ind.indicateur == selectedIndicateur &&
+            ind.formuleText.isNotEmpty) {
           formules[an] = ind.formuleText;
           break;
         }
       }
     }
-    
+
     return formules;
   }
 
@@ -481,67 +476,44 @@ class _GlobalState extends State<Global> {
 
   // Helper pour obtenir la liste des sous-indicateurs associés à l'indicateur sélectionné
   List<String> getSousIndicateursAssocies() {
-    // On extrait les sous-indicateurs depuis formule_text de l'indicateur sélectionné
-    List<String> sousIndicateursFromFormule = [];
-    if (indicateursResponse == null ||
-        selectedIndicateur == null ||
-        sousIndicsResponse == null) return [];
+    final List<String> associeLibelles = [];
+    if (indicateursResponse != null && selectedIndicateur != null) {
+      for (final an in indicateursResponse!.indicateurs.keys) {
+        final indics = indicateursResponse!.indicateurs[an] ?? [];
+        for (final ind in indics) {
+          if (ind.indicateur == selectedIndicateur) {
+            // Gérer les différents formats de données (Map ou objet)
+            String formuleText = '';
+            if (ind is Map) {
+              formuleText = ind['formule_text'] ?? ind['formuleText'] ?? '';
+            } else {
+              formuleText = ind.formuleText ?? ind.formule_text ?? '';
+            }
 
-    // Récupérer formule_text de l'indicateur sélectionné
-    String? formuleText;
-    for (final an in indicateursResponse!.indicateurs.keys) {
-      final indics = indicateursResponse!.indicateurs[an] ?? [];
-      for (final ind in indics) {
-        if (ind.indicateur == selectedIndicateur) {
-          formuleText = ind.formuleText;
-          break;
-        }
-      }
-      if (formuleText != null && formuleText.isNotEmpty) break;
-    }
+            if (formuleText.isNotEmpty) {
+              // Extraire les sous-indicateurs depuis formule_text
+              final Set<String> sousIndicateursTrouves = {};
 
-    if (formuleText == null || formuleText.isEmpty) return [];
+              // Pattern pour capturer les sous-indicateurs dans la formule
+              final pattern =
+                  RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
+              final matches = pattern.allMatches(formuleText);
 
-    // Extraire les sous-indicateurs depuis formule_text
-    // Exemple: "VA = MC (1234.56) + PRESTATIONS DE SERVICES (5678.90) - ACHATS STOCKES (2345.67) = 4567.79"
-    final Set<String> sousIndicateursTrouves = {};
+              for (final match in matches) {
+                final sousIndicateur = match.group(1)?.trim();
+                if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
+                  sousIndicateursTrouves.add(sousIndicateur);
+                }
+              }
 
-    // Pattern pour capturer les sous-indicateurs dans la formule
-    // Cherche les patterns comme "MC (1234.56)", "PRESTATIONS DE SERVICES (5678.90)", etc.
-    final pattern = RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
-    final matches = pattern.allMatches(formuleText);
-
-    for (final match in matches) {
-      final sousIndicateur = match.group(1)?.trim();
-      if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
-        sousIndicateursTrouves.add(sousIndicateur);
-      }
-    }
-
-    // Maintenant, chercher les sous-indicateurs dans la réponse qui correspondent
-    final Set<String> sousIndicateurLibelles = {};
-    for (final an in sousIndicsResponse!.sousIndicateurs.keys) {
-      final indicMap = sousIndicsResponse!.sousIndicateurs[an] ?? {};
-      final sousList = indicMap[selectedIndicateur] ?? [];
-      for (final sous in sousList) {
-        final libelleNorm = sous.libelle.trim().toUpperCase();
-        // Vérifier si le libellé du sous-indicateur correspond à un des sous-indicateurs trouvés dans la formule
-        for (final sousIndFromFormule in sousIndicateursTrouves) {
-          if (libelleNorm == sousIndFromFormule.toUpperCase()) {
-            sousIndicateurLibelles.add(sous.libelle);
-            break;
+              associeLibelles.addAll(sousIndicateursTrouves);
+              break;
+            }
           }
         }
       }
     }
-
-    print('[DEBUG] Formule text: $formuleText');
-    print(
-        '[DEBUG] Sous-indicateurs trouvés dans formule: ${sousIndicateursTrouves.toList()}');
-    print(
-        '[DEBUG] Sous-indicateurs à surligner: ${sousIndicateurLibelles.toList()}');
-
-    return sousIndicateurLibelles.toList();
+    return associeLibelles;
   }
 
   List<String> getAnnees() {
@@ -802,7 +774,7 @@ class _GlobalState extends State<Global> {
             ),
           ),
           SizedBox(height: 8),
-                    Padding(
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: AdaptiveTableContainer(
               child: GlobalSubIndicateurDataTable(
@@ -823,7 +795,6 @@ class _GlobalState extends State<Global> {
                 },
                 sousIndicsResponse: sousIndicsResponse,
                 isKEuros: isKEuros,
-                associeLibelles: getSousIndicateursAssocies(),
                 formuleTextParAnnee: getFormuleTextParAnnee(),
               ),
             ),

@@ -89,7 +89,6 @@ class OdooIndicateurMensuel {
   final String libelle;
   final String initiales;
   final double valeur;
-  final List<String> associe;
   final String formuleText;
   final String formuleNumeric;
 
@@ -98,7 +97,6 @@ class OdooIndicateurMensuel {
     required this.libelle,
     required this.initiales,
     required this.valeur,
-    this.associe = const [],
     this.formuleText = '',
     this.formuleNumeric = '',
   });
@@ -111,8 +109,6 @@ class OdooIndicateurMensuel {
       valeur: (json['valeur_calculee'] as num?)?.toDouble() ??
           (json['valeur'] as num?)?.toDouble() ??
           0.0,
-      associe:
-          (json['associe'] as List?)?.map((e) => e.toString()).toList() ?? [],
       formuleText: json['formule_text'] ?? '',
       formuleNumeric: json['formule_numeric'] ?? '',
     );
@@ -124,7 +120,6 @@ class OdooIndicateurMensuel {
       'libelle': libelle,
       'initiales': initiales,
       'valeur': valeur,
-      'associe': associe,
       'formule_text': formuleText,
       'formule_numeric': formuleNumeric,
     };
@@ -248,7 +243,6 @@ class OdooIndicateurGlobal {
   final String indicateur;
   final String libelle;
   final double valeur;
-  final List<String> associe;
   final String formuleText;
   final String formuleNumeric;
 
@@ -256,7 +250,6 @@ class OdooIndicateurGlobal {
     required this.indicateur,
     required this.libelle,
     required this.valeur,
-    required this.associe,
     this.formuleText = '',
     this.formuleNumeric = '',
   });
@@ -266,10 +259,6 @@ class OdooIndicateurGlobal {
       indicateur: json['indicateur'] ?? '',
       libelle: json['libelle'] ?? '',
       valeur: (json['valeur'] as num).toDouble(),
-      associe: (json['associe'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
       formuleText: json['formule_text'] ?? '',
       formuleNumeric: json['formule_numeric'] ?? '',
     );
@@ -280,7 +269,6 @@ class OdooIndicateurGlobal {
       'indicateur': indicateur,
       'libelle': libelle,
       'valeur': valeur,
-      'associe': associe,
       'formule_text': formuleText,
       'formule_numeric': formuleNumeric,
     };
@@ -318,7 +306,6 @@ class OdooSousIndicateurGlobal {
   final String initiales;
   final double montant;
   final String formule;
-  final List<String> associe;
 
   OdooSousIndicateurGlobal({
     required this.sousIndicateur,
@@ -326,7 +313,6 @@ class OdooSousIndicateurGlobal {
     required this.initiales,
     required this.montant,
     required this.formule,
-    required this.associe,
   });
 
   Map<String, dynamic> toJson() {
@@ -336,7 +322,6 @@ class OdooSousIndicateurGlobal {
       'initiales': initiales,
       'montant': montant,
       'formule': formule,
-      'associe': associe,
     };
   }
 
@@ -347,10 +332,6 @@ class OdooSousIndicateurGlobal {
       initiales: json['initiales'] ?? '',
       montant: (json['montant'] as num).toDouble(),
       formule: json['formule'] ?? '',
-      associe: (json['associe'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
     );
   }
 }

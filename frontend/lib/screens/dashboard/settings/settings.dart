@@ -6,11 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/swipe_provider.dart';
+
 import 'package:mobaitec_decision_making/services/cache/navision_service_cache.dart';
 import 'package:mobaitec_decision_making/services/cache/odoo_service_cache.dart';
 import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/models/OdooSIGModel.dart';
 import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
+import 'package:mobaitec_decision_making/services/indicateur/indicateur_service.dart';
 import 'package:mobaitec_decision_making/utils/diagnostic_utils.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -30,6 +32,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<String>? _userGroups;
   String? _accessToken;
   bool? _swipeEnabled;
+  bool _isCacheMode =
+      false; // Local state for cache mode (webservice by default)
 
   void _showThemeChangeDialog(BuildContext context) {
     showDialog(
@@ -157,26 +161,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style:
                         TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Ajoutez ici la logique de mise à jour des données
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Mise à jour des données en cours...')),
-                    );
-                  },
-                  icon: Icon(Icons.refresh),
-                  label: Text('Mise à jour des données'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF00A9CA),
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                SizedBox(height: 16),
-                SizedBox(height: 16),
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final isMobile = constraints.maxWidth < 700;
@@ -221,17 +205,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               onSwipeChanged: swipeProvider.setSwipeEnabled,
                             ),
                             SizedBox(width: 32),
-                            // Colonne Rôles + Groupes à droite
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _RolesAndCompaniesCard(
-                                  isClient: isClient,
-                                  isAdmin: isAdmin,
-                                  hasMDMFi: hasMDMFi,
-                                  userGroups: userGroups,
-                                ),
-                              ],
+                            // Colonne Rôles + Groupes au milieu
+                            _RolesAndCompaniesCard(
+                              isClient: isClient,
+                              isAdmin: isAdmin,
+                              hasMDMFi: hasMDMFi,
+                              userGroups: userGroups,
+                            ),
+                            SizedBox(width: 32),
+                            // Nouvelle carte Gestion des données à droite
+                            _DataManagementCard(
+                              isCacheMode: _isCacheMode,
+                              onCacheModeChanged: (value) {
+                                setState(() {
+                                  _isCacheMode = value;
+                                });
+                              },
                             ),
                           ],
                         ),
@@ -252,39 +241,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             fontWeight: FontWeight.w500)),
                   ],
                 ),
-                SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    // Exemple d'export des données du cache Navision et Odoo
-                    final navisionCache = NavisionServiceCache();
-                    final odooCache = OdooServiceCache();
-                    // Remplace 'societe' par la valeur réelle à exporter
-                    final societe = 'demo';
-                    final navisionData =
-                        await navisionCache.loadIndicateursMensuel(societe);
-                    final odooData =
-                        await odooCache.loadIndicateursMensuel(societe);
-                    // Affiche les données dans un SnackBar (ou adapte selon besoin)
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Navision: ' +
-                              (navisionData?.toJson().toString() ??
-                                  'Aucune donnée') +
-                              '\nOdoo: \n' +
-                              (odooData?.toJson().toString() ??
-                                  'Aucune donnée'))),
-                    );
-                  },
-                  icon: Icon(Icons.download),
-                  label: Text('Exporter données cache'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueGrey,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
+
                 ElevatedButton.icon(
                   onPressed: _logoutKeycloak,
                   icon: Icon(Icons.logout),
@@ -622,7 +579,7 @@ class _PreferencesCard extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: 340,
-      height: 300, // Hauteur fixe pour égaliser les cards
+      height: 400, // Hauteur fixe pour égaliser les cards
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
@@ -634,108 +591,6 @@ class _PreferencesCard extends StatelessWidget {
           Text('Préférences',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           SizedBox(height: 12),
-          ElevatedButton.icon(
-            onPressed: () async {
-              // Test : Stocker des données dans le cache Navision et Odoo
-              final navisionCache = NavisionServiceCache();
-              final odooCache = OdooServiceCache();
-              final societe = 'demo';
-              // Création d'un objet NavisionIndicateursMensuelResponse
-              final navisionTestData = NavisionIndicateursMensuelResponse(
-                annee: DateTime.now().year,
-                mois: {
-                  '07': [
-                    NavisionIndicateurMensuel(
-                      indicateur: 'CA',
-                      libelle: 'Chiffre d’Affaires',
-                      valeur: 12345.0,
-                      associe: [],
-                      formuleText: 'CA = ...',
-                      formuleNumeric: '12345',
-                      initiales: 'CA',
-                    ),
-                    NavisionIndicateurMensuel(
-                      indicateur: 'RES',
-                      libelle: 'Résultat',
-                      valeur: 6789.0,
-                      associe: [],
-                      formuleText: 'RES = ...',
-                      formuleNumeric: '6789',
-                      initiales: 'RES',
-                    ),
-                  ],
-                },
-              );
-              // Création d'un objet OdooIndicateursMensuelResponse
-              final odooTestData = OdooIndicateursMensuelResponse(
-                annee: DateTime.now().year,
-                mois: {
-                  '07': [
-                    OdooIndicateurMensuel(
-                      indicateur: 'CA',
-                      libelle: 'Chiffre d’Affaires',
-                      valeur: 54321.0,
-                      associe: [],
-                      formuleText: 'CA = ...',
-                      formuleNumeric: '54321',
-                      initiales: 'CA',
-                    ),
-                    OdooIndicateurMensuel(
-                      indicateur: 'RES',
-                      libelle: 'Résultat',
-                      valeur: 9876.0,
-                      associe: [],
-                      formuleText: 'RES = ...',
-                      formuleNumeric: '9876',
-                      initiales: 'RES',
-                    ),
-                  ],
-                },
-              );
-              await navisionCache.saveIndicateursMensuel(
-                  societe, navisionTestData);
-              await odooCache.saveIndicateursMensuel(societe, odooTestData);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text('Données de test stockées dans le cache !')),
-              );
-            },
-            icon: Icon(Icons.bug_report),
-            label: Text('Diagnostic API'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-          SizedBox(height: 8),
-          // Bouton pour vider le cache
-          ElevatedButton.icon(
-            onPressed: () async {
-              try {
-                await DiagnosticUtils.clearAllCaches();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('🗑️ Cache vidé avec succès')),
-                );
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('❌ Erreur lors du vidage du cache: $e')),
-                );
-              }
-            },
-            icon: Icon(Icons.clear_all),
-            label: Text('Vider le cache'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
           Row(
             children: [
               Icon(Icons.person,
@@ -801,7 +656,7 @@ class _RolesAndCompaniesCard extends StatelessWidget {
 
     return Container(
       width: 340,
-      // height: 300, // Hauteur fixe supprimée
+      height: 400, // Hauteur fixe pour égaliser les cards
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
@@ -904,6 +759,168 @@ class _RolesAndCompaniesCard extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+// Nouvelle carte pour la gestion des données
+class _DataManagementCard extends StatelessWidget {
+  final bool isCacheMode;
+  final Function(bool) onCacheModeChanged;
+
+  const _DataManagementCard({
+    required this.isCacheMode,
+    required this.onCacheModeChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      width: 340,
+      height: 400, // Hauteur fixe pour égaliser les cards
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Gestion des données',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          SizedBox(height: 12),
+
+          // Mode de données
+          Text('Mode de données',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+          SizedBox(height: 8),
+          SwitchListTile(
+            title: Text('Mode Cache'),
+            subtitle: Text(isCacheMode
+                ? 'Mode Cache (données locales)'
+                : 'Mode Webservice (données temps réel)'),
+            value: isCacheMode,
+            onChanged: (value) async {
+              onCacheModeChanged(value);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content:
+                      Text('Mode ${value ? "Cache" : "Webservice"} activé'),
+                  backgroundColor: value ? Colors.green : Colors.blue,
+                ),
+              );
+            },
+            secondary: Icon(
+              isCacheMode ? Icons.storage : Icons.cloud,
+              color: isCacheMode ? Colors.orange : Colors.blue,
+            ),
+          ),
+          SizedBox(height: 16),
+
+          // Bouton Exporter le cache
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                // Exemple d'export des données du cache Navision et Odoo
+                final navisionCache = NavisionServiceCache();
+                final odooCache = OdooServiceCache();
+                // Remplace 'societe' par la valeur réelle à exporter
+                final societe = 'demo';
+                final navisionData =
+                    await navisionCache.loadIndicateursMensuel(societe);
+                final odooData =
+                    await odooCache.loadIndicateursMensuel(societe);
+                // Affiche les données dans un SnackBar (ou adapte selon besoin)
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('Navision: ' +
+                          (navisionData?.toJson().toString() ??
+                              'Aucune donnée') +
+                          '\nOdoo: \n' +
+                          (odooData?.toJson().toString() ?? 'Aucune donnée'))),
+                );
+              },
+              icon: Icon(Icons.download),
+              label: Text('Exporter le cache'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueGrey,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          // Bouton Vider le cache
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                try {
+                  await IndicateurService.clearAllCaches();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('🗑️ Cache Hive vidé avec succès')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('❌ Erreur lors du vidage du cache: $e')),
+                  );
+                }
+              },
+              icon: Icon(Icons.clear_all),
+              label: Text('Vider le cache'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          // Bouton Mettre à jour les données
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                try {
+                  // Forcer le rafraîchissement du cache
+                  await IndicateurService.forceRefreshCache(
+                      context, 'demo', '2024', '01');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('🔄 Données mises à jour avec succès')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('❌ Erreur lors de la mise à jour: $e')),
+                  );
+                }
+              },
+              icon: Icon(Icons.refresh),
+              label: Text('Mettre à jour les données'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF00A9CA),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

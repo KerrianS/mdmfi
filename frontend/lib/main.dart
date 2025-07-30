@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/swipe_provider.dart';
+import 'package:mobaitec_decision_making/services/theme/data_mode_provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
@@ -29,7 +30,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => KeycloakProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => SwipeProvider())
+        ChangeNotifierProvider(create: (_) => SwipeProvider()),
+        ChangeNotifierProvider(create: (_) => DataModeProvider())
       ],
       child: MyApp(),
     ),

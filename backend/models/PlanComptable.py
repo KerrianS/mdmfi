@@ -172,70 +172,70 @@ class MappingIndicateurSIG:
         """
         return {
             # Classe 1 : Capitaux
-            'CAPITAL': 'CAP',
-            'RESERVES': 'RES',
-            'COMPTE DE LEXPLOITANT': 'CDL',
+            'CAPITAL': 'CA',
+            'RESERVES': 'RE',
+            'COMPTE DE LEXPLOITANT': 'CL',
             
             # Classe 2 : Immobilisations
-            'INCORPORELLES': 'INC',
-            'CORPORELLES': 'CORP',
+            'INCORPORELLES': 'IN',
+            'CORPORELLES': 'CO',
             'EN COURS': 'EC',
-            'FINANCIERES': 'FIN',
+            'FINANCIERES': 'FI',
             
             # Classe 3 : Stocks
             'MATIERES PREMIERES': 'MP',
-            'AUTRES APPROVISIONNEMENTS': 'APPR',
-            'EN-COURS DE PRODUCTION': 'ECDP',
-            'STOCKS DE PRODUITS': 'SDP',
-            'STOCKS DE MARCHANDISES': 'SDM',
+            'AUTRES APPROVISIONNEMENTS': 'AA',
+            'EN-COURS DE PRODUCTION': 'EP',
+            'STOCKS DE PRODUITS': 'SP',
+            'STOCKS DE MARCHANDISES': 'SM',
             
             # Classe 4 : Tiers
-            'FOURNISSEURS': 'FRN',
-            'FACTURES NON PARVENUES': 'FNP',
-            'CLIENTS': 'CLI',
-            'AVANCES ET ACOMPTES CLIENTS': 'AAC',
-            'PERSONNEL': 'PERS',
-            'ORGANISMES SOCIAUX': 'ORGSOC',
-            'TVA': 'TVA',
+            'FOURNISSEURS': 'FO',
+            'FACTURES NON PARVENUES': 'FP',
+            'CLIENTS': 'CL',
+            'AVANCES ET ACOMPTES CLIENTS': 'AC',
+            'PERSONNEL': 'PE',
+            'ORGANISMES SOCIAUX': 'OS',
+            'TVA': 'TV',
             'TVA DEDUCTIBLE': 'TD',
             'TVA COLLECTEE': 'TC',
-            'DIVERS': 'DIV',
-            'TRANSITOIRES': 'TRANS',
+            'DIVERS': 'DI',
+            'TRANSITOIRES': 'TR',
             
             # Classe 5 : Financiers
-            'VMP': 'VMP',
-            'BANQUES': 'BQ',
-            'CAISSE': 'CAISSE',
+            'VMP': 'VM',
+            'BANQUES': 'BA',
+            'CAISSE': 'CA',
             
             # Classe 6 : Charges
             'ACHATS STOCKES': 'AS',
-            'ACHATS NON STOCKES': 'ANS',
-            'FOURNITURES': 'FRN',
+            'ACHATS NON STOCKES': 'AN',
+            'FOURNITURES': 'FO',
             'FOURNITURES ADMINISTRATIVES': 'FA',
-            'ACHATS DE MARCHANDISES': 'ADM',
+            'ACHATS DE MARCHANDISES': 'AM',
             'SERVICES EXTÉRIEURS': 'SE',
-            'AUTRES SERVICES EXTÉRIEURS': 'ASE',
+            'AUTRES SERVICES EXTÉRIEURS': 'AS',
             'IMPÔTS ET TAXES': 'IT',
-            'CHARGES DE PERSONNEL': 'CDP',
-            'AUTRES CHARGES DE GESTION COURANTE': 'ACGC',
+            'CHARGES DE PERSONNEL': 'CP',
+            'AUTRES CHARGES DE GESTION COURANTE': 'AC',
             'CHARGES FINANCIÈRES': 'CF',
             'CHARGES EXCEPTIONNELLES': 'CE',
             'DOTATIONS AMORTISSEMENTS': 'DA',
-            'IMPÔTS SUR LES BÉNÉFICES': 'ISLB',
+            'IMPÔTS SUR LES BÉNÉFICES': 'IB',
             
             # Classe 7 : Produits
-            'VENTES DE PRODUITS FINIS': 'VDPF',
-            'VENTES DE SERVICES': 'VDS',
-            'PRESTATIONS DE SERVICES': 'PDS',
-            'VENTES DE MARCHANDISES': 'VDM',
+            'VENTES DE PRODUITS FINIS': 'VP',
+            'VENTES DE SERVICES': 'VS',
+            'PRESTATIONS DE SERVICES': 'PS',
+            'VENTES DE MARCHANDISES': 'VM',
             'PRODUCTION STOCKÉE': 'PS',
             'PRODUCTION IMMOBILISÉE': 'PI',
             'SUBVENTIONS D\'EXPLOITATION': 'SE',
-            'AUTRES PRODUITS DE GESTION COURANTE': 'APDGC',
+            'AUTRES PRODUITS DE GESTION COURANTE': 'AP',
             'PRODUITS FINANCIERS': 'PF',
             'PRODUITS EXCEPTIONNELS': 'PE',
             'REPRISES AMORTISSEMENTS': 'RA',
-            'TRANSFERTS DE CHARGES': 'TDC',
+            'TRANSFERTS DE CHARGES': 'TC',
             
             # Classe 8 : Speciaux
             'ENGAGEMENTS DONNES': 'ED',
@@ -330,27 +330,47 @@ class MappingIndicateurSIG:
         return formules.get(sous_indicateur, f'Σ (Crédit - Débit) des comptes liés à "{sous_indicateur}"')
 
     @staticmethod
-    def get_associe_mapping():
+    def get_sous_indicateurs_possibles():
         """
-        Mapping exhaustif des indicateurs SIG vers tous les sous-indicateurs impliqués dans leur formule.
+        Retourne le mapping des sous-indicateurs possibles pour chaque indicateur principal.
         """
         return {
             'MC': [
-                'VENTES DE MARCHANDISES', 'VENTES DE PRODUITS FINIS', 'VENTES DE SERVICES', 'PRESTATIONS DE SERVICES', 'TVA COLLECTEE',
-                'ACHATS DE MARCHANDISES'
+                "VENTES DE MARCHANDISES",
+                "VENTES DE PRODUITS FINIS",
+                "VENTES DE SERVICES",
+                "PRESTATIONS DE SERVICES",
+                "TVA COLLECTEE",
+                "ACHATS DE MARCHANDISES"
             ],
             'VA': [
-                'MC', 'PRESTATIONS DE SERVICES', 'VENTES DE PRODUITS FINIS', 'PRODUCTION STOCKÉE', 'PRODUCTION IMMOBILISÉE',
-                'ACHATS STOCKES', 'ACHATS NON STOCKES', 'FOURNITURES', 'SERVICES EXTÉRIEURS', 'AUTRES SERVICES EXTÉRIEURS'
+                "PRESTATIONS DE SERVICES",
+                "VENTES DE PRODUITS FINIS",
+                "PRODUCTION STOCKÉE",
+                "PRODUCTION IMMOBILISÉE",
+                "ACHATS STOCKES",
+                "ACHATS NON STOCKES",
+                "FOURNITURES",
+                "SERVICES EXTÉRIEURS",
+                "AUTRES SERVICES EXTÉRIEURS"
             ],
             'EBE': [
-                'VA', "SUBVENTIONS D'EXPLOITATION", 'IMPÔTS ET TAXES', 'CHARGES DE PERSONNEL'
+                "SUBVENTIONS D'EXPLOITATION",
+                "IMPÔTS ET TAXES",
+                "CHARGES DE PERSONNEL"
             ],
             'RE': [
-                'EBE', 'AUTRES PRODUITS DE GESTION COURANTE', 'REPRISES AMORTISSEMENTS',
-                'AUTRES CHARGES DE GESTION COURANTE', 'DOTATIONS AMORTISSEMENTS'
+                "AUTRES PRODUITS DE GESTION COURANTE",
+                "REPRISES AMORTISSEMENTS",
+                "AUTRES CHARGES DE GESTION COURANTE",
+                "DOTATIONS AMORTISSEMENTS"
             ],
             'R': [
-                'RE', 'PRODUITS FINANCIERS', 'CHARGES FINANCIÈRES', 'PRODUITS EXCEPTIONNELS', 'CHARGES EXCEPTIONNELLES', 'IMPÔTS SUR LES BÉNÉFICES'
-            ],
+                "PRODUITS FINANCIERS",
+                "CHARGES FINANCIÈRES",
+                "PRODUITS EXCEPTIONNELS",
+                "CHARGES EXCEPTIONNELLES",
+                "IMPÔTS SUR LES BÉNÉFICES"
+            ]
         }
+

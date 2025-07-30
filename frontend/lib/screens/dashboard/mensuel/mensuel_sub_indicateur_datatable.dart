@@ -15,7 +15,7 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
   final String?
       selectedIndicateur; // Pour savoir quel indicateur est sélectionné
   final bool isKEuros; // Paramètre pour affichage en KEuros
-  final List<String> associeLibelles; // Liste des sous-indicateurs associés
+
   final Map<String, String> formuleTextParMois; // Formules textuelles par mois
 
   MensuelSubIndicateurDataTable({
@@ -28,7 +28,6 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
     this.indicateursResponse,
     this.selectedIndicateur,
     this.isKEuros = false,
-    required this.associeLibelles,
     this.formuleTextParMois = const {},
   });
 
@@ -86,8 +85,8 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
           }
         }
         final isSelected = sousInd == selectedSousIndicateur;
-        // Jaune si le libellé du sous-indicateur est dans la liste associe de l'indicateur sélectionné
-        final isAssocie = associeLibelles.contains(libelle ?? sousInd);
+        // Suppression de la fonctionnalité associe
+        final isAssocie = false;
 
         // Déterminer le signe (+/-) pour les sous-indicateurs associés
         String signe = '';
