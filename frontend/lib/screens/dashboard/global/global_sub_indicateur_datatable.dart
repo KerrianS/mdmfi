@@ -88,16 +88,30 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
           if (formuleText != null && formuleText.isNotEmpty) {
             // Cherche le signe pour le libellé dans la formule
             final libelleToSearch = libelle ?? sousInd;
+
+            // Pattern pour détecter les signes explicites + ou -
             final plusPattern = RegExp(
                 r"\+\s*" + RegExp.escape(libelleToSearch) + r"\s*\(",
                 caseSensitive: false);
             final minusPattern = RegExp(
                 r"-\s*" + RegExp.escape(libelleToSearch) + r"\s*\(",
                 caseSensitive: false);
+
+            // Si on trouve un signe explicite, on l'utilise
             if (plusPattern.hasMatch(formuleText)) {
               signe = '+';
             } else if (minusPattern.hasMatch(formuleText)) {
               signe = '-';
+            } else {
+              // Sinon, on détermine le signe par défaut selon le contexte
+              // Si le libellé apparaît dans la formule sans signe explicite,
+              // on considère que c'est un terme positif (addition)
+              final libellePattern = RegExp(
+                  RegExp.escape(libelleToSearch) + r"\s*\(",
+                  caseSensitive: false);
+              if (libellePattern.hasMatch(formuleText)) {
+                signe = '+'; // Par défaut, les termes sont positifs
+              }
             }
           }
         }

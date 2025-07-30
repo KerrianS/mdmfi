@@ -40,24 +40,24 @@ async def force_utf8_encoding(request, call_next):
     return response
 app.include_router(odoo_router)
 app.include_router(navision_router)
-app.include_router(notification_router)
-app.include_router(websocket_router)
+# app.include_router(notification_router)
+# app.include_router(websocket_router)
 
-@app.on_event("startup")
-async def startup_event():
-    """Démarrer le monitoring automatique au lancement du serveur"""
-    logger.info("🚀 Démarrage du serveur MDM-FI avec WebSocket Relay")
+# @app.on_event("startup")
+# async def startup_event():
+#     """Démarrer le monitoring automatique au lancement du serveur"""
+#     logger.info("🚀 Démarrage du serveur MDM-FI avec WebSocket Relay")
     
-    # Démarrer le monitoring automatique des données
-    data_detector.start_monitoring()
-    logger.info("📊 Monitoring automatique des données démarré")
+#     # Démarrer le monitoring automatique des données
+#     data_detector.start_monitoring()
+#     logger.info("📊 Monitoring automatique des données démarré")
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Nettoyer les ressources au arrêt du serveur"""
-    logger.info("🔄 Arrêt du serveur MDM-FI")
-    data_detector.stop_monitoring()
-    logger.info("⏹️ Monitoring des données arrêté")
+# @app.on_event("shutdown")
+# async def shutdown_event():
+#     """Nettoyer les ressources au arrêt du serveur"""
+#     logger.info("🔄 Arrêt du serveur MDM-FI")
+#     data_detector.stop_monitoring()
+#     logger.info("⏹️ Monitoring des données arrêté")
 
 @app.get("/")
 def root():

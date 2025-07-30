@@ -105,34 +105,34 @@ def get_sous_indicateurs_mensuel(societe: str, annee: int):
     navision_sig = NavisionSIGController(vue)
     
     lignes = navision_sig.get_lines("annee")
-    result = {}
-    for mois in range(1, 13):
-        lignes_mois = [l for l in lignes if l.get('annee') == annee and l.get('mois') == mois]
-        if not lignes_mois:
+    
+    # Pour la route mensuelle, on va utiliser toutes les données de l'année
+    # car les données ne sont pas forcément réparties par mois
+    lignes_annee = [l for l in lignes if l.get('annee') == annee]
+    if not lignes_annee:
+        return {"annee": annee, "mois": {}}
+    
+    # Utiliser le nouveau SIGCalculator avec toutes les données de l'année
+    calculator = SIGCalculator(lignes_annee)
+    indicateurs_list = []
+    
+    for code, libelle in libelles.items():
+        # Construction des formules avec le nouveau modèle
+        formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+        formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
+        
+        # Extraire la valeur finale de la formule numérique
+        # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+        try:
+            valeur_finale = float(formule_numeric.split(' = ')[-1])
+        except (IndexError, ValueError):
+            valeur_finale = 0
+        
+        if valeur_finale == 0:
             continue
         
-        # Utiliser le nouveau SIGCalculator
-        calculator = SIGCalculator(lignes_mois)
-        indicateurs_calcules = calculator.calculer_tous_indicateurs()
-        indicateurs_dict = {}
-        
-        for ind_key in indicateurs_calcules.keys():
-            sous_indicateurs_avec_montants = calculator.get_sous_indicateurs_avec_montants(ind_key)
-            sous_indicateurs = []
-            
-            for si_data in sous_indicateurs_avec_montants:
-                sous_indicateur_name = si_data["sous_indicateur"]
-                sous_indicateurs.append({
-                    "sousIndicateur": sous_indicateur_name,
-                    "libelle": MappingIndicateurSIG.get_libelle(sous_indicateur_name),
-                    "initiales": MappingIndicateurSIG.get_initiales(sous_indicateur_name),
-                    "formule": MappingIndicateurSIG.get_formule(sous_indicateur_name),
-                    "montant": si_data["montant"]
-                })
-            
-            indicateurs_dict[ind_key] = sous_indicateurs
-        result[mois] = indicateurs_dict
-    return {"annee": annee, "mois": result}
+        # Récupération des sous-indicateurs avec montants non-nuls
+
 
 # 4. Comptes mensuels (paginé)
 @navision_router.get("/{societe}/comptes/mensuel", tags=["Navision"])
@@ -183,48 +183,62 @@ def get_indicateurs_mensuel_valeurs(societe: str, annee: int):
     
     lignes = navision_sig.get_lines("annee")
     result = {}
+    
     for mois in range(1, 13):
-        lignes_mois = [l for l in lignes if l.get('annee') == annee and l.get('mois') == mois]
+        # Filtrer les lignes par année et mois en utilisant date_ecriture
+        lignes_mois = []
+        for l in lignes:
+            if l.get('annee') == annee:
+                try:
+                    date_ecriture = l.get('date_ecriture', '')
+                    if date_ecriture:
+                        # Extraire le mois de la date (format: "2021-01-31T00:00:00")
+                        mois_ligne = int(date_ecriture.split('-')[1])
+                        if mois_ligne == mois:
+                            lignes_mois.append(l)
+                except (IndexError, ValueError):
+                    continue
+        
         if not lignes_mois:
             continue
         
-                    # Utiliser le nouveau SIGCalculator
-            calculator = SIGCalculator(lignes_mois)
-            indicateurs_list = []
+        # Utiliser le nouveau SIGCalculator
+        calculator = SIGCalculator(lignes_mois)
+        indicateurs_list = []
+        
+        for code, libelle in libelles.items():
+            # Construction des formules avec le nouveau modèle
+            formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+            formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
             
-            for code, libelle in libelles.items():
-                # Construction des formules avec le nouveau modèle
-                formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
-                formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
-                
-                # Extraire la valeur finale de la formule numérique
-                # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
-                try:
-                    valeur_finale = float(formule_numeric.split(' = ')[-1])
-                except (IndexError, ValueError):
-                    valeur_finale = 0
-                
-                if valeur_finale == 0:
+            # Extraire la valeur finale de la formule numérique
+            # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+            try:
+                valeur_finale = float(formule_numeric.split(' = ')[-1])
+            except (IndexError, ValueError):
+                valeur_finale = 0
+            
+            if valeur_finale == 0:
+                continue
+            
+            # Récupération des sous-indicateurs avec montants non-nuls
+            composantes_positives, composantes_negatives = calculator.get_composantes_formule(code)
+            tous_composantes = composantes_positives + composantes_negatives
+            
+            sous_indicateurs = []
+            for composante in tous_composantes:
+                # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                if composante in ['MC', 'VA', 'EBE', 'RE']:
                     continue
                 
-                # Récupération des sous-indicateurs avec montants non-nuls
-                composantes_positives, composantes_negatives = calculator.get_composantes_formule(code)
-                tous_composantes = composantes_positives + composantes_negatives
-                
-                sous_indicateurs = []
-                for composante in tous_composantes:
-                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
-                    if composante in ['MC', 'VA', 'EBE', 'RE']:
-                        continue
-                    
-                    # Récupérer le montant pour ce sous-indicateur
-                    montant = calculator._get_montant_par_indicateur_sous_ind(code, [composante])
-                    if montant != 0:
-                        sous_indicateurs.append({
-                            "sous_indicateur": composante,
-                            "montant": montant
-                        })
-            
+                # Récupérer le montant pour ce sous-indicateur
+                montant = calculator._get_montant_par_indicateur_sous_ind(code, [composante])
+                if montant != 0:
+                    sous_indicateurs.append({
+                        "sous_indicateur": composante,
+                        "montant": montant
+                    })
+        
             indicateurs_list.append({
                 "indicateur": code,
                 "libelle": libelle,
@@ -233,7 +247,9 @@ def get_indicateurs_mensuel_valeurs(societe: str, annee: int):
                 "formule_numeric": formule_numeric,
                 "sous_indicateurs": sous_indicateurs
             })
+        
         result[mois] = indicateurs_list
+    
     return {"annee": annee, "mois": result}
 
 @navision_router.get("/{societe}/indicateurs/global", tags=["Navision"])

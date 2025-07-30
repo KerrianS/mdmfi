@@ -179,7 +179,14 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                                         }
 
                                         if (formuleText.isNotEmpty) {
+                                          // DEBUG
+                                          print(
+                                              '[DEBUG] Indicateur $ind - formuleText de $selectedIndicateur: $formuleText');
+                                          print(
+                                              '[DEBUG] Cherche libellé: "$libelle" et indicateur: "$ind" dans la formule de $selectedIndicateur');
                                           final libelleToSearch = libelle;
+
+                                          // Pattern pour détecter les signes explicites + ou -
                                           final plusPattern = RegExp(
                                               r"\+\s*" +
                                                   RegExp.escape(
@@ -192,12 +199,37 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                                                       libelleToSearch) +
                                                   r"\s*\(",
                                               caseSensitive: false);
+
+                                          // Si on trouve un signe explicite, on l'utilise
                                           if (plusPattern
                                               .hasMatch(formuleText)) {
                                             signe = '+';
                                           } else if (minusPattern
                                               .hasMatch(formuleText)) {
                                             signe = '-';
+                                          } else {
+                                            // Sinon, on détermine le signe par défaut selon le contexte
+                                            // Si le libellé apparaît dans la formule sans signe explicite,
+                                            // on considère que c'est un terme positif (addition)
+                                            final libellePattern = RegExp(
+                                                RegExp.escape(libelleToSearch) +
+                                                    r"\s*\(",
+                                                caseSensitive: false);
+                                            if (libellePattern
+                                                .hasMatch(formuleText)) {
+                                              signe =
+                                                  '+'; // Par défaut, les termes sont positifs
+                                            } else {
+                                              // Essayer avec l'indicateur (code court) si le libellé complet ne marche pas
+                                              final indicateurPattern = RegExp(
+                                                  RegExp.escape(ind) + r"\s*\(",
+                                                  caseSensitive: false);
+                                              if (indicateurPattern
+                                                  .hasMatch(formuleText)) {
+                                                signe =
+                                                    '+'; // Par défaut, les termes sont positifs
+                                              }
+                                            }
                                           }
                                           break;
                                         }
