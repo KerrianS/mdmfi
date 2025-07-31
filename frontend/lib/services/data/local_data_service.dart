@@ -79,21 +79,17 @@ class LocalDataService {
   }
 
   /// Charge un fichier JSON depuis le système de fichiers
+
   static Future<Map<String, dynamic>?> _loadJsonFile(String path) async {
     try {
-      final file = File(path);
-      if (await file.exists()) {
-        final jsonString = await file.readAsString();
-        return json.decode(jsonString) as Map<String, dynamic>;
-      } else {
-        print('⚠️ Fichier non trouvé: $path');
-        return null;
-      }
+      final contents = await rootBundle.loadString(path);
+      return json.decode(contents) as Map<String, dynamic>;
     } catch (e) {
-      print('⚠️ Erreur lors de la lecture du fichier: $path - $e');
+      print('❌ Erreur chargement JSON depuis assets: $path - $e');
       return null;
     }
   }
+
 
   /// Obtient la liste des sociétés disponibles
   static List<String> getAvailableSocietes() {
