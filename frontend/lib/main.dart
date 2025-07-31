@@ -11,9 +11,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-  var box = await Hive.openBox('navision_cache');
-  print('Hive path: [32m${box.path}[0m');
+  // await Hive.initFlutter();
+  // var box = await Hive.openBox('navision_cache');
+  // print('Hive path: [32m${box.path}[0m');
   runApp(
     MultiProvider(
       providers: [
