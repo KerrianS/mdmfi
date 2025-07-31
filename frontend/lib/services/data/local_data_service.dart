@@ -60,13 +60,13 @@ class LocalDataService {
 
       for (String dataType in dataTypes) {
         try {
-          final data = await _loadJsonFile('data/$societe/$dataType.json');
+          final data = await _loadJsonFile('lib/data/$societe/$dataType.json');
           if (data != null) {
             societeData[dataType] = data;
           }
         } catch (e) {
           // Fichier non trouvé, c'est normal pour certaines années
-          print('⚠️ Fichier non trouvé: data/$societe/$dataType.json');
+          print('⚠️ Fichier non trouvé: lib/data/$societe/$dataType.json');
         }
       }
 
@@ -78,13 +78,19 @@ class LocalDataService {
     }
   }
 
-  /// Charge un fichier JSON
+  /// Charge un fichier JSON depuis le système de fichiers
   static Future<Map<String, dynamic>?> _loadJsonFile(String path) async {
     try {
-      final jsonString = await rootBundle.loadString(path);
-      return json.decode(jsonString) as Map<String, dynamic>;
+      final file = File(path);
+      if (await file.exists()) {
+        final jsonString = await file.readAsString();
+        return json.decode(jsonString) as Map<String, dynamic>;
+      } else {
+        print('⚠️ Fichier non trouvé: $path');
+        return null;
+      }
     } catch (e) {
-      print('⚠️ Fichier non trouvé ou erreur de lecture: $path - $e');
+      print('⚠️ Erreur lors de la lecture du fichier: $path - $e');
       return null;
     }
   }
@@ -143,12 +149,29 @@ class LocalDataService {
 
     try {
       // Adapter la structure JSON au format attendu par le modèle
-      final comptesData =
-          jsonData['comptes']?[annee.toString()]?[sousIndicateur];
+      final comptesData = jsonData['mois']?[mois.toString()]?[sousIndicateur];
       if (comptesData == null) {
         print(
-            '⚠️ Données non trouvées pour $societe, année $annee, sous-indicateur $sousIndicateur');
+            '⚠️ Données non trouvées pour $societe, année $annee, mois $mois, sous-indicateur $sousIndicateur');
         return null;
+      }
+
+      // Convertir les comptes pour correspondre au modèle
+      final List<Map<String, dynamic>> adaptedComptes = [];
+      final comptesList = comptesData['comptes'] as List<dynamic>? ?? [];
+
+      for (final compte in comptesList) {
+        final compteMap = compte as Map<String, dynamic>;
+        adaptedComptes.add({
+          'code_compte': compteMap['code_compte'] ?? '',
+          'libelle_compte': compteMap['libelle_compte'] ?? '',
+          'montant': (compteMap['montant'] as num?)?.toDouble() ?? 0.0,
+          'debit': (compteMap['debit'] as num?)?.toDouble() ?? 0.0,
+          'credit': (compteMap['credit'] as num?)?.toDouble() ?? 0.0,
+          'date_ecriture': DateTime(annee, mois, 1).toIso8601String(),
+          'document': compteMap['document'] ?? '',
+          'utilisateur': compteMap['utilisateur'] ?? '',
+        });
       }
 
       final adaptedData = {
@@ -159,7 +182,7 @@ class LocalDataService {
         'total': comptesData['total'] ?? 0,
         'limit': comptesData['limit'] ?? 50,
         'offset': comptesData['offset'] ?? 0,
-        'comptes': comptesData['comptes'] ?? [],
+        'comptes': adaptedComptes,
       };
 
       return SIGComptesMensuelPage.fromJson(adaptedData);
@@ -194,6 +217,36 @@ class LocalDataService {
       return SIGIndicateursMensuelResponse.fromJson(adaptedData);
     } catch (e) {
       print('❌ Erreur lors de la conversion des données indicateurs: $e');
+      return null;
+    }
+  }
+
+  /// Convertit les données JSON en modèle SIGSousIndicateursMensuelResponse
+  static SIGSousIndicateursMensuelResponse?
+      convertToSousIndicateursMensuelResponse(
+    Map<String, dynamic>? jsonData,
+    String societe,
+    int annee,
+  ) {
+    if (jsonData == null) return null;
+
+    try {
+      // Adapter la structure JSON au format attendu par le modèle
+      final adaptedData = {
+        'societe': societe,
+        'annee': annee,
+        'mois': jsonData['mois'] ?? {},
+      };
+
+      print(
+          '🔍 Conversion des données sous-indicateurs pour $societe, année $annee');
+      print('🔍 Données JSON: ${jsonData.keys}');
+      print(
+          '🔍 Mois disponibles: ${(jsonData['mois'] as Map<String, dynamic>?)?.keys}');
+
+      return SIGSousIndicateursMensuelResponse.fromJson(adaptedData);
+    } catch (e) {
+      print('❌ Erreur lors de la conversion des données sous-indicateurs: $e');
       return null;
     }
   }

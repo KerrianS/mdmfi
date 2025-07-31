@@ -134,16 +134,27 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
         String? initiales;
         String? libelle;
         if (sousIndicsResponse != null) {
-          for (final moisEntry in sousIndicsResponse.mois.entries) {
-            final sousIndicateursList = moisEntry.value.values
-                .where((v) => v is List)
-                .expand((list) => list as List)
-                .where((s) => s.sousIndicateur == sousInd)
-                .toList();
-            if (sousIndicateursList.isNotEmpty) {
-              initiales = sousIndicateursList.first.initiales;
-              libelle = sousIndicateursList.first.libelle;
-              break;
+          final mois = sousIndicsResponse!['mois'] as Map<String, dynamic>?;
+          if (mois != null) {
+            for (final moisEntry in mois.entries) {
+              final indicateurs = moisEntry.value as Map<String, dynamic>?;
+              if (indicateurs != null) {
+                for (final indicateurEntry in indicateurs.entries) {
+                  final sousIndicateursList =
+                      indicateurEntry.value as List<dynamic>? ?? [];
+                  for (final sousIndicateur in sousIndicateursList) {
+                    final sousIndicateurName =
+                        sousIndicateur['sousIndicateur'] as String?;
+                    if (sousIndicateurName == sousInd) {
+                      initiales = sousIndicateur['initiales'] as String?;
+                      libelle = sousIndicateur['libelle'] as String?;
+                      break;
+                    }
+                  }
+                  if (initiales != null || libelle != null) break;
+                }
+              }
+              if (initiales != null || libelle != null) break;
             }
           }
         }
@@ -255,16 +266,33 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                       Builder(
                         builder: (context) {
                           String? formule;
-                          for (final moisEntry
-                              in sousIndicsResponse.mois.entries) {
-                            final sousIndicateursList = moisEntry.value.values
-                                .where((v) => v is List)
-                                .expand((list) => list as List)
-                                .where((s) => s.sousIndicateur == sousInd)
-                                .toList();
-                            if (sousIndicateursList.isNotEmpty) {
-                              formule = sousIndicateursList.first.formule;
-                              break;
+                          final mois = sousIndicsResponse!['mois']
+                              as Map<String, dynamic>?;
+                          if (mois != null) {
+                            for (final moisEntry in mois.entries) {
+                              final indicateurs =
+                                  moisEntry.value as Map<String, dynamic>?;
+                              if (indicateurs != null) {
+                                for (final indicateurEntry
+                                    in indicateurs.entries) {
+                                  final sousIndicateursList =
+                                      indicateurEntry.value as List<dynamic>? ??
+                                          [];
+                                  for (final sousIndicateur
+                                      in sousIndicateursList) {
+                                    final sousIndicateurName =
+                                        sousIndicateur['sousIndicateur']
+                                            as String?;
+                                    if (sousIndicateurName == sousInd) {
+                                      formule =
+                                          sousIndicateur['formule'] as String?;
+                                      break;
+                                    }
+                                  }
+                                  if (formule != null) break;
+                                }
+                              }
+                              if (formule != null) break;
                             }
                           }
                           if (formule != null && formule.isNotEmpty)

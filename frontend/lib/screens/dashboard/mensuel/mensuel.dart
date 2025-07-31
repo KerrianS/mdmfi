@@ -45,15 +45,23 @@ class _MensuelState extends State<Mensuel> {
     if (indicateursResponse == null || selectedIndicateur == null)
       return formules;
 
-    for (final moisEntry in indicateursResponse.mois.entries) {
-      final mois = moisEntry.key;
-      final indicateursList = moisEntry.value;
+    final mois = indicateursResponse!['mois'] as Map<String, dynamic>?;
+    if (mois == null) return formules;
 
-      for (final ind in indicateursList) {
-        if (ind.indicateur == selectedIndicateur &&
-            ind.formuleText.isNotEmpty) {
-          formules[mois] = ind.formuleText;
-          break;
+    for (final moisEntry in mois.entries) {
+      final moisKey = moisEntry.key;
+      final indicateursList = moisEntry.value as List<dynamic>?;
+
+      if (indicateursList != null) {
+        for (final ind in indicateursList) {
+          final indicateur = ind['indicateur'] as String?;
+          final formuleText = ind['formuleText'] as String?;
+          if (indicateur == selectedIndicateur &&
+              formuleText != null &&
+              formuleText.isNotEmpty) {
+            formules[moisKey] = formuleText;
+            break;
+          }
         }
       }
     }
@@ -170,13 +178,21 @@ class _MensuelState extends State<Mensuel> {
       // Récupérer les mois qui ont des données pour ce sous-indicateur
       List<int> moisAvecDonnees = [];
       if (sousIndicsResponse != null) {
-        for (final moisEntry in sousIndicsResponse.mois.entries) {
-          final mois = int.parse(moisEntry.key);
-          final sousIndicateurs = moisEntry.value[selectedIndicateur] ?? [];
-          for (final sousInd in sousIndicateurs) {
-            if (sousInd.sousIndicateur == selectedSousIndicateur) {
-              moisAvecDonnees.add(mois);
-              break;
+        final mois = sousIndicsResponse!['mois'] as Map<String, dynamic>?;
+        if (mois != null) {
+          for (final moisEntry in mois.entries) {
+            final moisKey = int.parse(moisEntry.key);
+            final indicateurs = moisEntry.value as Map<String, dynamic>?;
+            if (indicateurs != null) {
+              final sousIndicateurs =
+                  indicateurs[selectedIndicateur] as List<dynamic>? ?? [];
+              for (final sousInd in sousIndicateurs) {
+                final sousIndicateur = sousInd['sousIndicateur'] as String?;
+                if (sousIndicateur == selectedSousIndicateur) {
+                  moisAvecDonnees.add(moisKey);
+                  break;
+                }
+              }
             }
           }
         }
@@ -435,17 +451,26 @@ class _MensuelState extends State<Mensuel> {
     if (indicateursResponse == null) return data;
 
     try {
-      for (final moisEntry in indicateursResponse!.mois.entries) {
-        final mois = moisEntry.key;
-        final indicateurs = moisEntry.value;
-        final moisFormatted = '$selectedAnnee${mois.padLeft(2, '0')}';
+      final mois = indicateursResponse!['mois'] as Map<String, dynamic>?;
+      if (mois == null) return data;
 
-        for (final ind in indicateurs) {
-          try {
-            data.putIfAbsent(ind.indicateur, () => {});
-            data[ind.indicateur]![moisFormatted] = ind.valeur;
-          } catch (e) {
-            // Erreur silencieuse
+      for (final moisEntry in mois.entries) {
+        final moisKey = moisEntry.key;
+        final indicateurs = moisEntry.value as List<dynamic>?;
+        final moisFormatted = '$selectedAnnee${moisKey.padLeft(2, '0')}';
+
+        if (indicateurs != null) {
+          for (final ind in indicateurs) {
+            try {
+              final indicateur = ind['indicateur'] as String?;
+              final valeur = ind['valeur'] as double?;
+              if (indicateur != null && valeur != null) {
+                data.putIfAbsent(indicateur, () => {});
+                data[indicateur]![moisFormatted] = valeur;
+              }
+            } catch (e) {
+              // Erreur silencieuse
+            }
           }
         }
       }
@@ -459,14 +484,29 @@ class _MensuelState extends State<Mensuel> {
     final Map<String, Map<String, double>> data = {};
     if (sousIndicsResponse == null || selectedIndicateur == null) return data;
 
-    for (final moisEntry in sousIndicsResponse!.mois.entries) {
-      final mois = moisEntry.key;
-      final indicateurs = moisEntry.value[selectedIndicateur!] ?? [];
-      final moisFormatted = '$selectedAnnee${mois.padLeft(2, '0')}';
+    final mois = sousIndicsResponse!['mois'] as Map<String, dynamic>?;
+    if (mois == null) return data;
 
-      for (final sousInd in indicateurs) {
-        data.putIfAbsent(sousInd.sousIndicateur, () => {});
-        data[sousInd.sousIndicateur]![moisFormatted] = sousInd.montant;
+    for (final moisEntry in mois.entries) {
+      final moisKey = moisEntry.key;
+      final indicateurs = moisEntry.value as Map<String, dynamic>?;
+      final moisFormatted = '$selectedAnnee${moisKey.padLeft(2, '0')}';
+
+      if (indicateurs != null) {
+        final sousIndicateurs =
+            indicateurs[selectedIndicateur!] as List<dynamic>? ?? [];
+        for (final sousInd in sousIndicateurs) {
+          try {
+            final sousIndicateur = sousInd['sousIndicateur'] as String?;
+            final montant = sousInd['montant'] as double?;
+            if (sousIndicateur != null && montant != null) {
+              data.putIfAbsent(sousIndicateur, () => {});
+              data[sousIndicateur]![moisFormatted] = montant;
+            }
+          } catch (e) {
+            // Erreur silencieuse
+          }
+        }
       }
     }
     return data;
@@ -474,7 +514,9 @@ class _MensuelState extends State<Mensuel> {
 
   List<String> getMois() {
     if (indicateursResponse == null) return <String>[];
-    final moisList = indicateursResponse!.mois.keys
+    final mois = indicateursResponse!['mois'] as Map<String, dynamic>?;
+    if (mois == null) return <String>[];
+    final moisList = mois.keys
         .map((mois) => '$selectedAnnee${mois.padLeft(2, '0')}')
         .toList();
     moisList.sort();
@@ -486,7 +528,11 @@ class _MensuelState extends State<Mensuel> {
       return [];
     }
     if (resp is Map && resp['comptes'] != null) {
-      return resp['comptes'];
+      final comptes = resp['comptes'] as List<dynamic>? ?? [];
+      return comptes
+          .where((compte) =>
+              compte is Map<String, dynamic> && compte['codeCompte'] != null)
+          .toList();
     }
     return [];
   }
@@ -498,22 +544,26 @@ class _MensuelState extends State<Mensuel> {
 
     // Initialiser tous les mois avec 0.0 pour chaque compte
     for (final compte in resp['comptes']) {
-      map.putIfAbsent(compte.codeCompte, () => {});
+      final codeCompte = compte['codeCompte'] as String? ?? '';
+      map.putIfAbsent(codeCompte, () => {});
       for (final m in mois) {
-        map[compte.codeCompte]![m] = 0.0;
+        map[codeCompte]![m] = 0.0;
       }
     }
 
     // Remplir avec les vraies données
     for (final compte in resp['comptes']) {
-      final dateEcriture = compte.dateEcriture;
+      final codeCompte = compte['codeCompte'] as String? ?? '';
+      final dateEcriture =
+          compte['dateEcriture'] as DateTime? ?? DateTime(2000);
       final moisCompte =
           '${dateEcriture.year}${dateEcriture.month.toString().padLeft(2, '0')}';
+      final montant = (compte['montant'] as num?)?.toDouble() ?? 0.0;
 
       // Vérifier si le mois existe dans la liste des mois affichés
       if (mois.contains(moisCompte)) {
-        map[compte.codeCompte]![moisCompte] =
-            (map[compte.codeCompte]![moisCompte] ?? 0.0) + compte.montant;
+        map[codeCompte]![moisCompte] =
+            (map[codeCompte]![moisCompte] ?? 0.0) + montant;
       }
     }
     return map;

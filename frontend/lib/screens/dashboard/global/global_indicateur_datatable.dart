@@ -24,33 +24,36 @@ class GlobalIndicateurDataTable extends StatelessWidget {
     // Récupérer la liste des libellés associés à l'indicateur sélectionné (via le champ formule_text de l'indicateur sélectionné)
     List<String> associeLibelles = [];
     if (sigResult != null && selectedIndicateur != null) {
-      for (final annee in sigResult.indicateurs.keys) {
-        final indicateursList = sigResult.indicateurs[annee] as List<dynamic>;
-        final indObj = indicateursList.cast<dynamic>().firstWhere(
-              (i) => i != null && i.indicateur == selectedIndicateur,
-              orElse: () => null,
-            );
-        if (indObj != null &&
-            indObj.formuleText != null &&
-            indObj.formuleText.isNotEmpty) {
-          // Extraire les sous-indicateurs depuis formule_text
-          final formuleText = indObj.formuleText;
-          final Set<String> sousIndicateursTrouves = {};
+      final indicateurs = sigResult['indicateurs'] as Map<String, dynamic>?;
+      if (indicateurs != null) {
+        for (final annee in indicateurs.keys) {
+          final indicateursList = indicateurs[annee] as List<dynamic>;
+          final indObj = indicateursList.cast<dynamic>().firstWhere(
+                (i) => i != null && i['indicateur'] == selectedIndicateur,
+                orElse: () => null,
+              );
+          if (indObj != null &&
+              indObj['formuleText'] != null &&
+              indObj['formuleText'].isNotEmpty) {
+            // Extraire les sous-indicateurs depuis formule_text
+            final formuleText = indObj['formuleText'];
+            final Set<String> sousIndicateursTrouves = {};
 
-          // Pattern pour capturer les sous-indicateurs dans la formule
-          // Cherche les patterns comme "MC (1234.56)", "PRESTATIONS DE SERVICES (5678.90)", etc.
-          final pattern = RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
-          final matches = pattern.allMatches(formuleText);
+            // Pattern pour capturer les sous-indicateurs dans la formule
+            // Cherche les patterns comme "MC (1234.56)", "PRESTATIONS DE SERVICES (5678.90)", etc.
+            final pattern = RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
+            final matches = pattern.allMatches(formuleText);
 
-          for (final match in matches) {
-            final sousIndicateur = match.group(1)?.trim();
-            if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
-              sousIndicateursTrouves.add(sousIndicateur);
+            for (final match in matches) {
+              final sousIndicateur = match.group(1)?.trim();
+              if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
+                sousIndicateursTrouves.add(sousIndicateur);
+              }
             }
-          }
 
-          associeLibelles = sousIndicateursTrouves.toList();
-          break;
+            associeLibelles = sousIndicateursTrouves.toList();
+            break;
+          }
         }
       }
     }
@@ -83,18 +86,21 @@ class GlobalIndicateurDataTable extends StatelessWidget {
           // Chercher le libellé dans sigResult si possible
           String libelle = ind;
           if (sigResult != null) {
-            for (final annee in sigResult.indicateurs.keys) {
-              final indicateursList =
-                  sigResult.indicateurs[annee] as List<dynamic>;
-              final indObj = indicateursList.cast<dynamic>().firstWhere(
-                    (i) => i != null && i.indicateur == ind,
-                    orElse: () => null,
-                  );
-              if (indObj != null &&
-                  indObj.libelle != null &&
-                  indObj.libelle.isNotEmpty) {
-                libelle = indObj.libelle;
-                break;
+            final indicateurs =
+                sigResult['indicateurs'] as Map<String, dynamic>?;
+            if (indicateurs != null) {
+              for (final annee in indicateurs.keys) {
+                final indicateursList = indicateurs[annee] as List<dynamic>;
+                final indObj = indicateursList.cast<dynamic>().firstWhere(
+                      (i) => i != null && i['indicateur'] == ind,
+                      orElse: () => null,
+                    );
+                if (indObj != null &&
+                    indObj['libelle'] != null &&
+                    indObj['libelle'].isNotEmpty) {
+                  libelle = indObj['libelle'];
+                  break;
+                }
               }
             }
           }
@@ -152,86 +158,93 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                                   // Chercher le signe dans la formule de l'indicateur sélectionné
                                   if (sigResult != null &&
                                       selectedIndicateur != null) {
-                                    for (final annee
-                                        in sigResult.indicateurs.keys) {
-                                      final indicateursList = sigResult
-                                          .indicateurs[annee] as List<dynamic>;
-                                      final indObj = indicateursList
-                                          .cast<dynamic>()
-                                          .firstWhere(
-                                            (i) =>
-                                                i != null &&
-                                                i.indicateur ==
-                                                    selectedIndicateur,
-                                            orElse: () => null,
-                                          );
-                                      if (indObj != null) {
-                                        String formuleText = '';
-                                        if (indObj is Map) {
-                                          formuleText =
-                                              indObj['formule_text'] ??
-                                                  indObj['formuleText'] ??
-                                                  '';
-                                        } else {
-                                          formuleText = indObj.formuleText ??
-                                              indObj.formule_text ??
-                                              '';
-                                        }
-
-                                        if (formuleText.isNotEmpty) {
-                                          // DEBUG
-                                          print(
-                                              '[DEBUG] Indicateur $ind - formuleText de $selectedIndicateur: $formuleText');
-                                          print(
-                                              '[DEBUG] Cherche libellé: "$libelle" et indicateur: "$ind" dans la formule de $selectedIndicateur');
-                                          final libelleToSearch = libelle;
-
-                                          // Pattern pour détecter les signes explicites + ou -
-                                          final plusPattern = RegExp(
-                                              r"\+\s*" +
-                                                  RegExp.escape(
-                                                      libelleToSearch) +
-                                                  r"\s*\(",
-                                              caseSensitive: false);
-                                          final minusPattern = RegExp(
-                                              r"-\s*" +
-                                                  RegExp.escape(
-                                                      libelleToSearch) +
-                                                  r"\s*\(",
-                                              caseSensitive: false);
-
-                                          // Si on trouve un signe explicite, on l'utilise
-                                          if (plusPattern
-                                              .hasMatch(formuleText)) {
-                                            signe = '+';
-                                          } else if (minusPattern
-                                              .hasMatch(formuleText)) {
-                                            signe = '-';
+                                    final indicateurs = sigResult['indicateurs']
+                                        as Map<String, dynamic>?;
+                                    if (indicateurs != null) {
+                                      for (final annee in indicateurs.keys) {
+                                        final indicateursList =
+                                            indicateurs[annee] as List<dynamic>;
+                                        final indObj = indicateursList
+                                            .cast<dynamic>()
+                                            .firstWhere(
+                                              (i) =>
+                                                  i != null &&
+                                                  i['indicateur'] ==
+                                                      selectedIndicateur,
+                                              orElse: () => null,
+                                            );
+                                        if (indObj != null) {
+                                          String formuleText = '';
+                                          if (indObj is Map) {
+                                            formuleText =
+                                                indObj['formule_text'] ??
+                                                    indObj['formuleText'] ??
+                                                    '';
                                           } else {
-                                            // Sinon, on détermine le signe par défaut selon le contexte
-                                            // Si le libellé apparaît dans la formule sans signe explicite,
-                                            // on considère que c'est un terme positif (addition)
-                                            final libellePattern = RegExp(
-                                                RegExp.escape(libelleToSearch) +
+                                            formuleText =
+                                                indObj['formuleText'] ??
+                                                    indObj['formule_text'] ??
+                                                    '';
+                                          }
+
+                                          if (formuleText.isNotEmpty) {
+                                            // DEBUG
+                                            print(
+                                                '[DEBUG] Indicateur $ind - formuleText de $selectedIndicateur: $formuleText');
+                                            print(
+                                                '[DEBUG] Cherche libellé: "$libelle" et indicateur: "$ind" dans la formule de $selectedIndicateur');
+                                            final libelleToSearch = libelle;
+
+                                            // Pattern pour détecter les signes explicites + ou -
+                                            final plusPattern = RegExp(
+                                                r"\+\s*" +
+                                                    RegExp.escape(
+                                                        libelleToSearch) +
                                                     r"\s*\(",
                                                 caseSensitive: false);
-                                            if (libellePattern
+                                            final minusPattern = RegExp(
+                                                r"-\s*" +
+                                                    RegExp.escape(
+                                                        libelleToSearch) +
+                                                    r"\s*\(",
+                                                caseSensitive: false);
+
+                                            // Si on trouve un signe explicite, on l'utilise
+                                            if (plusPattern
                                                 .hasMatch(formuleText)) {
-                                              signe =
-                                                  '+'; // Par défaut, les termes sont positifs
+                                              signe = '+';
+                                            } else if (minusPattern
+                                                .hasMatch(formuleText)) {
+                                              signe = '-';
                                             } else {
-                                              // Essayer avec l'indicateur (code court) si le libellé complet ne marche pas
-                                              final indicateurPattern = RegExp(
-                                                  RegExp.escape(ind) + r"\s*\(",
+                                              // Sinon, on détermine le signe par défaut selon le contexte
+                                              // Si le libellé apparaît dans la formule sans signe explicite,
+                                              // on considère que c'est un terme positif (addition)
+                                              final libellePattern = RegExp(
+                                                  RegExp.escape(
+                                                          libelleToSearch) +
+                                                      r"\s*\(",
                                                   caseSensitive: false);
-                                              if (indicateurPattern
+                                              if (libellePattern
                                                   .hasMatch(formuleText)) {
                                                 signe =
                                                     '+'; // Par défaut, les termes sont positifs
+                                              } else {
+                                                // Essayer avec l'indicateur (code court) si le libellé complet ne marche pas
+                                                final indicateurPattern =
+                                                    RegExp(
+                                                        RegExp.escape(ind) +
+                                                            r"\s*\(",
+                                                        caseSensitive: false);
+                                                if (indicateurPattern
+                                                    .hasMatch(formuleText)) {
+                                                  signe =
+                                                      '+'; // Par défaut, les termes sont positifs
+                                                }
                                               }
                                             }
+                                            break;
                                           }
-                                          break;
                                         }
                                       }
                                     }
@@ -289,14 +302,15 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 List<Widget> formuleWidgets = [];
-                                if (sigResult != null &&
-                                    sigResult.indicateurs != null) {
+                                final indicateurs = sigResult?['indicateurs']
+                                    as Map<String, dynamic>?;
+                                if (sigResult != null && indicateurs != null) {
                                   for (final annee in annees) {
                                     String formuleText = '';
                                     String formuleNumeric = '';
-                                    if (sigResult.indicateurs[annee] != null) {
-                                      final indicateursList = sigResult
-                                          .indicateurs[annee] as List<dynamic>;
+                                    if (indicateurs[annee] != null) {
+                                      final indicateursList =
+                                          indicateurs[annee] as List<dynamic>;
                                       final indObj = indicateursList
                                           .cast<dynamic>()
                                           .firstWhere(

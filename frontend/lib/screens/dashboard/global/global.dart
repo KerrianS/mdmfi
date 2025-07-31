@@ -49,7 +49,7 @@ class _GlobalState extends State<Global> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final keycloakProvider =
-        Provider.of<KeycloakProvider>(context, listen: false);
+        Provider.of<KeycloakProvider>(context, listen: true);
     final societe = keycloakProvider.selectedCompany;
     if (societe != null && societe != _lastSociete) {
       print(
@@ -95,8 +95,10 @@ class _GlobalState extends State<Global> {
         trimestre: selectedTrimestre,
       );
 
-      if (indicateursResponse!.indicateurs.isNotEmpty) {
-        selectedAnnee = indicateursResponse!.indicateurs.keys.first;
+      final indicateurs =
+          indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+      if (indicateurs != null && indicateurs.isNotEmpty) {
+        selectedAnnee = indicateurs.keys.first;
       }
       print('[Global] Données chargées avec succès');
       if (mounted) {
@@ -204,122 +206,132 @@ class _GlobalState extends State<Global> {
     ];
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 8, top: 0),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...periodes.map((periode) {
-            final isSelected = selectedPeriode == periode;
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: ElevatedButton(
+          Row(
+            children: [
+              ...periodes.map((periode) {
+                final isSelected = selectedPeriode == periode;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
+                      foregroundColor: isSelected ? Colors.white : Colors.black,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      elevation: isSelected ? 2 : 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                    ),
+                    onPressed: () {
+                      _isInitialized =
+                          false; // Reset pour permettre la réinitialisation
+                      setState(() {
+                        selectedPeriode = periode;
+                        Global.lastSelectedPeriode = selectedPeriode;
+                        selectedTrimestre = _getTrimestreNumber();
+                        selectedIndicateur = null;
+                        selectedSousIndicateur = null;
+                      });
+                      // Planifier le chargement des données pour après le rebuild
+                      Future.microtask(() {
+                        if (mounted) {
+                          _loadData();
+                        }
+                      });
+                    },
+                    child: Text(periode,
+                        style: TextStyle(
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal)),
+                  ),
+                );
+              }).toList(),
+              // Bouton Euros/KEuros
+              ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
-                  foregroundColor: isSelected ? Colors.white : Colors.black,
+                      isKEuros ? Color(0xFF65887a) : Color(0xFF00A9CA),
+                  foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  elevation: isSelected ? 2 : 0,
+                  elevation: 1,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6)),
                 ),
                 onPressed: () {
-                  _isInitialized =
-                      false; // Reset pour permettre la réinitialisation
                   setState(() {
-                    selectedPeriode = periode;
-                    Global.lastSelectedPeriode = selectedPeriode;
-                    selectedTrimestre = _getTrimestreNumber();
-                    selectedIndicateur = null;
-                    selectedSousIndicateur = null;
-                  });
-                  // Planifier le chargement des données pour après le rebuild
-                  Future.microtask(() {
-                    if (mounted) {
-                      _loadData();
-                    }
+                    isKEuros = !isKEuros;
                   });
                 },
-                child: Text(periode,
-                    style: TextStyle(
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal)),
+                icon: Icon(Icons.euro, size: 16),
+                label: Text(isKEuros ? 'Euros' : 'KEuros',
+                    style: TextStyle(fontWeight: FontWeight.w500)),
               ),
-            );
-          }).toList(),
-          // Bouton Euros/KEuros
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isKEuros ? Color(0xFF65887a) : Color(0xFF00A9CA),
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-            ),
-            onPressed: () {
-              setState(() {
-                isKEuros = !isKEuros;
-              });
-            },
-            icon: Icon(Icons.euro, size: 16),
-            label: Text(isKEuros ? 'Euros' : 'KEuros',
-                style: TextStyle(fontWeight: FontWeight.w500)),
-          ),
-          // Bouton info jaune
-          Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8),
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow.shade200,
-                foregroundColor: Colors.black,
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6)),
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Row(
-                      children: [
-                        Icon(Icons.info, color: Colors.yellow.shade200),
-                        SizedBox(width: 8),
-                        Text('Information'),
-                      ],
-                    ),
-                    content: Text(
-                        'Chaque élément surligné en jaune est relié au calcul de l\'indicateur que vous avez sélectionné !'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(),
-                        child: Text('Fermer'),
-                      ),
-                    ],
+              // Bouton info jaune
+              Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow.shade200,
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
                   ),
-                );
-              },
-              icon: Icon(Icons.info, color: Colors.black, size: 20),
-              label: Text('Info'),
-            ),
-          ),
-          Spacer(),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF00A9CA), // Couleur Mobaitec
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-            ),
-            onPressed: () {
-              setState(() {
-                showFormulas = !showFormulas;
-              });
-            },
-            icon: Icon(Icons.info_outline, size: 16),
-            label: Text(
-                showFormulas ? 'Masquer les formules' : 'Détails des formules',
-                style: TextStyle(fontWeight: FontWeight.w500)),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Row(
+                          children: [
+                            Icon(Icons.info, color: Colors.yellow.shade200),
+                            SizedBox(width: 8),
+                            Text('Information'),
+                          ],
+                        ),
+                        content: Text(
+                            'Chaque élément surligné en jaune est relié au calcul de l\'indicateur que vous avez sélectionné !'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            child: Text('Fermer'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.info, color: Colors.black, size: 20),
+                  label: Text('Info'),
+                ),
+              ),
+              Spacer(),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF00A9CA), // Couleur Mobaitec
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
+                ),
+                onPressed: () {
+                  setState(() {
+                    showFormulas = !showFormulas;
+                  });
+                },
+                icon: Icon(Icons.info_outline, size: 16),
+                label: Text(
+                    showFormulas
+                        ? 'Masquer les formules'
+                        : 'Détails des formules',
+                    style: TextStyle(fontWeight: FontWeight.w500)),
+              ),
+            ],
           ),
         ],
       ),
@@ -345,10 +357,21 @@ class _GlobalState extends State<Global> {
   Map<String, Map<String, double>> getIndicateurData() {
     final Map<String, Map<String, double>> data = {};
     if (indicateursResponse == null) return data;
-    for (final an in indicateursResponse!.indicateurs.keys) {
-      for (final ind in indicateursResponse!.indicateurs[an]!) {
-        data.putIfAbsent(ind.indicateur, () => {});
-        data[ind.indicateur]![an] = ind.valeur;
+    final indicateurs =
+        indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+    if (indicateurs == null) return data;
+
+    for (final an in indicateurs.keys) {
+      final indics = indicateurs[an] as List<dynamic>?;
+      if (indics != null) {
+        for (final ind in indics) {
+          final indicateur = ind['indicateur'] as String?;
+          final valeur = ind['valeur'] as double?;
+          if (indicateur != null && valeur != null) {
+            data.putIfAbsent(indicateur, () => {});
+            data[indicateur]![an] = valeur;
+          }
+        }
       }
     }
     return data;
@@ -383,9 +406,19 @@ class _GlobalState extends State<Global> {
     // DEBUG : Afficher l'indicateur sélectionné et la structure des indicateurs
     print('[DEBUG-PARENT] selectedIndicateur: $selectedIndicateur');
     if (indicateursResponse != null) {
-      for (final an in indicateursResponse!.indicateurs.keys) {
-        print(
-            '[DEBUG-PARENT] an: $an | indicateurs: ${indicateursResponse!.indicateurs[an]?.map((i) => i.indicateur).toList()}');
+      final indicateurs =
+          indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+      if (indicateurs != null) {
+        for (final an in indicateurs.keys) {
+          final indics = indicateurs[an] as List<dynamic>?;
+          if (indics != null) {
+            final indicateurNames = indics
+                .map((i) => i['indicateur'] as String?)
+                .where((i) => i != null)
+                .toList();
+            print('[DEBUG-PARENT] an: $an | indicateurs: $indicateurNames');
+          }
+        }
       }
     }
     return AdaptiveTableContainer(
@@ -416,13 +449,22 @@ class _GlobalState extends State<Global> {
     if (indicateursResponse == null || selectedIndicateur == null)
       return formules;
 
-    for (final an in indicateursResponse!.indicateurs.keys) {
-      final indics = indicateursResponse!.indicateurs[an] ?? [];
-      for (final ind in indics) {
-        if (ind.indicateur == selectedIndicateur &&
-            ind.formuleText.isNotEmpty) {
-          formules[an] = ind.formuleText;
-          break;
+    final indicateurs =
+        indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+    if (indicateurs == null) return formules;
+
+    for (final an in indicateurs.keys) {
+      final indics = indicateurs[an] as List<dynamic>?;
+      if (indics != null) {
+        for (final ind in indics) {
+          final indicateur = ind['indicateur'] as String?;
+          final formuleText = ind['formuleText'] as String?;
+          if (indicateur == selectedIndicateur &&
+              formuleText != null &&
+              formuleText.isNotEmpty) {
+            formules[an] = formuleText;
+            break;
+          }
         }
       }
     }
@@ -433,12 +475,24 @@ class _GlobalState extends State<Global> {
   Map<String, Map<String, double>> getSousIndicateurData() {
     final Map<String, Map<String, double>> data = {};
     if (sousIndicsResponse == null || selectedIndicateur == null) return data;
-    for (final an in sousIndicsResponse!.sousIndicateurs.keys) {
-      final sousList =
-          sousIndicsResponse!.sousIndicateurs[an]?[selectedIndicateur!] ?? [];
-      for (final sous in sousList) {
-        data.putIfAbsent(sous.sousIndicateur, () => {});
-        data[sous.sousIndicateur]![an] = sous.montant;
+    final sousIndicateurs =
+        sousIndicsResponse!['sousIndicateurs'] as Map<String, dynamic>?;
+    if (sousIndicateurs == null) return data;
+
+    for (final an in sousIndicateurs.keys) {
+      final anneeData = sousIndicateurs[an] as Map<String, dynamic>?;
+      if (anneeData != null) {
+        final sousList = anneeData[selectedIndicateur!] as List<dynamic>?;
+        if (sousList != null) {
+          for (final sous in sousList) {
+            final sousIndicateur = sous['sousIndicateur'] as String?;
+            final montant = sous['montant'] as double?;
+            if (sousIndicateur != null && montant != null) {
+              data.putIfAbsent(sousIndicateur, () => {});
+              data[sousIndicateur]![an] = montant;
+            }
+          }
+        }
       }
     }
     return data;
@@ -448,36 +502,43 @@ class _GlobalState extends State<Global> {
   List<String> getSousIndicateursAssocies() {
     final List<String> associeLibelles = [];
     if (indicateursResponse != null && selectedIndicateur != null) {
-      for (final an in indicateursResponse!.indicateurs.keys) {
-        final indics = indicateursResponse!.indicateurs[an] ?? [];
-        for (final ind in indics) {
-          if (ind.indicateur == selectedIndicateur) {
-            // Gérer les différents formats de données (Map ou objet)
-            String formuleText = '';
-            if (ind is Map) {
-              formuleText = ind['formule_text'] ?? ind['formuleText'] ?? '';
-            } else {
-              formuleText = ind.formuleText ?? ind.formule_text ?? '';
-            }
+      final indicateurs =
+          indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+      if (indicateurs == null) return associeLibelles;
 
-            if (formuleText.isNotEmpty) {
-              // Extraire les sous-indicateurs depuis formule_text
-              final Set<String> sousIndicateursTrouves = {};
-
-              // Pattern pour capturer les sous-indicateurs dans la formule
-              final pattern =
-                  RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
-              final matches = pattern.allMatches(formuleText);
-
-              for (final match in matches) {
-                final sousIndicateur = match.group(1)?.trim();
-                if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
-                  sousIndicateursTrouves.add(sousIndicateur);
-                }
+      for (final an in indicateurs.keys) {
+        final indics = indicateurs[an] as List<dynamic>?;
+        if (indics != null) {
+          for (final ind in indics) {
+            final indicateur = ind['indicateur'] as String?;
+            if (indicateur == selectedIndicateur) {
+              // Gérer les différents formats de données (Map ou objet)
+              String formuleText = '';
+              if (ind is Map) {
+                formuleText = ind['formule_text'] ?? ind['formuleText'] ?? '';
+              } else {
+                formuleText = ind['formuleText'] ?? ind['formule_text'] ?? '';
               }
 
-              associeLibelles.addAll(sousIndicateursTrouves);
-              break;
+              if (formuleText.isNotEmpty) {
+                // Extraire les sous-indicateurs depuis formule_text
+                final Set<String> sousIndicateursTrouves = {};
+
+                // Pattern pour capturer les sous-indicateurs dans la formule
+                final pattern =
+                    RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
+                final matches = pattern.allMatches(formuleText);
+
+                for (final match in matches) {
+                  final sousIndicateur = match.group(1)?.trim();
+                  if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
+                    sousIndicateursTrouves.add(sousIndicateur);
+                  }
+                }
+
+                associeLibelles.addAll(sousIndicateursTrouves);
+                break;
+              }
             }
           }
         }
@@ -487,33 +548,41 @@ class _GlobalState extends State<Global> {
   }
 
   List<String> getAnnees() {
-    return indicateursResponse?.indicateurs.keys.toList() ?? [];
+    if (indicateursResponse == null) return [];
+    final indicateurs =
+        indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+    return indicateurs?.keys.toList() ?? [];
   }
 
   List<SIGCompteGlobal> getComptesForAnnee(String annee) {
     if (comptesResponse == null) return [];
-    final comptes = comptesResponse!.comptes[annee]?.comptes ?? [];
+    final comptes =
+        comptesResponse!['comptes']?[annee]?['comptes'] as List<dynamic>? ?? [];
     print(
         '[DEBUG] Comptes pour année $annee (selectedSousIndicateur: $selectedSousIndicateur):');
     for (var c in comptes) {
-      print('  - ${c.codeCompte} | ${c.libelleCompte} | ${c.montant}');
+      final compteMap = c as Map<String, dynamic>;
+      print(
+          '  - ${compteMap['codeCompte']} | ${compteMap['libelleCompte']} | ${compteMap['montant']}');
     }
-    return comptes
-        .map((c) => SIGCompteGlobal(
-              codeCompte: c.codeCompte,
-              libelleCompte: c.libelleCompte,
-              montant: c.montant,
-              debit: c.debit,
-              credit: c.credit,
-              annee: int.tryParse(annee) ?? 0,
-            ))
-        .toList();
+    return comptes.map((c) {
+      final compteMap = c as Map<String, dynamic>;
+      return SIGCompteGlobal(
+        codeCompte: compteMap['codeCompte']?.toString() ?? '',
+        libelleCompte: compteMap['libelleCompte']?.toString() ?? '',
+        montant: (compteMap['montant'] as num?)?.toDouble() ?? 0.0,
+        debit: (compteMap['debit'] as num?)?.toDouble() ?? 0.0,
+        credit: (compteMap['credit'] as num?)?.toDouble() ?? 0.0,
+        annee: int.tryParse(annee) ?? 0,
+      );
+    }).toList();
   }
 
   // --- MAPPING POUR LE DATATABLE DES COMPTES GLOBALS ---
   List<String> getAnneesComptes() {
     if (comptesResponse == null) return [];
-    return comptesResponse!.comptes.keys.toList();
+    final comptes = comptesResponse!['comptes'] as Map<String, dynamic>?;
+    return comptes?.keys.toList() ?? [];
   }
 
   // Retourne la liste des comptes uniques (code+libellé)
@@ -521,11 +590,18 @@ class _GlobalState extends State<Global> {
     if (comptesResponse == null) return [];
     final Map<String, String> codeToLibelle = {};
     final Set<String> allCodes = {};
-    for (final an in annees) {
-      final comptesAnnee = comptesResponse!.comptes[an]?.comptes ?? [];
-      for (final c in comptesAnnee) {
-        allCodes.add(c.codeCompte);
-        codeToLibelle[c.codeCompte] = c.libelleCompte;
+    final comptes = comptesResponse!['comptes'] as Map<String, dynamic>?;
+
+    if (comptes != null) {
+      for (final an in annees) {
+        final anneeData = comptes[an] as Map<String, dynamic>?;
+        final comptesAnnee = anneeData?['comptes'] as List<dynamic>? ?? [];
+        for (final c in comptesAnnee) {
+          final compteMap = c as Map<String, dynamic>;
+          final code = compteMap['codeCompte']?.toString() ?? '';
+          allCodes.add(code);
+          codeToLibelle[code] = compteMap['libelleCompte']?.toString() ?? '';
+        }
       }
     }
     print(
@@ -547,11 +623,18 @@ class _GlobalState extends State<Global> {
       List<String> annees) {
     if (comptesResponse == null) return {};
     final Map<String, Map<String, double>> map = {};
-    for (final an in annees) {
-      final comptesAnnee = comptesResponse!.comptes[an]?.comptes ?? [];
-      for (final c in comptesAnnee) {
-        map.putIfAbsent(c.codeCompte, () => {});
-        map[c.codeCompte]![an] = c.montant;
+    final comptes = comptesResponse!['comptes'] as Map<String, dynamic>?;
+
+    if (comptes != null) {
+      for (final an in annees) {
+        final anneeData = comptes[an] as Map<String, dynamic>?;
+        final comptesAnnee = anneeData?['comptes'] as List<dynamic>? ?? [];
+        for (final c in comptesAnnee) {
+          final compteMap = c as Map<String, dynamic>;
+          final code = compteMap['codeCompte']?.toString() ?? '';
+          map.putIfAbsent(code, () => {});
+          map[code]![an] = (compteMap['montant'] as num?)?.toDouble() ?? 0.0;
+        }
       }
     }
     print(
@@ -561,22 +644,29 @@ class _GlobalState extends State<Global> {
 
   // Ajoute ces helpers pour utiliser la bonne réponse comptes par sous-indicateur
   List<String> getAnneesComptesFromResp(dynamic resp) {
-    return resp.comptes.keys.toList();
+    final comptes = resp['comptes'] as Map<String, dynamic>?;
+    return comptes?.keys.toList() ?? [];
   }
 
   List<SIGCompteGlobal> getComptesGlobalTableForResp(
       List<String> annees, dynamic resp) {
     final Map<String, String> keyToLibelle = {};
     final Set<String> allKeys = {};
-    for (final an in annees) {
-      final comptesAnnee = resp.comptes[an]?.comptes ?? [];
-      for (final c in comptesAnnee) {
-        final code = c.codeCompte.toString();
-        final libelle = c.libelleCompte.toString();
-        if (code.isEmpty || libelle.isEmpty) continue;
-        final key = '$code|$libelle';
-        allKeys.add(key);
-        keyToLibelle[key] = libelle;
+    final comptes = resp['comptes'] as Map<String, dynamic>?;
+
+    if (comptes != null) {
+      for (final an in annees) {
+        final anneeData = comptes[an] as Map<String, dynamic>?;
+        final comptesAnnee = anneeData?['comptes'] as List<dynamic>? ?? [];
+        for (final c in comptesAnnee) {
+          final compteMap = c as Map<String, dynamic>;
+          final code = compteMap['codeCompte']?.toString() ?? '';
+          final libelle = compteMap['libelleCompte']?.toString() ?? '';
+          if (code.isEmpty || libelle.isEmpty) continue;
+          final key = '$code|$libelle';
+          allKeys.add(key);
+          keyToLibelle[key] = libelle;
+        }
       }
     }
     return allKeys.map((key) {
@@ -595,27 +685,33 @@ class _GlobalState extends State<Global> {
   Map<String, Map<String, double>> getComptesMontantsParAnneeForResp(
       List<String> annees, dynamic resp) {
     final Map<String, Map<String, double>> map = {};
-    for (final an in annees) {
-      final comptesAnnee = resp.comptes[an]?.comptes ?? [];
-      for (final c in comptesAnnee) {
-        final codeStr = c.codeCompte.toString();
-        final libelleStr = c.libelleCompte.toString();
-        if (codeStr.isEmpty || libelleStr.isEmpty) {
-          print(
-              '[DEBUG-FR] codeCompte ou libelleCompte est null pour le compte: $c (année: $an)');
-          continue;
+    final comptes = resp['comptes'] as Map<String, dynamic>?;
+
+    if (comptes != null) {
+      for (final an in annees) {
+        final anneeData = comptes[an] as Map<String, dynamic>?;
+        final comptesAnnee = anneeData?['comptes'] as List<dynamic>? ?? [];
+        for (final c in comptesAnnee) {
+          final compteMap = c as Map<String, dynamic>;
+          final codeStr = compteMap['codeCompte']?.toString() ?? '';
+          final libelleStr = compteMap['libelleCompte']?.toString() ?? '';
+          if (codeStr.isEmpty || libelleStr.isEmpty) {
+            print(
+                '[DEBUG-FR] codeCompte ou libelleCompte est null pour le compte: $c (année: $an)');
+            continue;
+          }
+          if (codeStr == 'null' ||
+              libelleStr == 'null' ||
+              codeStr.isEmpty ||
+              libelleStr.isEmpty) {
+            print(
+                '[DEBUG-FR] codeCompte ou libelleCompte vide ou "null" (année: $an): code="$codeStr", libelle="$libelleStr", compte: $c');
+            continue;
+          }
+          final key = '$codeStr|$libelleStr';
+          map.putIfAbsent(key, () => {});
+          map[key]![an] = (compteMap['montant'] as num?)?.toDouble() ?? 0.0;
         }
-        if (codeStr == 'null' ||
-            libelleStr == 'null' ||
-            codeStr.isEmpty ||
-            libelleStr.isEmpty) {
-          print(
-              '[DEBUG-FR] codeCompte ou libelleCompte vide ou "null" (année: $an): code="$codeStr", libelle="$libelleStr", compte: $c');
-          continue;
-        }
-        final key = '$codeStr|$libelleStr';
-        map.putIfAbsent(key, () => {});
-        map[key]![an] = c.montant;
       }
     }
     print(
@@ -853,32 +949,67 @@ class _GlobalState extends State<Global> {
                     itemHeight: 48, // élargir les lignes du shimmer aussi
                   )
                 : comptesResponse != null
-                    ? AdaptiveTableContainer(
-                        child: GlobalAccountDataTable(
-                          comptes: getComptesGlobalTableForResp(
+                    ? comptesResponse!['hasComptes'] == true
+                        ? AdaptiveTableContainer(
+                            child: GlobalAccountDataTable(
+                              comptes: getComptesGlobalTableForResp(
+                                      getAnneesComptesFromResp(
+                                          comptesResponse!),
+                                      comptesResponse!)
+                                  .where((compte) =>
+                                      _globalSearchText.isEmpty ||
+                                      compte.codeCompte.toLowerCase().contains(
+                                          _globalSearchText.toLowerCase()) ||
+                                      compte.libelleCompte
+                                          .toLowerCase()
+                                          .contains(
+                                              _globalSearchText.toLowerCase()))
+                                  .toList(),
+                              annees:
                                   getAnneesComptesFromResp(comptesResponse!),
-                                  comptesResponse!)
-                              .where((compte) =>
-                                  _globalSearchText.isEmpty ||
-                                  compte.codeCompte.toLowerCase().contains(
-                                      _globalSearchText.toLowerCase()) ||
-                                  compte.libelleCompte.toLowerCase().contains(
-                                      _globalSearchText.toLowerCase()))
-                              .toList(),
-                          annees: getAnneesComptesFromResp(comptesResponse!),
-                          montantsParAnnee: getComptesMontantsParAnneeForResp(
-                              getAnneesComptesFromResp(comptesResponse!),
-                              comptesResponse!),
-                          total: comptesResponse!.comptes.values.isNotEmpty
-                              ? comptesResponse!.comptes.values.first.total
-                              : 0,
-                          currentPage: currentPage,
-                          pageSize: comptesLimit,
-                          onPageChanged: (page) =>
-                              _onPageChanged(selectedSousIndicateur!, page),
-                          isKEuros: isKEuros,
-                        ),
-                      )
+                              montantsParAnnee:
+                                  getComptesMontantsParAnneeForResp(
+                                      getAnneesComptesFromResp(
+                                          comptesResponse!),
+                                      comptesResponse!),
+                              total: 0,
+                              currentPage: currentPage,
+                              pageSize: comptesLimit,
+                              onPageChanged: (page) =>
+                                  _onPageChanged(selectedSousIndicateur!, page),
+                              isKEuros: isKEuros,
+                            ),
+                          )
+                        : Container(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  color: Colors.orange,
+                                  size: 48,
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Aucun compte disponible',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.orange,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Ce sous-indicateur n\'a pas de données de comptes associées.',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          )
                     : Container(
                         padding: EdgeInsets.all(16),
                         child:

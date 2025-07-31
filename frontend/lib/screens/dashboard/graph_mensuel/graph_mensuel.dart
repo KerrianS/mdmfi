@@ -58,7 +58,7 @@ class _GraphMensuelState extends State<GraphMensuel> {
     if (!_isInitialized) {
       _isInitialized = true;
       final keycloakProvider =
-          Provider.of<KeycloakProvider>(context, listen: false);
+          Provider.of<KeycloakProvider>(context, listen: true);
       final societe = keycloakProvider.selectedCompany;
 
       if (societe != null && societe != _lastSociete) {
@@ -89,7 +89,7 @@ class _GraphMensuelState extends State<GraphMensuel> {
   Future<void> _loadAnnees(String societe) async {
     print('[GraphMensuel] Début du chargement pour $societe');
     final keycloakProvider =
-        Provider.of<KeycloakProvider>(context, listen: false);
+        Provider.of<KeycloakProvider>(context, listen: true);
     keycloakProvider.setDataReloading(true);
 
     if (!mounted) return;
@@ -139,8 +139,8 @@ class _GraphMensuelState extends State<GraphMensuel> {
       if (indicateursResponse != null && selectedIndicateurs.isEmpty) {
         final allIndics = <String>{};
         for (final mois in indicateursResponse!.mois.keys) {
-          final indicateursList = indicateursResponse!.mois[mois]
-              as List<SIGIndicateurMensuel>;
+          final indicateursList =
+              indicateursResponse!.mois[mois] as List<SIGIndicateurMensuel>;
           for (final ind in indicateursList) {
             allIndics.add(ind.indicateur);
           }
@@ -224,19 +224,28 @@ class _GraphMensuelState extends State<GraphMensuel> {
 
   List<String> _getOrderedMois() {
     if (indicateursResponse == null) return [];
-    final moisList = indicateursResponse!.mois.keys
-        .map((m) => int.parse(m))
-        .toList()
-      ..sort();
+    final mois = indicateursResponse!['mois'] as Map<String, dynamic>?;
+    if (mois == null) return [];
+
+    final moisList = mois.keys.map((m) => int.parse(m)).toList()..sort();
     return moisList.map((m) => m.toString()).toList();
   }
 
   List<String> _getIndicateurNames() {
     if (indicateursResponse == null) return [];
     final Set<String> indicateurs = {};
-    for (final moisIndicateurs in indicateursResponse!.mois.values) {
-      for (final ind in moisIndicateurs) {
-        indicateurs.add(ind.indicateur);
+    final mois = indicateursResponse!['mois'] as Map<String, dynamic>?;
+    if (mois == null) return [];
+
+    for (final moisIndicateurs in mois.values) {
+      final indicateursList = moisIndicateurs as List<dynamic>?;
+      if (indicateursList != null) {
+        for (final ind in indicateursList) {
+          final indicateur = ind['indicateur'] as String?;
+          if (indicateur != null) {
+            indicateurs.add(indicateur);
+          }
+        }
       }
     }
     return indicateurs.toList()..sort();
@@ -246,13 +255,22 @@ class _GraphMensuelState extends State<GraphMensuel> {
     final Map<String, Map<String, double>> data = {};
     if (indicateursResponse == null) return data;
 
-    for (final moisEntry in indicateursResponse!.mois.entries) {
-      final mois = moisEntry.key;
-      final indicateurs = moisEntry.value;
+    final mois = indicateursResponse!['mois'] as Map<String, dynamic>?;
+    if (mois == null) return data;
 
-      for (final ind in indicateurs) {
-        data.putIfAbsent(ind.indicateur, () => {});
-        data[ind.indicateur]![mois] = ind.valeur;
+    for (final moisEntry in mois.entries) {
+      final moisKey = moisEntry.key;
+      final indicateurs = moisEntry.value as List<dynamic>?;
+
+      if (indicateurs != null) {
+        for (final ind in indicateurs) {
+          final indicateur = ind['indicateur'] as String?;
+          final valeur = ind['valeur'] as double?;
+          if (indicateur != null && valeur != null) {
+            data.putIfAbsent(indicateur, () => {});
+            data[indicateur]![moisKey] = valeur;
+          }
+        }
       }
     }
     return data;

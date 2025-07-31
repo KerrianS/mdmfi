@@ -63,7 +63,7 @@ class _GraphSigState extends State<GraphSig> {
     if (!_isInitialized) {
       _isInitialized = true;
       final keycloakProvider =
-          Provider.of<KeycloakProvider>(context, listen: false);
+          Provider.of<KeycloakProvider>(context, listen: true);
       final societe = keycloakProvider.selectedCompany;
 
       if (societe != null && societe != _lastSociete) {
@@ -228,9 +228,11 @@ class _GraphSigState extends State<GraphSig> {
 
   List<String> _getOrderedAnnees() {
     if (indicateursResponse == null) return [];
-    final anneesList = indicateursResponse!.indicateurs.keys
-        .map((a) => int.parse(a))
-        .toList()
+    final indicateursData =
+        indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+    if (indicateursData == null) return [];
+
+    final anneesList = indicateursData.keys.map((a) => int.parse(a)).toList()
       ..sort();
     return anneesList.map((a) => a.toString()).toList();
   }
@@ -238,9 +240,19 @@ class _GraphSigState extends State<GraphSig> {
   List<String> _getIndicateurNames() {
     if (indicateursResponse == null) return [];
     final Set<String> indicateurs = {};
-    for (final anneeIndicateurs in indicateursResponse!.indicateurs.values) {
-      for (final ind in anneeIndicateurs) {
-        indicateurs.add(ind.indicateur);
+    final indicateursData =
+        indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+    if (indicateursData == null) return [];
+
+    for (final anneeIndicateurs in indicateursData.values) {
+      final indicateursList = anneeIndicateurs as List<dynamic>?;
+      if (indicateursList != null) {
+        for (final ind in indicateursList) {
+          final indicateur = ind['indicateur'] as String?;
+          if (indicateur != null) {
+            indicateurs.add(indicateur);
+          }
+        }
       }
     }
     return indicateurs.toList()..sort();
@@ -250,13 +262,23 @@ class _GraphSigState extends State<GraphSig> {
     final Map<String, Map<String, double>> data = {};
     if (indicateursResponse == null) return data;
 
-    for (final anneeEntry in indicateursResponse!.indicateurs.entries) {
-      final annee = anneeEntry.key;
-      final indicateurs = anneeEntry.value;
+    final indicateursData =
+        indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+    if (indicateursData == null) return data;
 
-      for (final ind in indicateurs) {
-        data.putIfAbsent(ind.indicateur, () => {});
-        data[ind.indicateur]![annee] = ind.valeur;
+    for (final anneeEntry in indicateursData.entries) {
+      final annee = anneeEntry.key;
+      final indicateurs = anneeEntry.value as List<dynamic>?;
+
+      if (indicateurs != null) {
+        for (final ind in indicateurs) {
+          final indicateur = ind['indicateur'] as String?;
+          final valeur = ind['valeur'] as double?;
+          if (indicateur != null && valeur != null) {
+            data.putIfAbsent(indicateur, () => {});
+            data[indicateur]![annee] = valeur;
+          }
+        }
       }
     }
     return data;

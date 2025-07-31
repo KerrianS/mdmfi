@@ -82,28 +82,34 @@ class MensuelIndicateurDataTable extends StatelessWidget {
     // Récupérer la liste des libellés associés à l'indicateur sélectionné (via formule_text)
     List<String> associeLibelles = [];
     if (indicateursResponse != null && selectedIndicateur != null) {
-      for (final moisEntry in indicateursResponse.mois.entries) {
-        final indicateursList = moisEntry.value;
-        dynamic indObj = indicateursList.cast<dynamic>().firstWhere(
-              (i) => i.indicateur == selectedIndicateur,
-              orElse: () => null,
-            );
-        if (indObj != null &&
-            indObj.formuleText != null &&
-            indObj.formuleText.isNotEmpty) {
-          // Extraire les sous-indicateurs depuis formule_text
-          final Set<String> sousIndicateursTrouves = {};
-          final pattern = RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
-          final matches = pattern.allMatches(indObj.formuleText);
+      final moisData = indicateursResponse!['mois'] as Map<String, dynamic>?;
+      if (moisData != null) {
+        for (final moisEntry in moisData.entries) {
+          final indicateursList = moisEntry.value as List<dynamic>?;
+          if (indicateursList != null) {
+            dynamic indObj = indicateursList.cast<dynamic>().firstWhere(
+                  (i) => i['indicateur'] == selectedIndicateur,
+                  orElse: () => null,
+                );
+            if (indObj != null &&
+                indObj['formuleText'] != null &&
+                indObj['formuleText'].isNotEmpty) {
+              // Extraire les sous-indicateurs depuis formule_text
+              final Set<String> sousIndicateursTrouves = {};
+              final pattern =
+                  RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
+              final matches = pattern.allMatches(indObj['formuleText']);
 
-          for (final match in matches) {
-            final sousIndicateur = match.group(1)?.trim();
-            if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
-              sousIndicateursTrouves.add(sousIndicateur);
+              for (final match in matches) {
+                final sousIndicateur = match.group(1)?.trim();
+                if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
+                  sousIndicateursTrouves.add(sousIndicateur);
+                }
+              }
+              associeLibelles = sousIndicateursTrouves.toList();
+              break;
             }
           }
-          associeLibelles = sousIndicateursTrouves.toList();
-          break;
         }
       }
     }
@@ -142,17 +148,24 @@ class MensuelIndicateurDataTable extends StatelessWidget {
         final montants = entry.value;
         String? libelle;
         if (indicateursResponse != null) {
-          for (final moisEntry in indicateursResponse.mois.entries) {
-            final indicateursList = moisEntry.value;
-            dynamic indicateurObj = indicateursList.cast<dynamic>().firstWhere(
-                  (i) => i.indicateur == ind,
-                  orElse: () => null,
-                );
-            if (indicateurObj != null &&
-                indicateurObj.libelle != null &&
-                indicateurObj.libelle.isNotEmpty) {
-              libelle = indicateurObj.libelle;
-              break;
+          final moisData =
+              indicateursResponse!['mois'] as Map<String, dynamic>?;
+          if (moisData != null) {
+            for (final moisEntry in moisData.entries) {
+              final indicateursList = moisEntry.value as List<dynamic>?;
+              if (indicateursList != null) {
+                dynamic indicateurObj =
+                    indicateursList.cast<dynamic>().firstWhere(
+                          (i) => i['indicateur'] == ind,
+                          orElse: () => null,
+                        );
+                if (indicateurObj != null &&
+                    indicateurObj['libelle'] != null &&
+                    indicateurObj['libelle'].isNotEmpty) {
+                  libelle = indicateurObj['libelle'];
+                  break;
+                }
+              }
             }
           }
         }
@@ -256,59 +269,68 @@ class MensuelIndicateurDataTable extends StatelessWidget {
                         onTap: () {
                           // Récupérer les formules pour chaque mois
                           List<Widget> formuleWidgets = [];
-                          if (indicateursResponse != null &&
-                              indicateursResponse.mois != null) {
-                            print(
-                                '[DEBUG] indicateursResponse.mois.keys: ${indicateursResponse.mois.keys}');
-                            print('[DEBUG] mois list: $mois');
-                            for (final mois in mois) {
-                              String formuleText = '';
-                              String formuleNumeric = '';
-
-                              // Extraire le mois simple (1, 2, 3, etc.) du format YYYYMM
-                              final moisSimple = int.parse(mois.substring(4))
-                                  .toString(); // Convertit "01" en "1"
+                          if (indicateursResponse != null) {
+                            final moisData = indicateursResponse!['mois']
+                                as Map<String, dynamic>?;
+                            if (moisData != null) {
                               print(
-                                  '[DEBUG] mois: $mois, moisSimple: $moisSimple');
+                                  '[DEBUG] indicateursResponse.mois.keys: ${moisData.keys}');
+                              print('[DEBUG] mois list: $mois');
+                              for (final moisItem in mois) {
+                                String formuleText = '';
+                                String formuleNumeric = '';
 
-                              final indicateursList =
-                                  indicateursResponse.mois[moisSimple] ?? [];
-                              print(
-                                  '[DEBUG] indicateursList for $moisSimple: ${indicateursList.length} items');
+                                // Extraire le mois simple (1, 2, 3, etc.) du format YYYYMM
+                                final moisSimple =
+                                    int.parse(moisItem.substring(4))
+                                        .toString(); // Convertit "01" en "1"
+                                print(
+                                    '[DEBUG] mois: $moisItem, moisSimple: $moisSimple');
 
-                              final indObj =
-                                  indicateursList.cast<dynamic>().firstWhere(
-                                        (i) => i != null && i.indicateur == ind,
-                                        orElse: () => null,
-                                      );
-                              if (indObj != null) {
-                                formuleText = indObj.formuleText ?? '';
-                                formuleNumeric = indObj.formuleNumeric ?? '';
+                                final indicateursList =
+                                    moisData[moisSimple] as List<dynamic>? ??
+                                        [];
                                 print(
-                                    '[DEBUG] Found formuleText: $formuleText');
-                                print(
-                                    '[DEBUG] Found formuleNumeric: $formuleNumeric');
-                              } else {
-                                print(
-                                    '[DEBUG] No indObj found for indicateur: $ind');
+                                    '[DEBUG] indicateursList for $moisSimple: ${indicateursList.length} items');
+
+                                final indObj = indicateursList
+                                    .cast<dynamic>()
+                                    .firstWhere(
+                                      (i) =>
+                                          i != null && i['indicateur'] == ind,
+                                      orElse: () => null,
+                                    );
+                                if (indObj != null) {
+                                  formuleText = indObj['formuleText'] ?? '';
+                                  formuleNumeric =
+                                      indObj['formuleNumeric'] ?? '';
+                                  print(
+                                      '[DEBUG] Found formuleText: $formuleText');
+                                  print(
+                                      '[DEBUG] Found formuleNumeric: $formuleNumeric');
+                                } else {
+                                  print(
+                                      '[DEBUG] No indObj found for indicateur: $ind');
+                                }
+
+                                formuleWidgets.add(Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Mois : ' + moisItem,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    Text('Formule (textuelle) : ' +
+                                        (formuleText.isNotEmpty
+                                            ? formuleText
+                                            : '-')),
+                                    Text('Formule (numérique) : ' +
+                                        (formuleNumeric.isNotEmpty
+                                            ? formuleNumeric
+                                            : '-')),
+                                    SizedBox(height: 8),
+                                  ],
+                                ));
                               }
-                              formuleWidgets.add(Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Mois : ' + mois,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  Text('Formule (textuelle) : ' +
-                                      (formuleText.isNotEmpty
-                                          ? formuleText
-                                          : '-')),
-                                  Text('Formule (numérique) : ' +
-                                      (formuleNumeric.isNotEmpty
-                                          ? formuleNumeric
-                                          : '-')),
-                                  SizedBox(height: 8),
-                                ],
-                              ));
                             }
                           }
                           showDialog(

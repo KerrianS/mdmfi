@@ -819,7 +819,7 @@ class _DataManagementCardState extends State<_DataManagementCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Gestion du cache',
+            Text('Gestion des données locales',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             SizedBox(height: 12),
 
@@ -837,7 +837,7 @@ class _DataManagementCardState extends State<_DataManagementCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Statut du cache',
+                    Text('Statut des données',
                         style: TextStyle(
                             fontWeight: FontWeight.w600, fontSize: 14)),
                     SizedBox(height: 8),
@@ -858,8 +858,8 @@ class _DataManagementCardState extends State<_DataManagementCard> {
                         Text(
                           _cacheInfo['has_navision_data'] == true ||
                                   _cacheInfo['has_odoo_data'] == true
-                              ? 'Données disponibles'
-                              : 'Aucune donnée en cache',
+                              ? 'Données à jour'
+                              : 'Aucune donnée locale',
                           style: TextStyle(fontSize: 12),
                         ),
                       ],
@@ -868,13 +868,13 @@ class _DataManagementCardState extends State<_DataManagementCard> {
                         null) ...[
                       SizedBox(height: 4),
                       Text(
-                        'Navision: ${_formatDate(_cacheInfo['navision_indicateurs_last_update'])}',
+                        'Données à jour: ${_formatDate(_cacheInfo['navision_indicateurs_last_update'])}',
                         style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                       ),
                     ],
                     if (_cacheInfo['odoo_indicateurs_last_update'] != null) ...[
                       Text(
-                        'Odoo: ${_formatDate(_cacheInfo['odoo_indicateurs_last_update'])}',
+                        'Données à jour: ${_formatDate(_cacheInfo['odoo_indicateurs_last_update'])}',
                         style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                       ),
                     ],
@@ -884,7 +884,7 @@ class _DataManagementCardState extends State<_DataManagementCard> {
               SizedBox(height: 16),
             ],
 
-            // Bouton Précharger les données
+            // Bouton Mise à jour des données
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -900,7 +900,7 @@ class _DataManagementCardState extends State<_DataManagementCard> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content:
-                                  Text('✅ Données préchargées avec succès'),
+                                  Text('✅ Données mises à jour avec succès'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -908,7 +908,7 @@ class _DataManagementCardState extends State<_DataManagementCard> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content:
-                                  Text('❌ Erreur lors du préchargement: $e'),
+                                  Text('❌ Erreur lors de la mise à jour: $e'),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -918,106 +918,10 @@ class _DataManagementCardState extends State<_DataManagementCard> {
                           });
                         }
                       },
-                icon: Icon(Icons.download),
-                label: Text('Précharger les données'),
+                icon: Icon(Icons.update),
+                label: Text('Mise à jour des données'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 8),
-
-            // Bouton Forcer le rechargement
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _isLoading
-                    ? null
-                    : () async {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        try {
-                          await LocalDataService.initialize();
-                          await _loadCacheInfo();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('🔄 Données rechargées avec succès'),
-                              backgroundColor: Colors.orange,
-                            ),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text('❌ Erreur lors du rechargement: $e'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } finally {
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        }
-                      },
-                icon: Icon(Icons.refresh),
-                label: Text('Forcer le rechargement'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 8),
-
-            // Bouton Vider le cache
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _isLoading
-                    ? null
-                    : () async {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        try {
-                          // Pour les données locales, on ne peut pas vider le cache
-                          // car les données sont chargées depuis les assets
-                          print('Cache local non vidable - données depuis assets');
-                          await _loadCacheInfo();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('🗑️ Cache vidé avec succès'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('❌ Erreur lors du vidage: $e'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } finally {
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        }
-                      },
-                icon: Icon(Icons.clear_all),
-                label: Text('Vider le cache'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor: Color(0xFF00A9CA), // Bleu mobaitec
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(

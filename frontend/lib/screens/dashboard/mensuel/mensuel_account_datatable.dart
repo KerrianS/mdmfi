@@ -40,9 +40,10 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
     // Fonction pour vérifier si un compte est associé à l'indicateur sélectionné
     bool isCompteAssocie(String codeCompte, String libelleCompte) {
       if (widget.formuleTextParMois == null) return false;
-      
+
       for (final formuleText in widget.formuleTextParMois!.values) {
-        if (formuleText.contains(codeCompte) || formuleText.contains(libelleCompte)) {
+        if (formuleText.contains(codeCompte) ||
+            formuleText.contains(libelleCompte)) {
           return true;
         }
       }
@@ -85,10 +86,12 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
       ],
       rows: widget.comptes.asMap().entries.map((entry) {
         final i = entry.key;
-        final compte = entry.value;
+        final compte = entry.value as Map<String, dynamic>;
+        final codeCompte = compte['codeCompte'] as String? ?? '';
+        final libelleCompte = compte['libelleCompte'] as String? ?? '';
         final isSelected = widget.selectedRowIndex == i;
-        final isAssocie = isCompteAssocie(compte.codeCompte, compte.libelleCompte);
-        
+        final isAssocie = isCompteAssocie(codeCompte, libelleCompte);
+
         return DataRow(
           selected: isSelected,
           color: WidgetStateProperty.resolveWith<Color?>(
@@ -98,9 +101,13 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
               return Colors.yellow.shade200;
             }
             if (isSelected)
-              return isDarkMode ? const Color(0xFF404040) : Colors.grey.shade300;
+              return isDarkMode
+                  ? const Color(0xFF404040)
+                  : Colors.grey.shade300;
             if (states.contains(WidgetState.hovered))
-              return isDarkMode ? const Color(0xFF2C2C2C) : Colors.grey.shade200;
+              return isDarkMode
+                  ? const Color(0xFF2C2C2C)
+                  : Colors.grey.shade200;
             return null;
           }),
           onSelectChanged:
@@ -111,7 +118,7 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                 width: 110,
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  compte.codeCompte,
+                  codeCompte,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -131,7 +138,7 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                   children: [
                     Expanded(
                       child: Text(
-                        compte.libelleCompte,
+                        libelleCompte,
                         style: TextStyle(
                             fontSize: 13,
                             color:
@@ -153,12 +160,12 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                               title: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text('Infos : ${compte.codeCompte}',
+                                  Text('Infos : $codeCompte',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15)),
                                   const SizedBox(width: 12),
-                                  Text('- Libellé : ${compte.libelleCompte}',
+                                  Text('- Libellé : $libelleCompte',
                                       style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold)),
@@ -196,15 +203,17 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                                         // Ligne des montants totaux
                                         DataRow(
                                           cells: widget.mois.map((mois) {
-                                            final montant = widget
-                                                        .montantsParMois[
-                                                    compte.codeCompte]?[mois] ??
-                                                0.0;
+                                            final montant =
+                                                widget.montantsParMois[
+                                                        codeCompte]?[mois] ??
+                                                    0.0;
                                             return DataCell(
                                               Container(
                                                 width: 120,
                                                 child: Text(
-                                                  Currency.format(montant, isKEuros: widget.isKEuros),
+                                                  Currency.format(montant,
+                                                      isKEuros:
+                                                          widget.isKEuros),
                                                   style: const TextStyle(
                                                       fontSize: 13,
                                                       fontWeight:
@@ -238,8 +247,7 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
               ),
             ),
             ...widget.mois.map((mois) {
-              final montant =
-                  widget.montantsParMois[compte.codeCompte]?[mois] ?? 0.0;
+              final montant = widget.montantsParMois[codeCompte]?[mois] ?? 0.0;
               return DataCell(
                 Container(
                   width: 100,

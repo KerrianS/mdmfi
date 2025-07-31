@@ -137,75 +137,112 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
     final periodes = ['Année civile', 'Trimestre'];
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 16, top: 0),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...periodes.map((periode) {
-            final isSelected = selectedPeriode == periode;
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: ElevatedButton(
+          Row(
+            children: [
+              ...periodes.map((periode) {
+                final isSelected = selectedPeriode == periode;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
+                      foregroundColor: isSelected ? Colors.white : Colors.black,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      elevation: isSelected ? 2 : 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6)),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        selectedPeriode = periode;
+                        if (periode != 'Trimestre') {
+                          selectedTrimestre = null;
+                        }
+                        _loadData();
+                      });
+                    },
+                    child: Text(periode,
+                        style: TextStyle(
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal)),
+                  ),
+                );
+              }).toList(),
+              SizedBox(width: 8),
+              ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
-                  foregroundColor: isSelected ? Colors.white : Colors.black,
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  elevation: isSelected ? 2 : 0,
+                      showKeuros ? Color(0xFF65887a) : Color(0xFF00A9CA),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                  elevation: showKeuros ? 1 : 0,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6)),
+                  textStyle:
+                      TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                 ),
                 onPressed: () {
                   setState(() {
-                    selectedPeriode = periode;
-                    if (periode != 'Trimestre') {
-                      selectedTrimestre = null;
-                    }
-                    _loadData();
+                    showKeuros = !showKeuros;
                   });
                 },
-                child: Text(periode,
-                    style: TextStyle(
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal)),
+                icon: Icon(Icons.euro, size: 16),
+                label: Text(showKeuros ? 'Euros' : 'KEuros'),
               ),
-            );
-          }).toList(),
-          SizedBox(width: 8),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  showKeuros ? Color(0xFF65887a) : Color(0xFF00A9CA),
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-              elevation: showKeuros ? 1 : 0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-              textStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-            ),
-            onPressed: () {
-              setState(() {
-                showKeuros = !showKeuros;
-              });
-            },
-            icon: Icon(Icons.euro, size: 16),
-            label: Text(showKeuros ? 'Euros' : 'KEuros'),
+              if (selectedPeriode == 'Trimestre') ...[
+                SizedBox(width: 16),
+                DropdownButton<int>(
+                  value: selectedTrimestre,
+                  hint: Text('Sélectionner trimestre'),
+                  items: [1, 2, 3, 4].map((t) {
+                    return DropdownMenuItem(
+                      value: t,
+                      child: Text('T$t'),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedTrimestre = value;
+                      _loadData();
+                    });
+                  },
+                ),
+              ],
+            ],
           ),
+          // Message d'information pour les trimestres
           if (selectedPeriode == 'Trimestre') ...[
-            SizedBox(width: 16),
-            DropdownButton<int>(
-              value: selectedTrimestre,
-              hint: Text('Sélectionner trimestre'),
-              items: [1, 2, 3, 4].map((t) {
-                return DropdownMenuItem(
-                  value: t,
-                  child: Text('T$t'),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedTrimestre = value;
-                  _loadData();
-                });
-              },
+            SizedBox(height: 8),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.green.shade100,
+                border: Border.all(color: Colors.green.shade300),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline,
+                      color: Colors.green.shade700, size: 16),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '✅ Données trimestrielles calculées à partir des données mensuelles.',
+                      style: TextStyle(
+                        color: Colors.green.shade800,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ],
@@ -215,6 +252,7 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
 
   Widget _buildIndicateurSelector() {
     final indicateurs = _getIndicateurNames();
+    final libelles = _getIndicateurLibelles();
     if (indicateurs.isEmpty) return SizedBox();
 
     return Padding(
@@ -229,9 +267,11 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
               hint: Text('Sélectionner un indicateur'),
               isExpanded: true,
               items: indicateurs.map((indicateur) {
+                final libelle = libelles[indicateur] ?? indicateur;
                 return DropdownMenuItem(
                   value: indicateur,
-                  child: Text(indicateur, style: TextStyle(fontSize: 12)),
+                  child: Text('$indicateur - $libelle',
+                      style: TextStyle(fontSize: 12)),
                 );
               }).toList(),
               onChanged: (value) {
@@ -255,50 +295,128 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
 
   List<String> _getOrderedAnnees() {
     if (sousIndicsResponse == null) return [];
-    final anneesList = sousIndicsResponse!.sousIndicateurs.keys
-        .map((a) => int.parse(a))
-        .toList()
-      ..sort();
+    final sousIndicateursData =
+        sousIndicsResponse!['sousIndicateurs'] as Map<String, dynamic>?;
+    if (sousIndicateursData == null) return [];
+
+    final anneesList =
+        sousIndicateursData.keys.map((a) => int.parse(a)).toList()..sort();
     return anneesList.map((a) => a.toString()).toList();
   }
 
   List<String> _getIndicateurNames() {
     if (indicateursResponse == null) return [];
     final Set<String> indicateurs = {};
-    for (final anneeIndicateurs in indicateursResponse!.indicateurs.values) {
-      for (final ind in anneeIndicateurs) {
-        indicateurs.add(ind.indicateur);
+    final indicateursData =
+        indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+    if (indicateursData == null) return [];
+
+    for (final anneeIndicateurs in indicateursData.values) {
+      final indicateursList = anneeIndicateurs as List<dynamic>?;
+      if (indicateursList != null) {
+        for (final ind in indicateursList) {
+          final indicateur = ind['indicateur'] as String?;
+          if (indicateur != null) {
+            indicateurs.add(indicateur);
+          }
+        }
       }
     }
     return indicateurs.toList()..sort();
   }
 
+  Map<String, String> _getIndicateurLibelles() {
+    if (indicateursResponse == null) return {};
+    final Map<String, String> libelles = {};
+    final indicateursData =
+        indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+    if (indicateursData == null) return {};
+
+    for (final anneeIndicateurs in indicateursData.values) {
+      final indicateursList = anneeIndicateurs as List<dynamic>?;
+      if (indicateursList != null) {
+        for (final ind in indicateursList) {
+          final indicateur = ind['indicateur'] as String?;
+          final libelle = ind['libelle'] as String?;
+          if (indicateur != null && libelle != null) {
+            libelles[indicateur] = libelle;
+          }
+        }
+      }
+    }
+    return libelles;
+  }
+
   List<String> _getSousIndicateurNames() {
     if (sousIndicsResponse == null || selectedIndicateur == null) return [];
     final Set<String> sousIndicateurs = {};
-    for (final anneeSousIndicateurs
-        in sousIndicsResponse!.sousIndicateurs.values) {
-      final sousIndicsForIndicateur =
-          anneeSousIndicateurs[selectedIndicateur!] ?? [];
-      for (final sousInd in sousIndicsForIndicateur) {
-        sousIndicateurs.add(sousInd.sousIndicateur);
+    final sousIndicateursData =
+        sousIndicsResponse!['sousIndicateurs'] as Map<String, dynamic>?;
+    if (sousIndicateursData == null) return [];
+
+    for (final anneeSousIndicateurs in sousIndicateursData.values) {
+      final anneeData = anneeSousIndicateurs as Map<String, dynamic>?;
+      if (anneeData != null) {
+        final sousIndicsForIndicateur =
+            anneeData[selectedIndicateur!] as List<dynamic>? ?? [];
+        for (final sousInd in sousIndicsForIndicateur) {
+          final sousIndicateur = sousInd['sousIndicateur'] as String?;
+          if (sousIndicateur != null) {
+            sousIndicateurs.add(sousIndicateur);
+          }
+        }
       }
     }
     return sousIndicateurs.toList()..sort();
+  }
+
+  Map<String, String> _getSousIndicateurLibelles() {
+    if (sousIndicsResponse == null || selectedIndicateur == null) return {};
+    final Map<String, String> libelles = {};
+    final sousIndicateursData =
+        sousIndicsResponse!['sousIndicateurs'] as Map<String, dynamic>?;
+    if (sousIndicateursData == null) return {};
+
+    for (final anneeSousIndicateurs in sousIndicateursData.values) {
+      final anneeData = anneeSousIndicateurs as Map<String, dynamic>?;
+      if (anneeData != null) {
+        final sousIndicsForIndicateur =
+            anneeData[selectedIndicateur!] as List<dynamic>? ?? [];
+        for (final sousInd in sousIndicsForIndicateur) {
+          final sousIndicateur = sousInd['sousIndicateur'] as String?;
+          final libelle = sousInd['libelle'] as String?;
+          if (sousIndicateur != null && libelle != null) {
+            libelles[sousIndicateur] = libelle;
+          }
+        }
+      }
+    }
+    return libelles;
   }
 
   Map<String, Map<String, double>> _getSousIndicateurData() {
     final Map<String, Map<String, double>> data = {};
     if (sousIndicsResponse == null || selectedIndicateur == null) return data;
 
-    for (final anneeEntry in sousIndicsResponse!.sousIndicateurs.entries) {
-      final annee = anneeEntry.key;
-      final sousIndicateursForIndicateur =
-          anneeEntry.value[selectedIndicateur!] ?? [];
+    final sousIndicateursData =
+        sousIndicsResponse!['sousIndicateurs'] as Map<String, dynamic>?;
+    if (sousIndicateursData == null) return data;
 
-      for (final sousInd in sousIndicateursForIndicateur) {
-        data.putIfAbsent(sousInd.sousIndicateur, () => {});
-        data[sousInd.sousIndicateur]![annee] = sousInd.montant;
+    for (final anneeEntry in sousIndicateursData.entries) {
+      final annee = anneeEntry.key;
+      final anneeData = anneeEntry.value as Map<String, dynamic>?;
+      if (anneeData != null) {
+        final sousIndicateursForIndicateur =
+            anneeData[selectedIndicateur!] as List<dynamic>? ?? [];
+
+        for (final sousInd in sousIndicateursForIndicateur) {
+          final sousIndicateur = sousInd['sousIndicateur'] as String?;
+          final montant = (sousInd['montant'] as num?)?.toDouble() ?? 0.0;
+          if (sousIndicateur != null) {
+            data.putIfAbsent(sousIndicateur, () => {});
+            data[sousIndicateur]![annee] = montant;
+          }
+        }
       }
     }
     return data;
@@ -407,6 +525,7 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
 
   Widget _buildLegend() {
     final sousIndicateurs = _getSousIndicateurNames();
+    final libelles = _getSousIndicateurLibelles();
     if (sousIndicateurs.isEmpty) return SizedBox();
 
     return Container(
@@ -417,6 +536,7 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
         children: sousIndicateurs.asMap().entries.map((entry) {
           final index = entry.key;
           final sousIndicateur = entry.value;
+          final libelle = libelles[sousIndicateur] ?? sousIndicateur;
           final color =
               sousIndicateurColors[index % sousIndicateurColors.length];
           final isSelected = selectedSousIndicateurs.isEmpty ||
@@ -461,8 +581,7 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  Text(sousIndicateur,
-                      style: TextStyle(fontWeight: FontWeight.w500)),
+                  Text(libelle, style: TextStyle(fontWeight: FontWeight.w500)),
                   if (isSelected) ...[
                     SizedBox(width: 8),
                     Icon(Icons.check, color: color, size: 18),
@@ -579,6 +698,7 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
   }
 
   Widget _buildChartTypeSelector() {
+    final libelles = _getSousIndicateurLibelles();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -621,9 +741,11 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
             DropdownButton<String>(
               value: selectedSousIndicateurForPie,
               items: _getSousIndicateurNames().map((sousIndicateur) {
+                final libelle = libelles[sousIndicateur] ?? sousIndicateur;
                 return DropdownMenuItem(
                   value: sousIndicateur,
-                  child: Text(sousIndicateur, style: TextStyle(fontSize: 12)),
+                  child: Text('$sousIndicateur - $libelle',
+                      style: TextStyle(fontSize: 12)),
                 );
               }).toList(),
               onChanged: (value) {
