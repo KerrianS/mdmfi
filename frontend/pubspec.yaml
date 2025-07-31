@@ -14,6 +14,7 @@ dependencies:
   hive_flutter: ^1.1.0
   intl: ^0.19.0
   parse_server_sdk_flutter: ^8.0.0
+  path_provider: ^2.1.5
   provider: ^6.0.5
   shared_preferences: ^2.0.15
   shimmer: ^3.0.0
@@ -32,3 +33,6 @@ flutter:
   assets:
     - assets/mobaitec-logo.png
     - assets/keycloak.png
+    - lib/data/rsp-bgs/
+    - lib/data/rsp-neg/
+    - lib/data/rsp-sb/

@@ -3,6 +3,7 @@ import 'package:mobaitec_decision_making/screens/dashboard/dashboard.dart';
 import 'package:mobaitec_decision_making/utils/app_routes.dart';
 import 'package:mobaitec_decision_making/utils/colors.dart';
 import 'package:desktop_window/desktop_window.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:provider/provider.dart';
 import 'services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
@@ -13,7 +14,9 @@ import 'package:mobaitec_decision_making/services/data/local_data_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
+  final dir = await path_provider.getApplicationSupportDirectory();
+  Hive.init(dir.path);
+
 
   // Initialiser les boîtes Hive pour le cache
   await Hive.openBox('navision_cache');
