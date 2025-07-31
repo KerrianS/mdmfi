@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/utils/currency.dart';
 
 class MensuelSubIndicateurDataTable extends StatelessWidget {
-  final Map<String, Map<String, double>> sousIndicateurs; // sousIndicateur -> {mois: montant}
-  final List<String> mois; // tous les mois à afficher en colonnes (format YYYYMM)
+  final Map<String, Map<String, double>>
+      sousIndicateurs; // sousIndicateur -> {mois: montant}
+  final List<String>
+      mois; // tous les mois à afficher en colonnes (format YYYYMM)
   final String? selectedSousIndicateur;
   final void Function(String) onSelectSousIndicateur;
   final dynamic sousIndicsResponse; // Pour accéder aux libellés et initiales
-  final dynamic indicateursResponse; // Pour accéder au champ associe de l'indicateur sélectionné
-  final String? selectedIndicateur; // Pour savoir quel indicateur est sélectionné
+  final dynamic
+      indicateursResponse; // Pour accéder au champ formule_text de l'indicateur sélectionné
+  final String?
+      selectedIndicateur; // Pour savoir quel indicateur est sélectionné
   final bool isKEuros; // Paramètre pour affichage en KEuros
 
-  MensuelSubIndicateurDataTable({
+  final Map<String, String> formuleTextParMois; // Formules textuelles par mois
+
+  const MensuelSubIndicateurDataTable({
     super.key,
     required this.sousIndicateurs,
     required this.mois,
@@ -22,26 +27,76 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
     this.indicateursResponse,
     this.selectedIndicateur,
     this.isKEuros = false,
+    this.formuleTextParMois = const {},
   });
 
-  @override
-  Widget build(BuildContext context) {
-    // Récupérer la liste des libellés associés à l'indicateur sélectionné (via le champ associe de l'indicateur sélectionné)
-    List<String> associeLibelles = [];
-    if (indicateursResponse != null && selectedIndicateur != null) {
-      for (final moisEntry in indicateursResponse.mois.entries) {
-        final indicateursList = moisEntry.value;
-        dynamic indObj = indicateursList.cast<dynamic>().firstWhere(
-          (i) => i.indicateur == selectedIndicateur,
-          orElse: () => null,
-        );
-        if (indObj != null && indObj.associe != null && indObj.associe.isNotEmpty) {
-          associeLibelles = List<String>.from(indObj.associe);
-          break;
+  // Fonction pour vérifier si un sous-indicateur est associé à la formule
+  bool isSousIndicateurAssocie(String sousInd, String? libelle) {
+    if (formuleTextParMois.isEmpty) return false;
+
+    for (final formuleText in formuleTextParMois.values) {
+      if (formuleText.contains(sousInd) ||
+          (libelle != null && formuleText.contains(libelle))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Fonction pour déterminer le signe d'un sous-indicateur
+  String getSigneSousIndicateur(String sousInd, String? libelle) {
+    if (formuleTextParMois.isEmpty) return '+'; // Par défaut positif
+
+    final libelleToSearch = libelle ?? sousInd;
+
+    // Debug: afficher la formule pour comprendre le format
+    print('[DEBUG] Recherche pour: $libelleToSearch');
+    print('[DEBUG] Formules disponibles: $formuleTextParMois');
+
+    // Chercher le signe dans toutes les formules disponibles
+    for (final formuleText in formuleTextParMois.values) {
+      if (formuleText.isNotEmpty) {
+        print('[DEBUG] Vérification formule: $formuleText');
+
+        // Chercher avec le libellé
+        if (formuleText.contains('-$libelleToSearch')) {
+          print('[DEBUG] Signe négatif détecté pour $libelleToSearch');
+          return '-';
+        } else if (formuleText.contains('+$libelleToSearch')) {
+          print('[DEBUG] Signe positif détecté pour $libelleToSearch');
+          return '+';
+        }
+
+        // Chercher avec le code du sous-indicateur
+        if (formuleText.contains('-$sousInd')) {
+          print('[DEBUG] Signe négatif détecté pour $sousInd');
+          return '-';
+        } else if (formuleText.contains('+$sousInd')) {
+          print('[DEBUG] Signe positif détecté pour $sousInd');
+          return '+';
+        }
+
+        // Chercher avec des espaces autour du signe
+        if (formuleText.contains(' - $libelleToSearch') ||
+            formuleText.contains(' - $sousInd')) {
+          print(
+              '[DEBUG] Signe négatif détecté (avec espaces) pour $libelleToSearch');
+          return '-';
+        } else if (formuleText.contains(' + $libelleToSearch') ||
+            formuleText.contains(' + $sousInd')) {
+          print(
+              '[DEBUG] Signe positif détecté (avec espaces) pour $libelleToSearch');
+          return '+';
         }
       }
     }
 
+    print('[DEBUG] Aucun signe détecté pour $libelleToSearch, défaut: +');
+    return '+'; // Par défaut positif si aucun signe détecté
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return DataTable(
       showCheckboxColumn: false,
       columnSpacing: 16,
@@ -53,23 +108,24 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
           label: Container(
             width: 100,
             alignment: Alignment.centerLeft,
-            child: Text('Sous-indicateur', style: TextStyle(fontSize: 13)),
+            child:
+                const Text('Sous-indicateur', style: TextStyle(fontSize: 13)),
           ),
         ),
         DataColumn(
           label: Container(
             width: 150,
             alignment: Alignment.centerLeft,
-            child: Text('Libellé', style: TextStyle(fontSize: 13)),
+            child: const Text('Libellé', style: TextStyle(fontSize: 13)),
           ),
         ),
         ...mois.map((m) => DataColumn(
-          label: Container(
-            width: 100,
-            alignment: Alignment.centerRight,
-            child: Text(m, style: TextStyle(fontSize: 13)),
-          ),
-        )),
+              label: Container(
+                width: 100,
+                alignment: Alignment.centerRight,
+                child: Text(m, style: const TextStyle(fontSize: 13)),
+              ),
+            )),
       ],
       rows: sousIndicateurs.entries.map((entry) {
         final sousInd = entry.key;
@@ -92,19 +148,25 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
           }
         }
         final isSelected = sousInd == selectedSousIndicateur;
-        // Jaune si le libellé du sous-indicateur est dans la liste associe de l'indicateur sélectionné
-        final isAssocie = associeLibelles.contains(libelle ?? sousInd);
+
+        // Vérifier si le sous-indicateur est associé à la formule
+        final isAssocie = isSousIndicateurAssocie(sousInd, libelle);
+
+        // Déterminer le signe (+/-) pour les sous-indicateurs associés
+        final signe = isAssocie ? getSigneSousIndicateur(sousInd, libelle) : '';
+
         return DataRow(
           selected: isSelected,
           onSelectChanged: (_) => onSelectSousIndicateur(sousInd),
-          color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
+          color: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
             if (isAssocie) {
               return Colors.yellow.shade200;
             }
             if (isSelected) {
               return Colors.grey.shade300;
             }
-            if (states.contains(MaterialState.hovered)) {
+            if (states.contains(WidgetState.hovered)) {
               return Colors.grey.withOpacity(0.1);
             }
             return null;
@@ -113,14 +175,14 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
             DataCell(
               Container(
                 width: 100,
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
                   initiales ?? sousInd,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? Color(0xFFE0E0E0)
+                        ? const Color(0xFFE0E0E0)
                         : Colors.black,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -130,7 +192,7 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
             DataCell(
               Container(
                 width: 155,
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Row(
                   children: [
                     Expanded(
@@ -139,18 +201,62 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? Color(0xFFE0E0E0)
+                              ? const Color(0xFFE0E0E0)
                               : Colors.black,
                         ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
                     ),
+                    if (isAssocie)
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: signe == '+'
+                                ? [
+                                    Color(0xFF4CAF50),
+                                    Color(0xFF45A049)
+                                  ] // Vert dégradé
+                                : [
+                                    Color(0xFFF44336),
+                                    Color(0xFFD32F2F)
+                                  ], // Rouge dégradé
+                          ),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (signe == '+'
+                                      ? Color(0xFF4CAF50)
+                                      : Color(0xFFF44336))
+                                  .withOpacity(0.4),
+                              spreadRadius: 2,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Icon(
+                            signe == '+' ? Icons.add : Icons.remove,
+                            color: Colors.white,
+                            size: 13,
+                          ),
+                        ),
+                      ),
                     if (sousIndicsResponse != null)
                       Builder(
                         builder: (context) {
                           String? formule;
-                          for (final moisEntry in sousIndicsResponse.mois.entries) {
+                          for (final moisEntry
+                              in sousIndicsResponse.mois.entries) {
                             final sousIndicateursList = moisEntry.value.values
                                 .where((v) => v is List)
                                 .expand((list) => list as List)
@@ -162,59 +268,39 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                             }
                           }
                           if (formule != null && formule.isNotEmpty)
-                            return Padding(
-                              padding: const EdgeInsets.only(left: 4.0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: Row(
-                                        children: [
-                                          Icon(Icons.info_outline, color: Colors.blue),
-                                          SizedBox(width: 8),
-                                          Text('Formule'),
-                                        ],
-                                      ),
-                                      content: Text(formule!),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.of(ctx).pop(),
-                                          child: Text('Fermer'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                                child: Icon(Icons.info_outline, size: 18, color: Colors.blue),
-                              ),
+                            return const Padding(
+                              padding: EdgeInsets.only(left: 4.0),
+                              child: Icon(Icons.info_outline,
+                                  size: 18, color: Colors.blue),
                             );
-                          return SizedBox.shrink();
+                          return const SizedBox.shrink();
                         },
                       ),
                   ],
                 ),
               ),
             ),
-            ...mois.map((m) => DataCell(
-              Container(
-                width: 100,
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  montants[m] != null
-                      ? montants[m]!.format(isKEuros: isKEuros)
-                      : '0,00 €',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Color(0xFFE0E0E0)
-                        : Colors.black,
+            ...mois.map((m) {
+              return DataCell(
+                Container(
+                  width: 100,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    montants[m] != null
+                        ? Currency.format(montants[m]!, isKEuros: isKEuros)
+                        : '0,00 €',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFFE0E0E0)
+                          : Colors.black,
+                    ),
+                    textAlign: TextAlign.right,
                   ),
-                  textAlign: TextAlign.right,
                 ),
-              ),
-            )),
+              );
+            }),
           ],
         );
       }).toList(),

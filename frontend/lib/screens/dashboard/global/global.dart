@@ -5,6 +5,7 @@ import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/models/OdooSIGModel.dart';
 import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
 import 'package:mobaitec_decision_making/services/indicateur/odoo_service_sig.dart';
+import 'package:mobaitec_decision_making/services/indicateur/indicateur_service.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_account_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_indicateur_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_sub_indicateur_datatable.dart';
@@ -23,11 +24,12 @@ class _GlobalState extends State<Global> {
   String selectedPeriode = Global.lastSelectedPeriode;
   int? selectedTrimestre;
   String? selectedIndicateur;
-  String? selectedSousIndicateur; 
+  String? selectedSousIndicateur;
   String? _lastSociete;
   String? selectedAnnee;
   bool isLoading = false;
-  bool _isInitialized = false; // Flag pour éviter les réinitialisations multiples
+  bool _isInitialized =
+      false; // Flag pour éviter les réinitialisations multiples
 
   dynamic indicateursResponse;
   dynamic sousIndicsResponse;
@@ -40,8 +42,8 @@ class _GlobalState extends State<Global> {
   Set<String> expandedSousIndicateurs = {};
   Map<String, dynamic> comptesResponses = {};
   Map<String, bool> isLoadingComptes = {};
-  bool isKEuros = false; 
-  bool showFormulas = false; 
+  bool isKEuros = false;
+  bool showFormulas = false;
 
   final TextEditingController _globalSearchController = TextEditingController();
   String _globalSearchText = '';
@@ -49,10 +51,12 @@ class _GlobalState extends State<Global> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: false);
+    final keycloakProvider =
+        Provider.of<KeycloakProvider>(context, listen: false);
     final societe = keycloakProvider.selectedCompany;
     if (societe != null && societe != _lastSociete) {
-      print('[Global] Changement de société détecté: $_lastSociete -> $societe');
+      print(
+          '[Global] Changement de société détecté: $_lastSociete -> $societe');
       _lastSociete = societe;
       indicateursResponse = null;
       sousIndicsResponse = null;
@@ -72,14 +76,20 @@ class _GlobalState extends State<Global> {
     }
   }
 
-
   Future<void> _loadData() async {
     if (_lastSociete == null) return;
     print('[Global] Début du chargement des données pour $_lastSociete');
     if (!mounted) return;
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
     try {
-      final isOdoo = Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
+      // Exemple d'utilisation du nouveau service avec mode cache/webservice
+      final dataModeInfo = IndicateurService.getModeInfo(context);
+      print('[Global] Mode de données: $dataModeInfo');
+
+      final isOdoo =
+          Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
       if (isOdoo) {
         indicateursResponse = await OdooSIGService().fetchIndicateursGlobal(
           societe: _lastSociete!,
@@ -97,7 +107,8 @@ class _GlobalState extends State<Global> {
           periode: _getPeriodeParam(),
           trimestre: selectedTrimestre,
         );
-        sousIndicsResponse = await NavisionSIGService().fetchSousIndicateursGlobal(
+        sousIndicsResponse =
+            await NavisionSIGService().fetchSousIndicateursGlobal(
           societe: _lastSociete!,
           periode: _getPeriodeParam(),
           trimestre: selectedTrimestre,
@@ -108,12 +119,16 @@ class _GlobalState extends State<Global> {
       }
       print('[Global] Données chargées avec succès');
       if (mounted) {
-        setState(() { isLoading = false; });
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
       print('[Global] Erreur lors du chargement: $e');
       if (mounted) {
-        setState(() { isLoading = false; });
+        setState(() {
+          isLoading = false;
+        });
       }
     }
   }
@@ -123,9 +138,12 @@ class _GlobalState extends State<Global> {
       return;
     }
     if (!mounted) return;
-    setState(() { isLoadingComptes[sousIndicateur] = true; });
+    setState(() {
+      isLoadingComptes[sousIndicateur] = true;
+    });
     try {
-      final isOdoo = Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
+      final isOdoo =
+          Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
       final comptesResp = isOdoo
           ? await OdooSIGService().fetchComptesGlobal(
               societe: _lastSociete!,
@@ -146,24 +164,28 @@ class _GlobalState extends State<Global> {
       comptesResponses[sousIndicateur] = comptesResp;
       comptesResponse = comptesResp;
       if (mounted) {
-        setState(() { isLoadingComptes[sousIndicateur] = false; });
+        setState(() {
+          isLoadingComptes[sousIndicateur] = false;
+        });
       }
     } catch (e) {
       print('[Global] Erreur lors du chargement des comptes: $e');
       if (mounted) {
-        setState(() { isLoadingComptes[sousIndicateur] = false; });
+        setState(() {
+          isLoadingComptes[sousIndicateur] = false;
+        });
       }
     }
   }
 
   void _onPageChanged(String sousIndicateur, int page) {
     if (!mounted) return;
-    
+
     setState(() {
       currentPage = page;
       comptesOffset = page * comptesLimit;
     });
-    
+
     Future.microtask(() {
       if (mounted) {
         _loadComptesForSousIndicateur(sousIndicateur);
@@ -177,7 +199,6 @@ class _GlobalState extends State<Global> {
     if (selectedPeriode == 'Exercice') return 'exercice';
     return 'annee';
   }
-
 
   Widget _buildFormulaItem(String title, String formula) {
     return Padding(
@@ -221,14 +242,17 @@ class _GlobalState extends State<Global> {
               padding: const EdgeInsets.only(right: 8),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
+                  backgroundColor:
+                      isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   elevation: isSelected ? 2 : 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
                 ),
                 onPressed: () {
-                  _isInitialized = false; // Reset pour permettre la réinitialisation
+                  _isInitialized =
+                      false; // Reset pour permettre la réinitialisation
                   setState(() {
                     selectedPeriode = periode;
                     Global.lastSelectedPeriode = selectedPeriode;
@@ -243,7 +267,10 @@ class _GlobalState extends State<Global> {
                     }
                   });
                 },
-                child: Text(periode, style: TextStyle(fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                child: Text(periode,
+                    style: TextStyle(
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal)),
               ),
             );
           }).toList(),
@@ -254,7 +281,8 @@ class _GlobalState extends State<Global> {
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               elevation: 1,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
             ),
             onPressed: () {
               setState(() {
@@ -262,7 +290,8 @@ class _GlobalState extends State<Global> {
               });
             },
             icon: Icon(Icons.euro, size: 16),
-            label: Text(isKEuros ? 'Euros' : 'KEuros', style: TextStyle(fontWeight: FontWeight.w500)),
+            label: Text(isKEuros ? 'Euros' : 'KEuros',
+                style: TextStyle(fontWeight: FontWeight.w500)),
           ),
           // Bouton info jaune
           Padding(
@@ -273,7 +302,8 @@ class _GlobalState extends State<Global> {
                 foregroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 elevation: 1,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
               ),
               onPressed: () {
                 showDialog(
@@ -286,7 +316,8 @@ class _GlobalState extends State<Global> {
                         Text('Information'),
                       ],
                     ),
-                    content: Text('Chaque élément surligné en jaune est relié au calcul de l\'indicateur que vous avez sélectionné !'),
+                    content: Text(
+                        'Chaque élément surligné en jaune est relié au calcul de l\'indicateur que vous avez sélectionné !'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(),
@@ -307,7 +338,8 @@ class _GlobalState extends State<Global> {
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               elevation: 1,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
             ),
             onPressed: () {
               setState(() {
@@ -315,7 +347,9 @@ class _GlobalState extends State<Global> {
               });
             },
             icon: Icon(Icons.info_outline, size: 16),
-            label: Text(showFormulas ? 'Masquer les formules' : 'Détails des formules', style: TextStyle(fontWeight: FontWeight.w500)),
+            label: Text(
+                showFormulas ? 'Masquer les formules' : 'Détails des formules',
+                style: TextStyle(fontWeight: FontWeight.w500)),
           ),
         ],
       ),
@@ -324,11 +358,16 @@ class _GlobalState extends State<Global> {
 
   int? _getTrimestreNumber() {
     switch (selectedPeriode) {
-      case '1er Trimestre': return 1;
-      case '2ème Trimestre': return 2;
-      case '3ème Trimestre': return 3;
-      case '4ème Trimestre': return 4;
-      default: return null;
+      case '1er Trimestre':
+        return 1;
+      case '2ème Trimestre':
+        return 2;
+      case '3ème Trimestre':
+        return 3;
+      case '4ème Trimestre':
+        return 4;
+      default:
+        return null;
     }
   }
 
@@ -353,17 +392,7 @@ class _GlobalState extends State<Global> {
         annees: getAnnees(),
         selectedIndicateur: selectedIndicateur,
         onSelectIndicateur: (ind) {
-          // Ajout debug : afficher la liste associe dès la sélection
-          if (indicateursResponse != null) {
-            for (final an in indicateursResponse!.indicateurs.keys) {
-              final indics = indicateursResponse!.indicateurs[an] ?? [];
-              for (final indic in indics) {
-                if (indic.indicateur == ind) {
-                  print('[DEBUG] (onSelectIndicateur) Liste associe (libellés) pour $ind : ${indic.associe}');
-                }
-              }
-            }
-          }
+          // Suppression de la fonctionnalité associe
           setState(() {
             if (selectedIndicateur == ind) {
               selectedIndicateur = null;
@@ -385,7 +414,8 @@ class _GlobalState extends State<Global> {
     print('[DEBUG-PARENT] selectedIndicateur: $selectedIndicateur');
     if (indicateursResponse != null) {
       for (final an in indicateursResponse!.indicateurs.keys) {
-        print('[DEBUG-PARENT] an: $an | indicateurs: ${indicateursResponse!.indicateurs[an]?.map((i) => i.indicateur).toList()}');
+        print(
+            '[DEBUG-PARENT] an: $an | indicateurs: ${indicateursResponse!.indicateurs[an]?.map((i) => i.indicateur).toList()}');
       }
     }
     return AdaptiveTableContainer(
@@ -405,16 +435,37 @@ class _GlobalState extends State<Global> {
         },
         sousIndicsResponse: sousIndicsResponse,
         isKEuros: isKEuros,
-        associeLibelles: getSousIndicateursAssocies(),
+        formuleTextParAnnee: getFormuleTextParAnnee(),
       ),
     );
+  }
+
+  // Helper pour obtenir les formules textuelles par année pour l'indicateur sélectionné
+  Map<String, String> getFormuleTextParAnnee() {
+    final Map<String, String> formules = {};
+    if (indicateursResponse == null || selectedIndicateur == null)
+      return formules;
+
+    for (final an in indicateursResponse!.indicateurs.keys) {
+      final indics = indicateursResponse!.indicateurs[an] ?? [];
+      for (final ind in indics) {
+        if (ind.indicateur == selectedIndicateur &&
+            ind.formuleText.isNotEmpty) {
+          formules[an] = ind.formuleText;
+          break;
+        }
+      }
+    }
+
+    return formules;
   }
 
   Map<String, Map<String, double>> getSousIndicateurData() {
     final Map<String, Map<String, double>> data = {};
     if (sousIndicsResponse == null || selectedIndicateur == null) return data;
     for (final an in sousIndicsResponse!.sousIndicateurs.keys) {
-      final sousList = sousIndicsResponse!.sousIndicateurs[an]?[selectedIndicateur!] ?? [];
+      final sousList =
+          sousIndicsResponse!.sousIndicateurs[an]?[selectedIndicateur!] ?? [];
       for (final sous in sousList) {
         data.putIfAbsent(sous.sousIndicateur, () => {});
         data[sous.sousIndicateur]![an] = sous.montant;
@@ -422,34 +473,47 @@ class _GlobalState extends State<Global> {
     }
     return data;
   }
+
   // Helper pour obtenir la liste des sous-indicateurs associés à l'indicateur sélectionné
   List<String> getSousIndicateursAssocies() {
-    // On veut la liste des sous-indicateurs dont le libellé correspond à un des éléments de la liste associée de l'indicateur sélectionné (case-insensitive, trim)
-    List<String> associeLibelles = [];
-    if (indicateursResponse == null || selectedIndicateur == null || sousIndicsResponse == null) return [];
-    for (final an in indicateursResponse!.indicateurs.keys) {
-      final indics = indicateursResponse!.indicateurs[an] ?? [];
-      for (final ind in indics) {
-        if (ind.indicateur == selectedIndicateur) {
-          associeLibelles = List<String>.from(ind.associe);
-          break;
+    final List<String> associeLibelles = [];
+    if (indicateursResponse != null && selectedIndicateur != null) {
+      for (final an in indicateursResponse!.indicateurs.keys) {
+        final indics = indicateursResponse!.indicateurs[an] ?? [];
+        for (final ind in indics) {
+          if (ind.indicateur == selectedIndicateur) {
+            // Gérer les différents formats de données (Map ou objet)
+            String formuleText = '';
+            if (ind is Map) {
+              formuleText = ind['formule_text'] ?? ind['formuleText'] ?? '';
+            } else {
+              formuleText = ind.formuleText ?? ind.formule_text ?? '';
+            }
+
+            if (formuleText.isNotEmpty) {
+              // Extraire les sous-indicateurs depuis formule_text
+              final Set<String> sousIndicateursTrouves = {};
+
+              // Pattern pour capturer les sous-indicateurs dans la formule
+              final pattern =
+                  RegExp(r'([A-Z][A-Z\sÉÈÊËÀÂÄÔÙÛÜÇ]+)\s*\([^)]+\)');
+              final matches = pattern.allMatches(formuleText);
+
+              for (final match in matches) {
+                final sousIndicateur = match.group(1)?.trim();
+                if (sousIndicateur != null && sousIndicateur.isNotEmpty) {
+                  sousIndicateursTrouves.add(sousIndicateur);
+                }
+              }
+
+              associeLibelles.addAll(sousIndicateursTrouves);
+              break;
+            }
+          }
         }
       }
-      if (associeLibelles.isNotEmpty) break;
     }
-    final Set<String> associeSet = associeLibelles.map((e) => e.trim().toUpperCase()).toSet();
-    final Set<String> sousIndicateurLibelles = {};
-    for (final an in sousIndicsResponse!.sousIndicateurs.keys) {
-      final indicMap = sousIndicsResponse!.sousIndicateurs[an] ?? {};
-      final sousList = indicMap[selectedIndicateur] ?? [];
-      for (final sous in sousList) {
-        final libelleNorm = sous.libelle.trim().toUpperCase();
-        if (associeSet.contains(libelleNorm)) {
-          sousIndicateurLibelles.add(sous.libelle);
-        }
-      }
-    }
-    return sousIndicateurLibelles.toList();
+    return associeLibelles;
   }
 
   List<String> getAnnees() {
@@ -459,20 +523,21 @@ class _GlobalState extends State<Global> {
   List<NavisionCompteGlobal> getComptesForAnnee(String annee) {
     if (comptesResponse == null) return [];
     final comptes = comptesResponse!.comptes[annee]?.comptes ?? [];
-    print('[DEBUG] Comptes pour année $annee (selectedSousIndicateur: $selectedSousIndicateur):');
+    print(
+        '[DEBUG] Comptes pour année $annee (selectedSousIndicateur: $selectedSousIndicateur):');
     for (var c in comptes) {
       print('  - ${c.codeCompte} | ${c.libelleCompte} | ${c.montant}');
     }
-    return comptes.map((c) =>
-      NavisionCompteGlobal(
-        codeCompte: c.codeCompte,
-        libelleCompte: c.libelleCompte,
-        montant: c.montant,
-        debit: c.debit,
-        credit: c.credit,
-        annee: int.tryParse(annee) ?? 0,
-      )
-    ).toList();
+    return comptes
+        .map((c) => NavisionCompteGlobal(
+              codeCompte: c.codeCompte,
+              libelleCompte: c.libelleCompte,
+              montant: c.montant,
+              debit: c.debit,
+              credit: c.credit,
+              annee: int.tryParse(annee) ?? 0,
+            ))
+        .toList();
   }
 
   // --- MAPPING POUR LE DATATABLE DES COMPTES GLOBALS ---
@@ -493,19 +558,23 @@ class _GlobalState extends State<Global> {
         codeToLibelle[c.codeCompte] = c.libelleCompte;
       }
     }
-    print('[DEBUG] getComptesGlobalTable: ${allCodes.length} comptes trouvés: ${allCodes.toList()}');
-    return allCodes.map((code) => NavisionCompteGlobal(
-      codeCompte: code,
-      libelleCompte: codeToLibelle[code] ?? '',
-      montant: 0,
-      debit: 0,
-      credit: 0,
-      annee: 0,
-    )).toList();
+    print(
+        '[DEBUG] getComptesGlobalTable: ${allCodes.length} comptes trouvés: ${allCodes.toList()}');
+    return allCodes
+        .map((code) => NavisionCompteGlobal(
+              codeCompte: code,
+              libelleCompte: codeToLibelle[code] ?? '',
+              montant: 0,
+              debit: 0,
+              credit: 0,
+              annee: 0,
+            ))
+        .toList();
   }
 
   // Mapping codeCompte -> { annee -> montant }
-  Map<String, Map<String, double>> getComptesMontantsParAnnee(List<String> annees) {
+  Map<String, Map<String, double>> getComptesMontantsParAnnee(
+      List<String> annees) {
     if (comptesResponse == null) return {};
     final Map<String, Map<String, double>> map = {};
     for (final an in annees) {
@@ -515,7 +584,8 @@ class _GlobalState extends State<Global> {
         map[c.codeCompte]![an] = c.montant;
       }
     }
-    print('[DEBUG] getComptesMontantsParAnnee: ${map.length} comptes, keys: ${map.keys.toList()}');
+    print(
+        '[DEBUG] getComptesMontantsParAnnee: ${map.length} comptes, keys: ${map.keys.toList()}');
     return map;
   }
 
@@ -524,7 +594,8 @@ class _GlobalState extends State<Global> {
     return resp.comptes.keys.toList();
   }
 
-  List<NavisionCompteGlobal> getComptesGlobalTableForResp(List<String> annees, dynamic resp) {
+  List<NavisionCompteGlobal> getComptesGlobalTableForResp(
+      List<String> annees, dynamic resp) {
     final Map<String, String> keyToLibelle = {};
     final Set<String> allKeys = {};
     for (final an in annees) {
@@ -551,7 +622,8 @@ class _GlobalState extends State<Global> {
     }).toList();
   }
 
-  Map<String, Map<String, double>> getComptesMontantsParAnneeForResp(List<String> annees, dynamic resp) {
+  Map<String, Map<String, double>> getComptesMontantsParAnneeForResp(
+      List<String> annees, dynamic resp) {
     final Map<String, Map<String, double>> map = {};
     for (final an in annees) {
       final comptesAnnee = resp.comptes[an]?.comptes ?? [];
@@ -559,11 +631,16 @@ class _GlobalState extends State<Global> {
         final codeStr = c.codeCompte.toString();
         final libelleStr = c.libelleCompte.toString();
         if (codeStr.isEmpty || libelleStr.isEmpty) {
-          print('[DEBUG-FR] codeCompte ou libelleCompte est null pour le compte: $c (année: $an)');
+          print(
+              '[DEBUG-FR] codeCompte ou libelleCompte est null pour le compte: $c (année: $an)');
           continue;
         }
-        if (codeStr == 'null' || libelleStr == 'null' || codeStr.isEmpty || libelleStr.isEmpty) {
-          print('[DEBUG-FR] codeCompte ou libelleCompte vide ou "null" (année: $an): code="$codeStr", libelle="$libelleStr", compte: $c');
+        if (codeStr == 'null' ||
+            libelleStr == 'null' ||
+            codeStr.isEmpty ||
+            libelleStr.isEmpty) {
+          print(
+              '[DEBUG-FR] codeCompte ou libelleCompte vide ou "null" (année: $an): code="$codeStr", libelle="$libelleStr", compte: $c');
           continue;
         }
         final key = '$codeStr|$libelleStr';
@@ -571,7 +648,8 @@ class _GlobalState extends State<Global> {
         map[key]![an] = c.montant;
       }
     }
-    print('[DEBUG-FR] getComptesMontantsParAnneeForResp: map.keys = \'${map.keys}\'');
+    print(
+        '[DEBUG-FR] getComptesMontantsParAnneeForResp: map.keys = \'${map.keys}\'');
     return map;
   }
 
@@ -580,7 +658,7 @@ class _GlobalState extends State<Global> {
     final annees = getAnnees();
     // final indicateurData = getIndicateurData();
     final sousIndicateurData = getSousIndicateurData();
-    
+
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -605,15 +683,23 @@ class _GlobalState extends State<Global> {
                     children: [
                       Icon(Icons.functions, color: Color(0xFF00A9CA)),
                       SizedBox(width: 8),
-                      Text('Détails des formules SIG', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF00A9CA))),
+                      Text('Détails des formules SIG',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Color(0xFF00A9CA))),
                     ],
                   ),
                   SizedBox(height: 12),
-                  _buildFormulaItem('MC (Marge commerciale)', "Ventes de marchandises - Coût d'achat des marchandises vendues"),
-                  _buildFormulaItem('VA (Valeur ajoutée)', "Production de l'exercice + Marge commerciale - Consommations de l'exercice"),
-                  _buildFormulaItem("EBE (Excédent brut d'exploitation)", "VA + Subventions d'exploitation - Impôts et taxes - Charges de personnel"),
+                  _buildFormulaItem('MC (Marge commerciale)',
+                      "Ventes de marchandises - Coût d'achat des marchandises vendues"),
+                  _buildFormulaItem('VA (Valeur ajoutée)',
+                      "Production de l'exercice + Marge commerciale - Consommations de l'exercice"),
+                  _buildFormulaItem("EBE (Excédent brut d'exploitation)",
+                      "VA + Subventions d'exploitation - Impôts et taxes - Charges de personnel"),
                   _buildFormulaItem('R (Résultat)', 'Produits - Charges'),
-                  _buildFormulaItem("RE (Résultat d'exploitation)", "EBE + Autres produits - Autres charges"),
+                  _buildFormulaItem("RE (Résultat d'exploitation)",
+                      "EBE + Autres produits - Autres charges"),
                 ],
               ),
             ),
@@ -624,7 +710,10 @@ class _GlobalState extends State<Global> {
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Text(
             'Sélectionner un indicateur pour voir ses sous-indicateurs, puis sur un sous-indicateur pour voir les comptes',
-            style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12, color: Colors.grey.shade700),
+            style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontSize: 12,
+                color: Colors.grey.shade700),
           ),
         ),
 
@@ -641,7 +730,7 @@ class _GlobalState extends State<Global> {
             child: Text(
               'Indicateurs SIG',
               style: TextStyle(
-                fontWeight: FontWeight.bold, 
+                fontWeight: FontWeight.bold,
                 fontSize: 14,
                 color: Color(0xFFFF8C00),
               ),
@@ -661,7 +750,7 @@ class _GlobalState extends State<Global> {
                 : buildIndicateurTable(),
           ),
         ],
-        
+
         // Section des sous-indicateurs
         if (selectedIndicateur != null && sousIndicateurData.isNotEmpty) ...[
           SizedBox(height: 16),
@@ -677,7 +766,7 @@ class _GlobalState extends State<Global> {
               child: Text(
                 'Sous-indicateurs',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold, 
+                  fontWeight: FontWeight.bold,
                   fontSize: 14,
                   color: Color(0xFF00A9CA),
                 ),
@@ -705,13 +794,13 @@ class _GlobalState extends State<Global> {
                   });
                 },
                 sousIndicsResponse: sousIndicsResponse,
-        isKEuros: isKEuros,
-        associeLibelles: getSousIndicateursAssocies(),
+                isKEuros: isKEuros,
+                formuleTextParAnnee: getFormuleTextParAnnee(),
               ),
             ),
           ),
         ],
-        
+
         // Section des comptes
         if (selectedSousIndicateur != null) ...[
           SizedBox(height: 16),
@@ -731,7 +820,7 @@ class _GlobalState extends State<Global> {
                   Text(
                     'Détails des comptes',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold, 
+                      fontWeight: FontWeight.bold,
                       fontSize: 14,
                       color: Color(0xFF65887a),
                     ),
@@ -749,25 +838,35 @@ class _GlobalState extends State<Global> {
                       },
                       decoration: InputDecoration(
                         hintText: 'Rechercher N° compte ou libellé',
-                        hintStyle: TextStyle(color: Color(0xFF65887a).withOpacity(0.7), fontSize: 14),
-                        prefixIcon: Icon(Icons.search, color: Color(0xFF65887a), size: 20),
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                        hintStyle: TextStyle(
+                            color: Color(0xFF65887a).withOpacity(0.7),
+                            fontSize: 14),
+                        prefixIcon: Icon(Icons.search,
+                            color: Color(0xFF65887a), size: 20),
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 12),
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Color(0xFF65887a), width: 2),
+                          borderSide:
+                              BorderSide(color: Color(0xFF65887a), width: 2),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Color(0xFF65887a), width: 2),
+                          borderSide:
+                              BorderSide(color: Color(0xFF65887a), width: 2),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Color(0xFF00A9CA), width: 2),
+                          borderSide:
+                              BorderSide(color: Color(0xFF00A9CA), width: 2),
                         ),
                       ),
-                      style: TextStyle(color: Color(0xFF222222), fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                          color: Color(0xFF222222),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -787,32 +886,33 @@ class _GlobalState extends State<Global> {
                     ? AdaptiveTableContainer(
                         child: GlobalAccountDataTable(
                           comptes: getComptesGlobalTableForResp(
-                            getAnneesComptesFromResp(comptesResponse!), 
-                            comptesResponse!
-                          )
-                          .where((compte) =>
-                            _globalSearchText.isEmpty ||
-                            compte.codeCompte.toLowerCase().contains(_globalSearchText.toLowerCase()) ||
-                            compte.libelleCompte.toLowerCase().contains(_globalSearchText.toLowerCase())
-                          )
-                          .toList(),
+                                  getAnneesComptesFromResp(comptesResponse!),
+                                  comptesResponse!)
+                              .where((compte) =>
+                                  _globalSearchText.isEmpty ||
+                                  compte.codeCompte.toLowerCase().contains(
+                                      _globalSearchText.toLowerCase()) ||
+                                  compte.libelleCompte.toLowerCase().contains(
+                                      _globalSearchText.toLowerCase()))
+                              .toList(),
                           annees: getAnneesComptesFromResp(comptesResponse!),
                           montantsParAnnee: getComptesMontantsParAnneeForResp(
-                            getAnneesComptesFromResp(comptesResponse!), 
-                            comptesResponse!
-                          ),
-                          total: comptesResponse!.comptes.values.isNotEmpty ? 
-                                comptesResponse!.comptes.values.first.total 
-                                : 0,
+                              getAnneesComptesFromResp(comptesResponse!),
+                              comptesResponse!),
+                          total: comptesResponse!.comptes.values.isNotEmpty
+                              ? comptesResponse!.comptes.values.first.total
+                              : 0,
                           currentPage: currentPage,
                           pageSize: comptesLimit,
-                          onPageChanged: (page) => _onPageChanged(selectedSousIndicateur!, page),
+                          onPageChanged: (page) =>
+                              _onPageChanged(selectedSousIndicateur!, page),
                           isKEuros: isKEuros,
                         ),
                       )
                     : Container(
                         padding: EdgeInsets.all(16),
-                        child: Text('Aucun compte trouvé pour ce sous-indicateur'),
+                        child:
+                            Text('Aucun compte trouvé pour ce sous-indicateur'),
                       ),
           ),
         ], // <-- fin du if (selectedSousIndicateur != null)

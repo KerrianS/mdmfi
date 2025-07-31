@@ -1,170 +1,642 @@
-def calcul_sig_adapte(lignes):
+# -*- coding: utf-8 -*-
+"""
+Modèle SIG (Système d'Information de Gestion) pour les calculs financiers
+Contient les formules et logiques de calcul des indicateurs financiers
+"""
+
+from typing import Dict, List, Any, Tuple
+from models.PlanComptable import MappingIndicateurSIG
+
+
+class SIGCalculator:
     """
-    Calcul SIG avec formules comptables officielles françaises
-    Retourne un dict : {'indicateurs': {...}, 'details': {...}}
+    Calculateur SIG pour les indicateurs financiers
     """
-    # Helper functions pour sommer les montants (EXCLUANT les comptes de tiers)
-    def get_montant_par_indicateur_sous_ind(indicateur, sous_indicateurs_list, exclure_tiers=True):
+    
+    def __init__(self, lignes: List[Dict[str, Any]]):
+        """
+        Initialise le calculateur avec les lignes comptables
+        
+        Args:
+            lignes: Liste des lignes comptables avec indicateurs et sous-indicateurs
+        """
+        self.lignes = lignes
+        self._cache_montants = {}
+    
+    def _get_montant_par_indicateur_sous_ind(self, indicateur: str, sous_indicateurs_list: List[str], exclure_tiers: bool = True) -> float:
+        """
+        Calcule le montant total pour un indicateur et ses sous-indicateurs spécifiques
+        
+        Args:
+            indicateur: Code de l'indicateur (MC, VA, EBE, RE, R)
+            sous_indicateurs_list: Liste des sous-indicateurs à inclure
+            exclure_tiers: Si True, exclut les comptes de tiers (classes 4 et 5)
+            
+        Returns:
+            Montant total calculé
+        """
+        cache_key = f"{indicateur}_{'_'.join(sous_indicateurs_list)}_{exclure_tiers}"
+        if cache_key in self._cache_montants:
+            return self._cache_montants[cache_key]
+        
         total = 0
-        for l in lignes:
-            if l.get('indicateur') == indicateur:
-                code_compte = str(l.get('code_compte', ''))
+        for ligne in self.lignes:
+            if ligne.get('indicateur') == indicateur:
+                # Exclure les comptes de tiers (classes 4 et 5) sauf si explicitement demandé
+                code_compte = str(ligne.get('code_compte', ''))
                 if exclure_tiers and (code_compte.startswith('4') or code_compte.startswith('5')):
                     continue
-                if any(si in l.get('sous_indicateur', []) for si in sous_indicateurs_list):
-                    total += l['montant']
+                
+                if any(si in ligne.get('sous_indicateur', []) for si in sous_indicateurs_list):
+                    total += ligne['montant']
+        
+        self._cache_montants[cache_key] = total
         return total
-
-    def get_montant_par_indicateur(indicateur, exclure_tiers=True):
+    
+    def _get_montant_par_indicateur(self, indicateur: str, exclure_tiers: bool = True) -> float:
+        """
+        Calcule le montant total pour un indicateur (tous sous-indicateurs confondus)
+        
+        Args:
+            indicateur: Code de l'indicateur
+            exclure_tiers: Si True, exclut les comptes de tiers
+            
+        Returns:
+            Montant total calculé
+        """
+        cache_key = f"{indicateur}_all_{exclure_tiers}"
+        if cache_key in self._cache_montants:
+            return self._cache_montants[cache_key]
+        
         total = 0
-        for l in lignes:
-            if l.get('indicateur') == indicateur:
-                code_compte = str(l.get('code_compte', ''))
+        for ligne in self.lignes:
+            if ligne.get('indicateur') == indicateur:
+                code_compte = str(ligne.get('code_compte', ''))
                 if exclure_tiers and (code_compte.startswith('4') or code_compte.startswith('5')):
                     continue
-                total += l['montant']
+                total += ligne['montant']
+        
+        self._cache_montants[cache_key] = total
         return total
-
-    # 1. MARGE COMMERCIALE (MC)
-    ventes_marchandises = get_montant_par_indicateur_sous_ind('MC', ['VENTES DE MARCHANDISES', 'VENTES DE PRODUITS FINIS', 'VENTES DE SERVICES', 'PRESTATIONS DE SERVICES', 'TVA COLLECTEE'])
-    cout_achat_marchandises = get_montant_par_indicateur_sous_ind('MC', ['ACHATS DE MARCHANDISES'])
-    valeur_formule = 0
-    if ventes_marchandises == 0 and cout_achat_marchandises == 0:
-        mc_total = get_montant_par_indicateur('MC')
-        if mc_total != 0:
-            result['MC'] = mc_total
-            valeur_formule = mc_total
-    else:
-        mc_calculee = ventes_marchandises - abs(cout_achat_marchandises)
-        if mc_calculee != 0:
-            result['MC'] = mc_calculee
-            valeur_formule = mc_calculee
-    # Si aucun résultat, garder valeur_formule à 0
-    if ventes_marchandises == 0 and cout_achat_marchandises == 0:
-        formule_text = "MC : Non calculable"
-        formule_numeric = "MC : Non calculable"
-    else:
-        formule_text = f"MC = VENTES DE MARCHANDISES ({ventes_marchandises:.2f}) - ACHATS DE MARCHANDISES ({abs(cout_achat_marchandises):.2f}) = {valeur_formule:.2f}"
-        formule_numeric = f"MC = {ventes_marchandises:.2f} - {abs(cout_achat_marchandises):.2f} = {valeur_formule:.2f}"
-    ecart = round(result.get('MC', 0) - valeur_formule, 2)
-    details['MC'] = {
-        'formule_text': formule_text,
-        'formule_numeric': formule_numeric,
-        'valeur_formule': valeur_formule,
-        'ecart': ecart
-    }
-
-    # 2. VALEUR AJOUTÉE (VA)
-    mc_value = result.get('MC', 0)
-    production_vendue = get_montant_par_indicateur_sous_ind('VA', ['PRESTATIONS DE SERVICES', 'VENTES DE PRODUITS'])
-    production_stockee = get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION STOCKÉE'])
-    production_immobilisee = get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION IMMOBILISÉE'])
-    production_exercice = mc_value + production_vendue + production_stockee + production_immobilisee
-    achats_matieres = get_montant_par_indicateur_sous_ind('VA', ['ACHATS', 'FOURNITURES'])
-    services_exterieurs = get_montant_par_indicateur_sous_ind('EBE', ['SERVICES EXTÉRIEURS', 'AUTRES SERVICES EXTÉRIEURS'])
-    consommations_tiers = abs(achats_matieres) + abs(services_exterieurs)
-    va_direct = get_montant_par_indicateur('VA')
-    if production_exercice == mc_value and consommations_tiers == 0 and va_direct != 0:
-        result['VA'] = va_direct + mc_value
-        valeur_formule = va_direct + mc_value
-    else:
-        va_calculee = production_exercice - consommations_tiers
-        if va_calculee != 0:
-            result['VA'] = va_calculee
-            valeur_formule = va_calculee
-    partie_plus = [mc_value, production_vendue, production_stockee, production_immobilisee]
-    partie_moins = [abs(achats_matieres), abs(services_exterieurs)]
-    if all(v == 0 for v in partie_plus + partie_moins):
-        formule_text = "VA : Non calculable"
-        formule_numeric = "VA : Non calculable"
-    else:
-        formule_text = f"VA = MC ({mc_value:.2f}) + PRESTATIONS DE SERVICES ({production_vendue:.2f}) + PRODUCTION STOCKÉE ({production_stockee:.2f}) + PRODUCTION IMMOBILISÉE ({production_immobilisee:.2f}) - ACHATS ({abs(achats_matieres):.2f}) - CHARGES EXTERNES ({abs(services_exterieurs):.2f}) = {valeur_formule:.2f}"
-        formule_numeric = "VA = (" + " + ".join([f"{v:.2f}" for v in partie_plus]) + ") - (" + " + ".join([f"{v:.2f}" for v in partie_moins]) + f") = {valeur_formule:.2f}"
-    ecart = round(result.get('VA', 0) - valeur_formule, 2)
-    details['VA'] = {
-        'formule_text': formule_text,
-        'formule_numeric': formule_numeric,
-        'valeur_formule': valeur_formule,
-        'ecart': ecart
-    }
-
-    # 3. EXCÉDENT BRUT D'EXPLOITATION (EBE)
-    va_value = result.get('VA', 0)
-    subventions_exploitation = get_montant_par_indicateur_sous_ind('EBE', ["SUBVENTIONS D'EXPLOITATION"])
-    impots_taxes = get_montant_par_indicateur_sous_ind('EBE', ['IMPÔTS ET TAXES'])
-    charges_personnel = get_montant_par_indicateur_sous_ind('EBE', ['CHARGES DE PERSONNEL'])
-    if va_value != 0 or subventions_exploitation != 0 or impots_taxes != 0 or charges_personnel != 0:
-        result['EBE'] = va_value + subventions_exploitation - abs(impots_taxes) - abs(charges_personnel)
-        valeur_formule = result['EBE']
-    else:
-        valeur_formule = 0
-    partie_plus = [va_value, subventions_exploitation]
-    partie_moins = [abs(impots_taxes), abs(charges_personnel)]
-    if all(v == 0 for v in partie_plus + partie_moins):
-        formule_text = "EBE : Non calculable"
-        formule_numeric = "EBE : Non calculable"
-    else:
-        formule_text = f"EBE = VA ({va_value:.2f}) + SUBVENTIONS D'EXPLOITATION ({subventions_exploitation:.2f}) - IMPÔTS ET TAXES ({abs(impots_taxes):.2f}) - CHARGES DE PERSONNEL ({abs(charges_personnel):.2f}) = {valeur_formule:.2f}"
-        formule_numeric = "EBE = (" + " + ".join([f"{v:.2f}" for v in partie_plus]) + ") - (" + " + ".join([f"{v:.2f}" for v in partie_moins]) + f") = {valeur_formule:.2f}"
-    ecart = round(result.get('EBE', 0) - valeur_formule, 2)
-    details['EBE'] = {
-        'formule_text': formule_text,
-        'formule_numeric': formule_numeric,
-        'valeur_formule': valeur_formule,
-        'ecart': ecart
-    }
-
-    # 4. RÉSULTAT D'EXPLOITATION (RE)
-    ebe_value = result.get('EBE', 0)
-    autres_produits = get_montant_par_indicateur_sous_ind('RE', ['AUTRES PRODUITS DE GESTION COURANTE', 'REPRISES AMORTISSEMENTS'])
-    autres_charges = get_montant_par_indicateur_sous_ind('RE', ['AUTRES CHARGES DE GESTION COURANTE', 'DOTATIONS AMORTISSEMENTS'])
-    if ebe_value != 0 or autres_produits != 0 or autres_charges != 0:
-        result['RE'] = ebe_value + autres_produits - abs(autres_charges)
-        valeur_formule = result['RE']
-    else:
-        valeur_formule = 0
-    partie_plus = [ebe_value, autres_produits]
-    partie_moins = [abs(autres_charges)]
-    if all(v == 0 for v in partie_plus + partie_moins):
-        formule_text = "RE : Non calculable"
-        formule_numeric = "RE : Non calculable"
-    else:
-        formule_text = f"RE = EBE ({ebe_value:.2f}) + AUTRES PRODUITS ({autres_produits:.2f}) - AUTRES CHARGES ({abs(autres_charges):.2f}) = {valeur_formule:.2f}"
-        formule_numeric = "RE = (" + " + ".join([f"{v:.2f}" for v in partie_plus]) + ") - (" + " + ".join([f"{v:.2f}" for v in partie_moins]) + f") = {valeur_formule:.2f}"
-    ecart = round(result.get('RE', 0) - valeur_formule, 2)
-    details['RE'] = {
-        'formule_text': formule_text,
-        'formule_numeric': formule_numeric,
-        'valeur_formule': valeur_formule,
-        'ecart': ecart
-    }
-
-    # 5. RÉSULTAT NET (R)
-    re_value = result.get('RE', 0)
-    produits_financiers = get_montant_par_indicateur_sous_ind('R', ['PRODUITS FINANCIERS'])
-    charges_financieres = get_montant_par_indicateur_sous_ind('R', ['CHARGES FINANCIÈRES'])
-    resultat_financier = produits_financiers - abs(charges_financieres)
-    produits_exceptionnels = get_montant_par_indicateur_sous_ind('R', ['PRODUITS EXCEPTIONNELS'])
-    charges_exceptionnelles = get_montant_par_indicateur_sous_ind('R', ['CHARGES EXCEPTIONNELLES'])
-    resultat_exceptionnel = produits_exceptionnels - abs(charges_exceptionnelles)
-    impots_benefices = get_montant_par_indicateur_sous_ind('R', ['IMPÔTS SUR LES BÉNÉFICES'])
-    if (re_value != 0 or resultat_financier != 0 or resultat_exceptionnel != 0 or impots_benefices != 0):
-        result['R'] = re_value + resultat_financier + resultat_exceptionnel - abs(impots_benefices)
-        valeur_formule = result['R']
-    else:
-        valeur_formule = 0
-    partie_plus = [re_value, produits_financiers, produits_exceptionnels]
-    partie_moins = [abs(charges_financieres), abs(charges_exceptionnelles), abs(impots_benefices)]
-    if all(v == 0 for v in partie_plus + partie_moins):
-        formule_text = "R : Non calculable"
-        formule_numeric = "R : Non calculable"
-    else:
-        formule_text = f"R = RE ({re_value:.2f}) + PRODUITS FINANCIERS ({produits_financiers:.2f}) + PRODUITS EXCEPTIONNELS ({produits_exceptionnels:.2f}) - CHARGES FINANCIÈRES ({abs(charges_financieres):.2f}) - CHARGES EXCEPTIONNELLES ({abs(charges_exceptionnelles):.2f}) - IMPÔTS SUR LES BÉNÉFICES ({abs(impots_benefices):.2f}) = {valeur_formule:.2f}"
-        formule_numeric = "R = (" + " + ".join([f"{v:.2f}" for v in partie_plus]) + ") - (" + " + ".join([f"{v:.2f}" for v in partie_moins]) + f") = {valeur_formule:.2f}"
-    ecart = round(result.get('R', 0) - valeur_formule, 2)
-    details['R'] = {
-        'formule_text': formule_text,
-        'formule_numeric': formule_numeric,
-        'valeur_formule': valeur_formule,
-        'ecart': ecart
-    }
+    
+    def calculer_marge_commerciale(self) -> float:
+        """
+        Calcule la Marge Commerciale (MC)
+        MC = Ventes de marchandises - Coût d'achat des marchandises vendues
+        
+        Returns:
+            Valeur de la marge commerciale
+        """
+        # Composantes positives (ventes)
+        ventes_marchandises = self._get_montant_par_indicateur_sous_ind(
+            'MC', 
+            ['VENTES DE MARCHANDISES', 'VENTES DE PRODUITS FINIS', 'VENTES DE SERVICES', 
+             'PRESTATIONS DE SERVICES', 'TVA COLLECTEE']
+        )
+        
+        # Composantes négatives (achats)
+        cout_achat_marchandises = self._get_montant_par_indicateur_sous_ind(
+            'MC', 
+            ['ACHATS DE MARCHANDISES']
+        )
+        
+        # Si pas de sous-indicateurs spécifiques, prendre tout MC (hors tiers)
+        if ventes_marchandises == 0 and cout_achat_marchandises == 0:
+            mc_total = self._get_montant_par_indicateur('MC')
+            return mc_total if mc_total != 0 else 0
+        
+        return ventes_marchandises - abs(cout_achat_marchandises)
+    
+    def calculer_valeur_ajoutee(self, mc_value: float = 0) -> float:
+        """
+        Calcule la Valeur Ajoutée (VA)
+        VA = Production de l'exercice + Marge commerciale - Consommations de l'exercice
+        
+        Args:
+            mc_value: Valeur de la marge commerciale (si déjà calculée)
+            
+        Returns:
+            Valeur de la valeur ajoutée
+        """
+        # Production de l'exercice = Prestations + Ventes produits + Production stockée + Production immobilisée
+        prestations_services = self._get_montant_par_indicateur_sous_ind('VA', ['PRESTATIONS DE SERVICES'])
+        ventes_produits = self._get_montant_par_indicateur_sous_ind('VA', ['VENTES DE PRODUITS FINIS'])
+        production_stockee = self._get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION STOCKÉE'])
+        production_immobilisee = self._get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION IMMOBILISÉE'])
+        
+        production_exercice = prestations_services + ventes_produits + production_stockee + production_immobilisee
+        
+        # Marge commerciale (si pas fournie, la calculer)
+        if mc_value == 0:
+            mc_value = self.calculer_marge_commerciale()
+        
+        # Consommations de l'exercice = Achats stockés + Achats non stockés + Fournitures + Services extérieurs
+        achats_stockes = self._get_montant_par_indicateur_sous_ind('VA', ['ACHATS STOCKES'])
+        achats_non_stockes = self._get_montant_par_indicateur_sous_ind('VA', ['ACHATS NON STOCKES'])
+        fournitures = self._get_montant_par_indicateur_sous_ind('VA', ['FOURNITURES'])
+        services_exterieurs = self._get_montant_par_indicateur_sous_ind('VA', ['SERVICES EXTÉRIEURS'])
+        autres_services_exterieurs = self._get_montant_par_indicateur_sous_ind('VA', ['AUTRES SERVICES EXTÉRIEURS'])
+        
+        consommations_exercice = abs(achats_stockes) + abs(achats_non_stockes) + abs(fournitures) + abs(services_exterieurs) + abs(autres_services_exterieurs)
+        
+        va_calculee = production_exercice + mc_value - consommations_exercice
+        
+        # Si aucune donnée calculée, essayer de récupérer la VA directe
+        if va_calculee == 0 and production_exercice == 0 and consommations_exercice == 0:
+            va_direct = self._get_montant_par_indicateur('VA')
+            return va_direct if va_direct != 0 else 0
+        
+        return va_calculee
+    
+    def calculer_excedent_brut_exploitation(self, va_value: float = 0) -> float:
+        """
+        Calcule l'Excédent Brut d'Exploitation (EBE)
+        EBE = VA + Subventions d'exploitation - Impôts et taxes - Charges de personnel
+        
+        Args:
+            va_value: Valeur de la valeur ajoutée (si déjà calculée)
+            
+        Returns:
+            Valeur de l'excédent brut d'exploitation
+        """
+        # Valeur ajoutée (si pas fournie, la calculer)
+        if va_value == 0:
+            va_value = self.calculer_valeur_ajoutee()
+        
+        # Subventions d'exploitation
+        subventions_exploitation = self._get_montant_par_indicateur_sous_ind('EBE', ['SUBVENTIONS D\'EXPLOITATION'])
+        
+        # Impôts et taxes
+        impots_taxes = self._get_montant_par_indicateur_sous_ind('EBE', ['IMPÔTS ET TAXES'])
+        
+        # Charges de personnel
+        charges_personnel = self._get_montant_par_indicateur_sous_ind('EBE', ['CHARGES DE PERSONNEL'])
+        
+        if va_value != 0 or subventions_exploitation != 0 or impots_taxes != 0 or charges_personnel != 0:
+            return va_value + subventions_exploitation - abs(impots_taxes) - abs(charges_personnel)
+        
+        return 0
+    
+    def calculer_resultat_exploitation(self, ebe_value: float = 0) -> float:
+        """
+        Calcule le Résultat d'Exploitation (RE)
+        RE = EBE + Autres produits - Autres charges
+        
+        Args:
+            ebe_value: Valeur de l'EBE (si déjà calculée)
+            
+        Returns:
+            Valeur du résultat d'exploitation
+        """
+        # EBE (si pas fourni, le calculer)
+        if ebe_value == 0:
+            ebe_value = self.calculer_excedent_brut_exploitation()
+        
+        # Autres produits
+        autres_produits = self._get_montant_par_indicateur_sous_ind('RE', ['AUTRES PRODUITS DE GESTION COURANTE'])
+        reprises_amortissements = self._get_montant_par_indicateur_sous_ind('RE', ['REPRISES AMORTISSEMENTS'])
+        
+        # Autres charges
+        autres_charges = self._get_montant_par_indicateur_sous_ind('RE', ['AUTRES CHARGES DE GESTION COURANTE'])
+        dotations_amortissements = self._get_montant_par_indicateur_sous_ind('RE', ['DOTATIONS AMORTISSEMENTS'])
+        
+        if ebe_value != 0 or autres_produits != 0 or reprises_amortissements != 0 or autres_charges != 0 or dotations_amortissements != 0:
+            return ebe_value + autres_produits + reprises_amortissements - abs(autres_charges) - abs(dotations_amortissements)
+        
+        return 0
+    
+    def calculer_resultat_net(self, re_value: float = 0) -> float:
+        """
+        Calcule le Résultat Net (R)
+        R = RE + Résultat financier + Résultat exceptionnel - Impôts sur les bénéfices
+        
+        Args:
+            re_value: Valeur du RE (si déjà calculée)
+            
+        Returns:
+            Valeur du résultat net
+        """
+        # RE (si pas fourni, le calculer)
+        if re_value == 0:
+            re_value = self.calculer_resultat_exploitation()
+        
+        # Résultat financier
+        produits_financiers = self._get_montant_par_indicateur_sous_ind('R', ['PRODUITS FINANCIERS'])
+        charges_financieres = self._get_montant_par_indicateur_sous_ind('R', ['CHARGES FINANCIÈRES'])
+        resultat_financier = produits_financiers - abs(charges_financieres)
+        
+        # Résultat exceptionnel
+        produits_exceptionnels = self._get_montant_par_indicateur_sous_ind('R', ['PRODUITS EXCEPTIONNELS'])
+        charges_exceptionnelles = self._get_montant_par_indicateur_sous_ind('R', ['CHARGES EXCEPTIONNELLES'])
+        resultat_exceptionnel = produits_exceptionnels - abs(charges_exceptionnelles)
+        
+        # Impôts sur les bénéfices
+        impots_benefices = self._get_montant_par_indicateur_sous_ind('R', ['IMPÔTS SUR LES BÉNÉFICES'])
+        
+        if (re_value != 0 or resultat_financier != 0 or resultat_exceptionnel != 0 or impots_benefices != 0):
+            return re_value + resultat_financier + resultat_exceptionnel - abs(impots_benefices)
+        
+        return 0
+    
+    def calculer_tous_indicateurs(self) -> Dict[str, float]:
+        """
+        Calcule tous les indicateurs SIG dans l'ordre logique
+        
+        Returns:
+            Dictionnaire avec tous les indicateurs calculés
+        """
+        result = {}
+        
+        # 1. Marge Commerciale (MC)
+        mc_value = self.calculer_marge_commerciale()
+        if mc_value != 0:
+            result['MC'] = mc_value
+        
+        # 2. Valeur Ajoutée (VA)
+        va_value = self.calculer_valeur_ajoutee(mc_value)
+        if va_value != 0:
+            result['VA'] = va_value
+        
+        # 3. Excédent Brut d'Exploitation (EBE)
+        ebe_value = self.calculer_excedent_brut_exploitation(va_value)
+        if ebe_value != 0:
+            result['EBE'] = ebe_value
+        
+        # 4. Résultat d'Exploitation (RE)
+        re_value = self.calculer_resultat_exploitation(ebe_value)
+        if re_value != 0:
+            result['RE'] = re_value
+        
+        # 5. Résultat Net (R)
+        r_value = self.calculer_resultat_net(re_value)
+        if r_value != 0:
+            result['R'] = r_value
+        
+        return result
+    
+    def get_composantes_formule(self, indicateur: str) -> Tuple[List[str], List[str]]:
+        """
+        Récupère les composantes positives et négatives d'un indicateur pour la construction de formule
+        Respecte les formules SIG officielles françaises
+        
+        Args:
+            indicateur: Code de l'indicateur
+            
+        Returns:
+            Tuple (composantes_positives, composantes_negatives)
+        """
+        if indicateur == 'MC':
+            # MC = Ventes de marchandises - Coût d'achat des marchandises vendues
+            composantes_positives = []
+            composantes_negatives = []
+            
+            # Composantes positives (ventes) - inclure si montant > 0
+            ventes_composantes = ['VENTES DE MARCHANDISES', 'VENTES DE PRODUITS FINIS', 'VENTES DE SERVICES', 'PRESTATIONS DE SERVICES', 'TVA COLLECTEE']
+            for comp in ventes_composantes:
+                montant = self._get_montant_par_indicateur_sous_ind('MC', [comp])
+                if montant > 0:
+                    composantes_positives.append(comp)
+            
+            # Composantes négatives (achats) - inclure si montant > 0 (car ce sont des charges)
+            achats_composantes = ['ACHATS DE MARCHANDISES']
+            for comp in achats_composantes:
+                montant = self._get_montant_par_indicateur_sous_ind('MC', [comp])
+                if montant > 0:  # Les achats sont des charges, donc on les inclut si > 0
+                    composantes_negatives.append(comp)
+            
+            return composantes_positives, composantes_negatives
+            
+        elif indicateur == 'VA':
+            # VA = Production de l'exercice + Marge commerciale - Consommations de l'exercice
+            composantes_positives = []
+            composantes_negatives = []
+            
+            # Composantes de production (positives) - inclure si montant > 0
+            production_composantes = ['PRESTATIONS DE SERVICES', 'VENTES DE PRODUITS FINIS', 'PRODUCTION STOCKÉE', 'PRODUCTION IMMOBILISÉE']
+            for comp in production_composantes:
+                montant = self._get_montant_par_indicateur_sous_ind('VA', [comp])
+                if montant > 0:
+                    composantes_positives.append(comp)
+            
+            # Ajouter MC comme composante positive (selon la formule officielle)
+            mc_value = self.calculer_marge_commerciale()
+            if mc_value > 0:
+                composantes_positives.append('MC')
+            
+            # Composantes de consommation (négatives) - inclure si montant > 0 (car ce sont des charges)
+            consommation_composantes = ['ACHATS STOCKES', 'ACHATS NON STOCKES', 'FOURNITURES', 'SERVICES EXTÉRIEURS', 'AUTRES SERVICES EXTÉRIEURS']
+            for comp in consommation_composantes:
+                montant = self._get_montant_par_indicateur_sous_ind('VA', [comp])
+                if montant > 0:  # Les consommations sont des charges, donc on les inclut si > 0
+                    composantes_negatives.append(comp)
+            
+            return composantes_positives, composantes_negatives
+            
+        elif indicateur == 'EBE':
+            # EBE = VA + Subventions d'exploitation - Impôts et taxes - Charges de personnel
+            composantes_positives = []
+            composantes_negatives = []
+            
+            # Ajouter VA comme composante positive (selon la formule officielle)
+            va_value = self.calculer_valeur_ajoutee()
+            if va_value > 0:
+                composantes_positives.append('VA')
+            
+            # Vérifier les autres composantes
+            ebe_composantes = ['SUBVENTIONS D\'EXPLOITATION', 'IMPÔTS ET TAXES', 'CHARGES DE PERSONNEL']
+            for comp in ebe_composantes:
+                montant = self._get_montant_par_indicateur_sous_ind('EBE', [comp])
+                if montant > 0:
+                    composantes_positives.append(comp)
+                elif montant < 0:
+                    composantes_negatives.append(comp)
+            
+            return composantes_positives, composantes_negatives
+            
+        elif indicateur == 'RE':
+            # RE = EBE + Autres produits - Autres charges
+            composantes_positives = []
+            composantes_negatives = []
+            
+            # Ajouter EBE comme composante positive (selon la formule officielle)
+            ebe_value = self.calculer_excedent_brut_exploitation()
+            if ebe_value > 0:
+                composantes_positives.append('EBE')
+            
+            # Vérifier les autres composantes
+            re_composantes = ['AUTRES PRODUITS DE GESTION COURANTE', 'REPRISES AMORTISSEMENTS', 'AUTRES CHARGES DE GESTION COURANTE', 'DOTATIONS AMORTISSEMENTS']
+            for comp in re_composantes:
+                montant = self._get_montant_par_indicateur_sous_ind('RE', [comp])
+                if montant > 0:
+                    composantes_positives.append(comp)
+                elif montant < 0:
+                    composantes_negatives.append(comp)
+            
+            return composantes_positives, composantes_negatives
+            
+        elif indicateur == 'R':
+            # R = RE + Résultat financier + Résultat exceptionnel - Impôts sur les bénéfices
+            composantes_positives = []
+            composantes_negatives = []
+            
+            # Ajouter RE comme composante positive (selon la formule officielle)
+            re_value = self.calculer_resultat_exploitation()
+            if re_value > 0:
+                composantes_positives.append('RE')
+            
+            # Vérifier les autres composantes
+            r_composantes = ['PRODUITS FINANCIERS', 'CHARGES FINANCIÈRES', 'PRODUITS EXCEPTIONNELS', 'CHARGES EXCEPTIONNELLES', 'IMPÔTS SUR LES BÉNÉFICES']
+            for comp in r_composantes:
+                montant = self._get_montant_par_indicateur_sous_ind('R', [comp])
+                if montant > 0:
+                    composantes_positives.append(comp)
+                elif montant < 0:
+                    composantes_negatives.append(comp)
+            
+            return composantes_positives, composantes_negatives
+        
+        else:
+            # Fallback pour les autres indicateurs
+            sous_indicateurs_possibles = MappingIndicateurSIG.get_sous_indicateurs_possibles().get(indicateur, [])
+            
+            composantes_positives = []
+            composantes_negatives = []
+            
+            # Vérifier quels sous-indicateurs ont réellement des montants dans les données
+            for sous_ind in sous_indicateurs_possibles:
+                montant = self._get_montant_par_indicateur_sous_ind(indicateur, [sous_ind])
+                if montant > 0:
+                    composantes_positives.append(sous_ind)
+                elif montant < 0:
+                    composantes_negatives.append(sous_ind)
+            
+            return composantes_positives, composantes_negatives
+    
+    def construire_formule_text(self, indicateur: str, valeur: float = 0) -> str:
+        """
+        Construit la formule textuelle d'un indicateur
+        
+        Args:
+            indicateur: Code de l'indicateur
+            valeur: Valeur calculée de l'indicateur (ignorée, recalculée)
+            
+        Returns:
+            Formule textuelle formatée
+        """
+        composantes_positives, composantes_negatives = self.get_composantes_formule(indicateur)
+        
+        partie_plus = []
+        partie_moins = []
+        somme_calculee = 0
+        
+        # Construire la partie positive
+        for comp in composantes_positives:
+            if comp in ['MC', 'VA', 'EBE', 'RE']:
+                # Pour les composantes calculées, récupérer leur valeur calculée
+                if comp == 'MC':
+                    montant = self.calculer_marge_commerciale()
+                elif comp == 'VA':
+                    montant = self.calculer_valeur_ajoutee()
+                elif comp == 'EBE':
+                    montant = self.calculer_excedent_brut_exploitation()
+                elif comp == 'RE':
+                    montant = self.calculer_resultat_exploitation()
+                else:
+                    montant = 0
+            else:
+                # Pour les sous-indicateurs individuels
+                montant = self._get_montant_par_indicateur_sous_ind(indicateur, [comp])
+            
+            if montant > 0:
+                partie_plus.append(f"{comp} ({montant:.2f})")
+                somme_calculee += montant
+        
+        # Construire la partie négative
+        for comp in composantes_negatives:
+            if comp in ['MC', 'VA', 'EBE', 'RE']:
+                # Pour les composantes calculées, récupérer leur valeur calculée
+                if comp == 'MC':
+                    montant = self.calculer_marge_commerciale()
+                elif comp == 'VA':
+                    montant = self.calculer_valeur_ajoutee()
+                elif comp == 'EBE':
+                    montant = self.calculer_excedent_brut_exploitation()
+                elif comp == 'RE':
+                    montant = self.calculer_resultat_exploitation()
+                else:
+                    montant = 0
+            else:
+                # Pour les sous-indicateurs individuels
+                montant = self._get_montant_par_indicateur_sous_ind(indicateur, [comp])
+            
+            # Les composantes négatives sont maintenant incluses si montant > 0 (car ce sont des charges)
+            if montant > 0:
+                partie_moins.append(f"{comp} ({montant:.2f})")
+                somme_calculee -= montant  # On soustrait car c'est une charge
+        
+        # Construire la formule avec la somme calculée
+        if partie_plus and partie_moins:
+            formule = f"{indicateur} = {' + '.join(partie_plus)} - {' + '.join(partie_moins)} = {somme_calculee:.2f}"
+        elif partie_plus and not partie_moins:
+            formule = f"{indicateur} = {' + '.join(partie_plus)} = {somme_calculee:.2f}"
+        elif not partie_plus and partie_moins:
+            formule = f"{indicateur} = -({' + '.join(partie_moins)}) = {somme_calculee:.2f}"
+        else:
+            formule = f"{indicateur} = {somme_calculee:.2f}"
+        
+        return formule
+    
+    def construire_formule_numeric(self, indicateur: str, valeur: float = 0) -> str:
+        """
+        Construit la formule numérique d'un indicateur
+        
+        Args:
+            indicateur: Code de l'indicateur
+            valeur: Valeur calculée de l'indicateur (ignorée, recalculée)
+            
+        Returns:
+            Formule numérique formatée
+        """
+        composantes_positives, composantes_negatives = self.get_composantes_formule(indicateur)
+        
+        partie_plus = []
+        partie_moins = []
+        somme_calculee = 0
+        
+        # Construire la partie positive
+        for comp in composantes_positives:
+            if comp in ['MC', 'VA', 'EBE', 'RE']:
+                # Pour les composantes calculées, récupérer leur valeur calculée
+                if comp == 'MC':
+                    montant = self.calculer_marge_commerciale()
+                elif comp == 'VA':
+                    montant = self.calculer_valeur_ajoutee()
+                elif comp == 'EBE':
+                    montant = self.calculer_excedent_brut_exploitation()
+                elif comp == 'RE':
+                    montant = self.calculer_resultat_exploitation()
+                else:
+                    montant = 0
+            else:
+                # Pour les sous-indicateurs individuels
+                montant = self._get_montant_par_indicateur_sous_ind(indicateur, [comp])
+            
+            if montant > 0:
+                partie_plus.append(f"{montant:.2f}")
+                somme_calculee += montant
+        
+        # Construire la partie négative
+        for comp in composantes_negatives:
+            if comp in ['MC', 'VA', 'EBE', 'RE']:
+                # Pour les composantes calculées, récupérer leur valeur calculée
+                if comp == 'MC':
+                    montant = self.calculer_marge_commerciale()
+                elif comp == 'VA':
+                    montant = self.calculer_valeur_ajoutee()
+                elif comp == 'EBE':
+                    montant = self.calculer_excedent_brut_exploitation()
+                elif comp == 'RE':
+                    montant = self.calculer_resultat_exploitation()
+                else:
+                    montant = 0
+            else:
+                # Pour les sous-indicateurs individuels
+                montant = self._get_montant_par_indicateur_sous_ind(indicateur, [comp])
+            
+            # Les composantes négatives sont maintenant incluses si montant > 0 (car ce sont des charges)
+            if montant > 0:
+                partie_moins.append(f"{montant:.2f}")
+                somme_calculee -= montant  # On soustrait car c'est une charge
+        
+        # Construire la formule avec la somme calculée
+        if partie_plus and partie_moins:
+            formule = f"{indicateur} = ({' + '.join(partie_plus)}) - ({' + '.join(partie_moins)}) = {somme_calculee:.2f}"
+        elif partie_plus and not partie_moins:
+            formule = f"{indicateur} = {' + '.join(partie_plus)} = {somme_calculee:.2f}"
+        elif not partie_plus and partie_moins:
+            formule = f"{indicateur} = -({' + '.join(partie_moins)}) = {somme_calculee:.2f}"
+        else:
+            formule = f"{indicateur} = {somme_calculee:.2f}"
+        
+        return formule
+    
+    def calculer_valeur_par_formule(self, indicateur: str) -> float:
+        """
+        Calcule la valeur d'un indicateur basée sur la somme des composantes de sa formule
+        
+        Args:
+            indicateur: Code de l'indicateur
+            
+        Returns:
+            Valeur calculée basée sur la somme des composantes de la formule
+        """
+        composantes_positives, composantes_negatives = self.get_composantes_formule(indicateur)
+        
+        somme_calculee = 0
+        
+        # Calculer la somme des composantes positives
+        for comp in composantes_positives:
+            if comp in ['MC', 'VA', 'EBE', 'RE']:
+                # Pour les composantes calculées, récupérer leur valeur calculée
+                if comp == 'MC':
+                    montant = self.calculer_marge_commerciale()
+                elif comp == 'VA':
+                    montant = self.calculer_valeur_ajoutee()
+                elif comp == 'EBE':
+                    montant = self.calculer_excedent_brut_exploitation()
+                elif comp == 'RE':
+                    montant = self.calculer_resultat_exploitation()
+                else:
+                    montant = 0
+            else:
+                # Pour les sous-indicateurs individuels
+                montant = self._get_montant_par_indicateur_sous_ind(indicateur, [comp])
+            
+            if montant > 0:
+                somme_calculee += montant
+        
+        # Calculer la somme des composantes négatives
+        for comp in composantes_negatives:
+            if comp in ['MC', 'VA', 'EBE', 'RE']:
+                # Pour les composantes calculées, récupérer leur valeur calculée
+                if comp == 'MC':
+                    montant = self.calculer_marge_commerciale()
+                elif comp == 'VA':
+                    montant = self.calculer_valeur_ajoutee()
+                elif comp == 'EBE':
+                    montant = self.calculer_excedent_brut_exploitation()
+                elif comp == 'RE':
+                    montant = self.calculer_resultat_exploitation()
+                else:
+                    montant = 0
+            else:
+                # Pour les sous-indicateurs individuels
+                montant = self._get_montant_par_indicateur_sous_ind(indicateur, [comp])
+            
+            # Les composantes négatives sont maintenant incluses si montant > 0 (car ce sont des charges)
+            if montant > 0:
+                somme_calculee -= montant  # On soustrait car c'est une charge
+        
+        return somme_calculee
+    
+    def get_sous_indicateurs_avec_montants(self, indicateur: str) -> List[Dict[str, Any]]:
+        """
+        Récupère tous les sous-indicateurs possibles d'un indicateur avec leurs montants
+        
+        Args:
+            indicateur: Code de l'indicateur
+            
+        Returns:
+            Liste des sous-indicateurs avec leurs montants
+        """
+        sous_indicateurs_possibles = MappingIndicateurSIG.get_sous_indicateurs_possibles().get(indicateur, [])
+        result = []
+        
+        for sous_ind in sous_indicateurs_possibles:
+            montant = self._get_montant_par_indicateur_sous_ind(indicateur, [sous_ind])
+            result.append({
+                "sous_indicateur": sous_ind,
+                "montant": montant
+            })
+        
+        return result

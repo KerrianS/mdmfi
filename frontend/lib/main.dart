@@ -7,19 +7,37 @@ import 'package:provider/provider.dart';
 import 'services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/swipe_provider.dart';
+import 'package:mobaitec_decision_making/services/theme/data_mode_provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+<<<<<<< HEAD
   // await Hive.initFlutter();
   // var box = await Hive.openBox('navision_cache');
   // print('Hive path: [32m${box.path}[0m');
+=======
+  await Hive.initFlutter();
+
+  // Vider le cache pour résoudre les problèmes de données
+  try {
+    var box = await Hive.openBox('navision_cache');
+    await box.clear();
+    print('Cache Hive vidé avec succès');
+  } catch (e) {
+    print('Erreur lors du vidage du cache: $e');
+  }
+
+  var box = await Hive.openBox('navision_cache');
+  print('Hive path: [32m${box.path}[0m');
+>>>>>>> fcec052493fa8f97cdd922f31bac53071ff66a61
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => KeycloakProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => SwipeProvider())
+        ChangeNotifierProvider(create: (_) => SwipeProvider()),
+        ChangeNotifierProvider(create: (_) => DataModeProvider())
       ],
       child: MyApp(),
     ),
@@ -57,8 +75,8 @@ class MyApp extends StatelessWidget {
             900: AppColors.mcaBleu900.color,
           },
         ),
-        segmentedButtonTheme: themeProvider.isDarkMode 
-            ? _getSegementedButtonThemeDark() 
+        segmentedButtonTheme: themeProvider.isDarkMode
+            ? _getSegementedButtonThemeDark()
             : _getSegementedButtonTheme(),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
@@ -66,7 +84,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: false,
         brightness: Brightness.dark,
         primarySwatch: Colors.grey,
-        scaffoldBackgroundColor: Color(0xFF2C2C2C), // Gris pas trop foncé pour le fond des écrans
+        scaffoldBackgroundColor:
+            Color(0xFF2C2C2C), // Gris pas trop foncé pour le fond des écrans
         canvasColor: Color(0xFF2C2C2C), // Fond canvas gris
         appBarTheme: AppBarTheme(
           backgroundColor: Color(0xFF1E1E1E), // Gris très foncé pour navbar
@@ -75,12 +94,16 @@ class MyApp extends StatelessWidget {
         ),
         dataTableTheme: DataTableThemeData(
           decoration: BoxDecoration(
-            color: Color(0xFF1E1E1E), // Gris très foncé comme navbar pour les tableaux
+            color: Color(
+                0xFF1E1E1E), // Gris très foncé comme navbar pour les tableaux
           ),
           headingRowColor: MaterialStateProperty.all(Color(0xFF1E1E1E)),
           dataRowColor: MaterialStateProperty.all(Color(0xFF1E1E1E)),
-          dataTextStyle: TextStyle(color: Color(0xFFE0E0E0)), // Blanc cassé pour les valeurs
-          headingTextStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), // Blanc pur pour les en-têtes
+          dataTextStyle: TextStyle(
+              color: Color(0xFFE0E0E0)), // Blanc cassé pour les valeurs
+          headingTextStyle: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold), // Blanc pur pour les en-têtes
         ),
         listTileTheme: ListTileThemeData(
           tileColor: Color(0xFF1E1E1E), // Gris foncé pour les ListTile
@@ -91,7 +114,8 @@ class MyApp extends StatelessWidget {
           textColor: Color(0xFFE0E0E0), // Couleur du texte
           collapsedTextColor: Color(0xFFE0E0E0), // Couleur du texte quand fermé
           iconColor: Color(0xFFE0E0E0), // Couleur de l'icône
-          collapsedIconColor: Color(0xFFE0E0E0), // Couleur de l'icône quand fermé
+          collapsedIconColor:
+              Color(0xFFE0E0E0), // Couleur de l'icône quand fermé
         ),
         dividerColor: Color(0xFF404040), // Couleur des dividers
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -102,28 +126,39 @@ class MyApp extends StatelessWidget {
         ),
         segmentedButtonTheme: _getSegementedButtonThemeDark(),
         textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Color(0xFFE0E0E0)), // Blanc cassé pour le texte principal
+          bodyLarge: TextStyle(
+              color: Color(0xFFE0E0E0)), // Blanc cassé pour le texte principal
           bodyMedium: TextStyle(color: Color(0xFFE0E0E0)), // Blanc cassé
-          bodySmall: TextStyle(color: Color(0xFFCCCCCC)), // Blanc plus terne pour les détails
-          titleLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), // Blanc pur pour les titres
-          titleMedium: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          bodySmall: TextStyle(
+              color: Color(0xFFCCCCCC)), // Blanc plus terne pour les détails
+          titleLarge: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold), // Blanc pur pour les titres
+          titleMedium:
+              TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           titleSmall: TextStyle(color: Color(0xFFE0E0E0)),
-          headlineLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          headlineMedium: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          headlineLarge:
+              TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          headlineMedium:
+              TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           headlineSmall: TextStyle(color: Colors.white),
-          labelLarge: TextStyle(color: Color(0xFFE0E0E0)), // Pour les labels de tableaux
+          labelLarge: TextStyle(
+              color: Color(0xFFE0E0E0)), // Pour les labels de tableaux
           labelMedium: TextStyle(color: Color(0xFFCCCCCC)),
           labelSmall: TextStyle(color: Color(0xFFB0B0B0)),
         ),
         colorScheme: ColorScheme.dark(
           primary: Color(0xFF404040),
           secondary: Color(0xFF505050),
-          surface: Color(0xFF1E1E1E), // Gris très foncé pour les surfaces (cartes, tableaux)
+          surface: Color(
+              0xFF1E1E1E), // Gris très foncé pour les surfaces (cartes, tableaux)
           background: Color(0xFF2C2C2C), // Gris pas trop foncé pour le fond
           onPrimary: Colors.white,
           onSecondary: Colors.white,
-          onSurface: Color(0xFFE0E0E0), // Blanc cassé pour le texte sur les surfaces
-          onBackground: Color(0xFFE0E0E0), // Blanc cassé pour le texte sur le fond
+          onSurface:
+              Color(0xFFE0E0E0), // Blanc cassé pour le texte sur les surfaces
+          onBackground:
+              Color(0xFFE0E0E0), // Blanc cassé pour le texte sur le fond
           outline: Color(0xFF404040), // Pour les bordures
           surfaceVariant: Color(0xFF2C2C2C), // Variante de surface
           onSurfaceVariant: Color(0xFFCCCCCC), // Texte sur variante de surface

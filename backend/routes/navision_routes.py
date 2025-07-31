@@ -2,6 +2,7 @@
 from fastapi import APIRouter
 from controllers.navision_sig_controller import NavisionSIGController
 from models.PlanComptable import MappingIndicateurSIG
+from models.SIG_model import SIGCalculator
 import datetime
 from fastapi import Query
 from typing import Optional
@@ -17,116 +18,10 @@ SOCIETE_VUE_MAP = {
 def calcul_sig_adapte(lignes):
     """
     Calcul SIG avec formules comptables officielles françaises
+    Utilise le nouveau SIGCalculator pour un code plus propre et modulaire
     """
-    result = {}
-    
-    # Helper functions pour sommer les montants (EXCLUANT les comptes de tiers)
-    def get_montant_par_indicateur_sous_ind(indicateur, sous_indicateurs_list, exclure_tiers=True):
-        total = 0
-        for l in lignes:
-            if l.get('indicateur') == indicateur:
-                # Exclure les comptes de tiers (classes 4 et 5) sauf si explicitement demandé
-                code_compte = str(l.get('code_compte', ''))
-                if exclure_tiers and (code_compte.startswith('4') or code_compte.startswith('5')):
-                    continue
-                    
-                if any(si in l.get('sous_indicateur', []) for si in sous_indicateurs_list):
-                    total += l['montant']
-        return total
-    
-    def get_montant_par_indicateur(indicateur, exclure_tiers=True):
-        total = 0
-        for l in lignes:
-            if l.get('indicateur') == indicateur:
-                # Exclure les comptes de tiers (classes 4 et 5) sauf si explicitement demandé
-                code_compte = str(l.get('code_compte', ''))
-                if exclure_tiers and (code_compte.startswith('4') or code_compte.startswith('5')):
-                    continue
-                total += l['montant']
-        return total
-    
-    # 1. MARGE COMMERCIALE (MC)
-    # MC = Ventes de marchandises - Coût d'achat des marchandises vendues
-    ventes_marchandises = get_montant_par_indicateur_sous_ind('MC', ['VENTES DE MARCHANDISES', 'VENTES DE PRODUITS FINIS', 'VENTES DE SERVICES', 'PRESTATIONS DE SERVICES', 'TVA COLLECTEE'])
-    cout_achat_marchandises = get_montant_par_indicateur_sous_ind('MC', ['ACHATS DE MARCHANDISES'])
-    
-    # Si pas de sous-indicateurs spécifiques, prendre tout MC (hors tiers)
-    if ventes_marchandises == 0 and cout_achat_marchandises == 0:
-        mc_total = get_montant_par_indicateur('MC')
-        if mc_total != 0:
-            result['MC'] = mc_total
-    else:
-        mc_calculee = ventes_marchandises - abs(cout_achat_marchandises)
-        if mc_calculee != 0:
-            result['MC'] = mc_calculee
-    
-    # 2. VALEUR AJOUTÉE (VA)
-    # VA = Production de l'exercice - Consommations de l'exercice en provenance de tiers
-    
-    # Production = MC + Production vendue + Production stockée + Production immobilisée
-    mc_value = result.get('MC', 0)
-    production_vendue = get_montant_par_indicateur_sous_ind('VA', ['PRESTATIONS DE SERVICES', 'VENTES DE PRODUITS'])
-    production_stockee = get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION STOCKÉE'])
-    production_immobilisee = get_montant_par_indicateur_sous_ind('VA', ['PRODUCTION IMMOBILISÉE'])
-    
-    production_exercice = mc_value + production_vendue + production_stockee + production_immobilisee
-    
-    # Consommations = Achats + Autres charges externes
-    achats_matieres = get_montant_par_indicateur_sous_ind('VA', ['ACHATS', 'FOURNITURES'])
-    services_exterieurs = get_montant_par_indicateur_sous_ind('EBE', ['SERVICES EXTÉRIEURS', 'AUTRES SERVICES EXTÉRIEURS'])
-    
-    consommations_tiers = abs(achats_matieres) + abs(services_exterieurs)
-    
-    # Si pas assez de détail, prendre VA directe + MC
-    va_direct = get_montant_par_indicateur('VA')
-    if production_exercice == mc_value and consommations_tiers == 0 and va_direct != 0:
-        result['VA'] = va_direct + mc_value
-    else:
-        va_calculee = production_exercice - consommations_tiers
-        if va_calculee != 0:
-            result['VA'] = va_calculee
-    
-    # 3. EXCÉDENT BRUT D'EXPLOITATION (EBE)
-    # EBE = VA + Subventions d'exploitation - Impôts et taxes - Charges de personnel
-    va_value = result.get('VA', 0)
-    subventions_exploitation = get_montant_par_indicateur_sous_ind('EBE', ['SUBVENTIONS D\'EXPLOITATION'])
-    impots_taxes = get_montant_par_indicateur_sous_ind('EBE', ['IMPÔTS ET TAXES'])
-    charges_personnel = get_montant_par_indicateur_sous_ind('EBE', ['CHARGES DE PERSONNEL'])
-    
-    if va_value != 0 or subventions_exploitation != 0 or impots_taxes != 0 or charges_personnel != 0:
-        result['EBE'] = va_value + subventions_exploitation - abs(impots_taxes) - abs(charges_personnel)
-    
-    # 4. RÉSULTAT D'EXPLOITATION (RE)
-    # RE = EBE + Autres produits - Autres charges
-    ebe_value = result.get('EBE', 0)
-    autres_produits = get_montant_par_indicateur_sous_ind('RE', ['AUTRES PRODUITS DE GESTION COURANTE', 'REPRISES AMORTISSEMENTS'])
-    autres_charges = get_montant_par_indicateur_sous_ind('RE', ['AUTRES CHARGES DE GESTION COURANTE', 'DOTATIONS AMORTISSEMENTS'])
-    
-    if ebe_value != 0 or autres_produits != 0 or autres_charges != 0:
-        result['RE'] = ebe_value + autres_produits - abs(autres_charges)
-    
-    # 5. RÉSULTAT NET (R)
-    # R = Produits - Charges (approche globale)
-    # Ou R = RE + Résultat financier + Résultat exceptionnel - Impôts sur les bénéfices
-    re_value = result.get('RE', 0)
-    
-    # Résultat financier
-    produits_financiers = get_montant_par_indicateur_sous_ind('R', ['PRODUITS FINANCIERS'])
-    charges_financieres = get_montant_par_indicateur_sous_ind('R', ['CHARGES FINANCIÈRES'])
-    resultat_financier = produits_financiers - abs(charges_financieres)
-    
-    # Résultat exceptionnel
-    produits_exceptionnels = get_montant_par_indicateur_sous_ind('R', ['PRODUITS EXCEPTIONNELS'])
-    charges_exceptionnelles = get_montant_par_indicateur_sous_ind('R', ['CHARGES EXCEPTIONNELLES'])
-    resultat_exceptionnel = produits_exceptionnels - abs(charges_exceptionnelles)
-    
-    # Impôts sur les bénéfices
-    impots_benefices = get_montant_par_indicateur_sous_ind('R', ['IMPÔTS SUR LES BÉNÉFICES'])
-    
-    if (re_value != 0 or resultat_financier != 0 or resultat_exceptionnel != 0 or impots_benefices != 0):
-        result['R'] = re_value + resultat_financier + resultat_exceptionnel - abs(impots_benefices)
-    
-    return result
+    calculator = SIGCalculator(lignes)
+    return calculator.calculer_tous_indicateurs()
 
 @navision_router.get("/{societe}/comptes/global", tags=["Navision"])
 def get_comptes_global(
@@ -208,35 +103,96 @@ def get_sous_indicateurs_mensuel(societe: str, annee: int):
     if not vue:
         return {"error": "Société inconnue"}
     navision_sig = NavisionSIGController(vue)
+    
+    lignes = navision_sig.get_lines("annee")
     result = {}
-    # On suppose que MappingIndicateurSIG a des méthodes pour obtenir libellé, initiales, formule d'un sous-indicateur
+    
     for mois in range(1, 13):
-        lignes = navision_sig.get_lines("mois", annee=annee, mois=mois)
-        indicateurs_calcules = calcul_sig_adapte(lignes)
+        # Filtrer les lignes par année et mois en utilisant date_ecriture
+        lignes_mois = []
+        for l in lignes:
+            if l.get('annee') == annee:
+                try:
+                    date_ecriture = l.get('date_ecriture', '')
+                    if date_ecriture:
+                        # Extraire le mois de la date (format: "2021-01-31T00:00:00")
+                        mois_ligne = int(date_ecriture.split('-')[1])
+                        if mois_ligne == mois:
+                            lignes_mois.append(l)
+                except (IndexError, ValueError):
+                    continue
+        
+        if not lignes_mois:
+            continue
+        
+        # Utiliser le nouveau SIGCalculator
+        calculator = SIGCalculator(lignes_mois)
+        
+        # Définition des libellés des indicateurs
+        libelles = {
+            'MC': 'Marge commerciale',
+            'VA': 'Valeur ajoutée',
+            'EBE': 'Excédent brut d\'exploitation',
+            'RE': 'Résultat d\'exploitation',
+            'R': 'Résultat net',
+        }
+        
+        indicateurs_calcules = {}
+        sous_indicateurs = {}
+        
+        # Calculer les indicateurs principaux
+        for code, libelle in libelles.items():
+            # Construction des formules avec le nouveau modèle
+            formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+            formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
+            
+            # Extraire la valeur finale de la formule numérique
+            # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+            try:
+                valeur_finale = float(formule_numeric.split(' = ')[-1])
+            except (IndexError, ValueError):
+                valeur_finale = 0
+            
+            if valeur_finale == 0:
+                continue
+            
+            indicateurs_calcules[code] = {
+                "indicateur": code,
+                "libelle": libelle,
+                "valeur": valeur_finale,
+                "formule_text": formule_text,
+                "formule_numeric": formule_numeric
+            }
+        
+        # Pour chaque indicateur calculé, récupérer ses sous-indicateurs
         indicateurs_dict = {}
-        for ind_key, valeur in indicateurs_calcules.items():
-            sous_indicateurs_montants = {}
-            for l in lignes:
-                if l.get('indicateur') == ind_key:
-                    for si in l.get('sous_indicateur', []):
-                        if si:
-                            sous_indicateurs_montants[si] = sous_indicateurs_montants.get(si, 0) + l.get('montant', 0)
-            sous_indicateurs = []
-            for si, montant in sous_indicateurs_montants.items():
-                # Récupérer libellé, initiales, formule depuis le mapping si possible
-                libelle = MappingIndicateurSIG.get_libelle(si) if hasattr(MappingIndicateurSIG, 'get_libelle') else si
-                initiales = MappingIndicateurSIG.get_initiales(si) if hasattr(MappingIndicateurSIG, 'get_initiales') else ''
-                formule = MappingIndicateurSIG.get_formule(si) if hasattr(MappingIndicateurSIG, 'get_formule') else ''
-                sous_indicateurs.append({
-                    "sousIndicateur": si,
-                    "libelle": libelle,
-                    "initiales": initiales,
-                    "formule": formule,
-                    "montant": montant
-                })
-            indicateurs_dict[ind_key] = sous_indicateurs
+        for ind_key in indicateurs_calcules.keys():
+            # Utiliser get_composantes_formule pour récupérer seulement les sous-indicateurs utilisés dans la formule
+            composantes_positives, composantes_negatives = calculator.get_composantes_formule(ind_key)
+            tous_composantes = composantes_positives + composantes_negatives
+            
+            sous_indicateurs_list = []
+            for composante in tous_composantes:
+                # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                if composante in ['MC', 'VA', 'EBE', 'RE']:
+                    continue
+                
+                # Récupérer le montant pour ce sous-indicateur
+                montant = calculator._get_montant_par_indicateur_sous_ind(ind_key, [composante])
+                if montant != 0:
+                    sous_indicateurs_list.append({
+                        "sousIndicateur": composante,
+                        "libelle": MappingIndicateurSIG.get_libelle(composante),
+                        "initiales": MappingIndicateurSIG.get_initiales(composante),
+                        "formule": MappingIndicateurSIG.get_formule(composante),
+                        "montant": montant
+                    })
+            indicateurs_dict[ind_key] = sous_indicateurs_list
+        
         result[mois] = indicateurs_dict
+    
     return {"annee": annee, "mois": result}
+
 
 # 4. Comptes mensuels (paginé)
 @navision_router.get("/{societe}/comptes/mensuel", tags=["Navision"])
@@ -277,30 +233,83 @@ def get_indicateurs_mensuel_valeurs(societe: str, annee: int):
     if not vue:
         return {"error": "Société inconnue"}
     navision_sig = NavisionSIGController(vue)
+    libelles = {
+        'MC': 'Marge commerciale',
+        'VA': 'Valeur ajoutée',
+        'EBE': 'Excédent brut d\'exploitation',
+        'RE': 'Résultat d\'exploitation',
+        'R': 'Résultat net',
+    }
+    
+    lignes = navision_sig.get_lines("annee")
     result = {}
+    
     for mois in range(1, 13):
-        lignes = navision_sig.get_lines("mois", annee=annee, mois=mois)
-        # Calcul SIG avec formules comptables adaptées aux vrais sous-indicateurs
-        indicateurs_calcules = calcul_sig_adapte(lignes)
+        # Filtrer les lignes par année et mois en utilisant date_ecriture
+        lignes_mois = []
+        for l in lignes:
+            if l.get('annee') == annee:
+                try:
+                    date_ecriture = l.get('date_ecriture', '')
+                    if date_ecriture:
+                        # Extraire le mois de la date (format: "2021-01-31T00:00:00")
+                        mois_ligne = int(date_ecriture.split('-')[1])
+                        if mois_ligne == mois:
+                            lignes_mois.append(l)
+                except (IndexError, ValueError):
+                    continue
         
+        if not lignes_mois:
+            continue
+        
+        # Utiliser le nouveau SIGCalculator
+        calculator = SIGCalculator(lignes_mois)
         indicateurs_list = []
-        # Bloc libellés à corriger partout où il apparaît :
-        libelles = {
-            'MC': 'Marge commerciale',
-            'VA': 'Valeur ajoutée',
-            'EBE': 'Excédent brut d’exploitation',
-            'RE': 'Résultat d’exploitation',
-            'R': 'Résultat net',
-        }
-        associe_mapping = MappingIndicateurSIG.get_associe_mapping()
-        for code, montant in indicateurs_calcules.items():
+        
+        for code, libelle in libelles.items():
+            # Construction des formules avec le nouveau modèle
+            formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+            formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
+            
+            # Extraire la valeur finale de la formule numérique
+            # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+            try:
+                valeur_finale = float(formule_numeric.split(' = ')[-1])
+            except (IndexError, ValueError):
+                valeur_finale = 0
+            
+            if valeur_finale == 0:
+                continue
+            
+            # Récupération des sous-indicateurs avec montants non-nuls
+            composantes_positives, composantes_negatives = calculator.get_composantes_formule(code)
+            tous_composantes = composantes_positives + composantes_negatives
+            
+            sous_indicateurs = []
+            for composante in tous_composantes:
+                # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                if composante in ['MC', 'VA', 'EBE', 'RE']:
+                    continue
+                
+                # Récupérer le montant pour ce sous-indicateur
+                montant = calculator._get_montant_par_indicateur_sous_ind(code, [composante])
+                if montant != 0:
+                    sous_indicateurs.append({
+                        "sous_indicateur": composante,
+                        "montant": montant
+                    })
+        
             indicateurs_list.append({
                 "indicateur": code,
-                "libelle": libelles.get(code, code),
-                "valeur": montant,
-                "associe": associe_mapping.get(code, [])
+                "libelle": libelle,
+                "valeur": valeur_finale,
+                "formule_text": formule_text,
+                "formule_numeric": formule_numeric,
+                "sous_indicateurs": sous_indicateurs
             })
+        
         result[mois] = indicateurs_list
+    
     return {"annee": annee, "mois": result}
 
 @navision_router.get("/{societe}/indicateurs/global", tags=["Navision"])
@@ -316,80 +325,62 @@ def get_indicateurs_global_valeurs(
     libelles = {
         'MC': 'Marge commerciale',
         'VA': 'Valeur ajoutée',
-        'EBE': 'Excédent brut d’exploitation',
-        'RE': 'Résultat d’exploitation',
+        'EBE': 'Excédent brut d\'exploitation',
+        'RE': 'Résultat d\'exploitation',
         'R': 'Résultat net',
     }
-    associe_mapping = MappingIndicateurSIG.get_associe_mapping()
+    
     if periode == "annee":
         lignes = navision_sig.get_lines("annee")
         annees = sorted({l.get('annee') for l in lignes if l.get('annee')}, reverse=True)[:3]
         result = {}
         for a in annees:
             lignes_annee = [l for l in lignes if l.get('annee') == a]
-            indicateurs_calcules = calcul_sig_adapte(lignes_annee)
+            
+            # Utiliser le nouveau SIGCalculator
+            calculator = SIGCalculator(lignes_annee)
             indicateurs_list = []
-            for code, montant in indicateurs_calcules.items():
-                # Construction des champs manquants
-                formule_text = ""
-                formule_numeric = ""
-                valeur_formule = montant
-                ecart = 0
-                # MC
-                if code == "MC":
-                    ventes_marchandises = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["VENTES DE MARCHANDISES", "VENTES DE PRODUITS FINIS", "VENTES DE SERVICES", "PRESTATIONS DE SERVICES", "TVA COLLECTEE"]))
-                    achats_marchandises = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'MC' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS DE MARCHANDISES"]))
-                    formule_text = f"MC = VENTES DE MARCHANDISES ({ventes_marchandises:.2f}) - ACHATS DE MARCHANDISES ({abs(achats_marchandises):.2f}) = {montant:.2f}"
-                    formule_numeric = f"MC = {ventes_marchandises:.2f} - {abs(achats_marchandises):.2f} = {montant:.2f}"
-                    valeur_formule = montant
-                # VA
-                elif code == "VA":
-                    mc_value = indicateurs_calcules.get('MC', 0)
-                    prestations_services = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRESTATIONS DE SERVICES"]))
-                    production_stockee = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRODUCTION STOCKÉE"]))
-                    production_immobilisee = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["PRODUCTION IMMOBILISÉE"]))
-                    achats = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'VA' and any(si in l.get('sous_indicateur', []) for si in ["ACHATS", "FOURNITURES"]))
-                    charges_externes = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["SERVICES EXTÉRIEURS", "AUTRES SERVICES EXTÉRIEURS"]))
-                    formule_text = f"VA = MC ({mc_value:.2f}) + PRESTATIONS DE SERVICES ({prestations_services:.2f}) + PRODUCTION STOCKÉE ({production_stockee:.2f}) + PRODUCTION IMMOBILISÉE ({production_immobilisee:.2f}) - ACHATS ({abs(achats):.2f}) - CHARGES EXTERNES ({abs(charges_externes):.2f}) = {montant:.2f}"
-                    formule_numeric = f"VA = ({mc_value:.2f} + {prestations_services:.2f} + {production_stockee:.2f} + {production_immobilisee:.2f}) - ({abs(achats):.2f} + {abs(charges_externes):.2f}) = {montant:.2f}"
-                    valeur_formule = montant
-                # EBE
-                elif code == "EBE":
-                    va_value = indicateurs_calcules.get('VA', 0)
-                    subventions = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["SUBVENTIONS D'EXPLOITATION"]))
-                    impots_taxes = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["IMPÔTS ET TAXES"]))
-                    charges_personnel = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'EBE' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES DE PERSONNEL"]))
-                    formule_text = f"EBE = VA ({va_value:.2f}) + SUBVENTIONS D'EXPLOITATION ({subventions:.2f}) - IMPÔTS ET TAXES ({abs(impots_taxes):.2f}) - CHARGES DE PERSONNEL ({abs(charges_personnel):.2f}) = {montant:.2f}"
-                    formule_numeric = f"EBE = ({va_value:.2f} + {subventions:.2f}) - ({abs(impots_taxes):.2f} + {abs(charges_personnel):.2f}) = {montant:.2f}"
-                    valeur_formule = montant
-                # RE
-                elif code == "RE":
-                    ebe_value = indicateurs_calcules.get('EBE', 0)
-                    autres_produits = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES PRODUITS DE GESTION COURANTE", "REPRISES AMORTISSEMENTS"]))
-                    autres_charges = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'RE' and any(si in l.get('sous_indicateur', []) for si in ["AUTRES CHARGES DE GESTION COURANTE", "DOTATIONS AMORTISSEMENTS"]))
-                    formule_text = f"RE = EBE ({ebe_value:.2f}) + AUTRES PRODUITS ({autres_produits:.2f}) - AUTRES CHARGES ({abs(autres_charges):.2f}) = {montant:.2f}"
-                    formule_numeric = f"RE = ({ebe_value:.2f} + {autres_produits:.2f}) - ({abs(autres_charges):.2f}) = {montant:.2f}"
-                    valeur_formule = montant
-                # R
-                elif code == "R":
-                    re_value = indicateurs_calcules.get('RE', 0)
-                    produits_financiers = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["PRODUITS FINANCIERS"]))
-                    charges_financieres = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES FINANCIÈRES"]))
-                    produits_exceptionnels = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["PRODUITS EXCEPTIONNELS"]))
-                    charges_exceptionnelles = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["CHARGES EXCEPTIONNELLES"]))
-                    impots_benefices = sum(l.get('montant', 0) for l in lignes_annee if l.get('indicateur') == 'R' and any(si in l.get('sous_indicateur', []) for si in ["IMPÔTS SUR LES BÉNÉFICES"]))
-                    formule_text = f"R = RE ({re_value:.2f}) + PRODUITS FINANCIERS ({produits_financiers:.2f}) + PRODUITS EXCEPTIONNELS ({produits_exceptionnels:.2f}) - CHARGES FINANCIÈRES ({abs(charges_financieres):.2f}) - CHARGES EXCEPTIONNELLES ({abs(charges_exceptionnelles):.2f}) - IMPÔTS SUR LES BÉNÉFICES ({abs(impots_benefices):.2f}) = {montant:.2f}"
-                    formule_numeric = f"R = ({re_value:.2f} + {produits_financiers:.2f} + {produits_exceptionnels:.2f}) - ({abs(charges_financieres):.2f} + {abs(charges_exceptionnelles):.2f} + {abs(impots_benefices):.2f}) = {montant:.2f}"
-                    valeur_formule = montant
+            
+            for code, libelle in libelles.items():
+                # Construction des formules avec le nouveau modèle
+                formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+                formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
+                
+                # Extraire la valeur finale de la formule numérique
+                # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+                try:
+                    valeur_finale = float(formule_numeric.split(' = ')[-1])
+                except (IndexError, ValueError):
+                    valeur_finale = 0
+                
+                if valeur_finale == 0:
+                    continue
+                
+                # Récupération des sous-indicateurs avec montants non-nuls
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(code)
+                tous_composantes = composantes_positives + composantes_negatives
+                
+                sous_indicateurs = []
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(code, [composante])
+                    if montant != 0:
+                        sous_indicateurs.append({
+                            "sous_indicateur": composante,
+                            "montant": montant
+                        })
+                
                 indicateurs_list.append({
                     "indicateur": code,
-                    "libelle": libelles.get(code, code),
-                    "valeur_calculee": montant,
+                    "libelle": libelle,
+                    "valeur": valeur_finale,
                     "formule_text": formule_text,
                     "formule_numeric": formule_numeric,
-                    "valeur_formule": valeur_formule,
-                    "ecart": ecart,
-                    "associe": associe_mapping.get(code, [])
+                    "sous_indicateurs": sous_indicateurs
                 })
             result[a] = indicateurs_list
         return {"periode": "annee", "indicateurs": result}
@@ -405,14 +396,51 @@ def get_indicateurs_global_valeurs(
         result = {}
         for a in annees:
             lignes_trim = navision_sig.get_lines("trimestre", annee=a, trimestre=trimestre_int)
-            indicateurs_calcules = calcul_sig_adapte(lignes_trim)
+            
+            # Utiliser le nouveau SIGCalculator
+            calculator = SIGCalculator(lignes_trim)
             indicateurs_list = []
-            for code, montant in indicateurs_calcules.items():
+            
+            for code, libelle in libelles.items():
+                # Construction des formules avec le nouveau modèle
+                formule_text = calculator.construire_formule_text(code, 0)  # valeur temporaire
+                formule_numeric = calculator.construire_formule_numeric(code, 0)  # valeur temporaire
+                
+                # Extraire la valeur finale de la formule numérique
+                # La formule est au format "INDICATEUR = ... = VALEUR_FINALE"
+                try:
+                    valeur_finale = float(formule_numeric.split(' = ')[-1])
+                except (IndexError, ValueError):
+                    valeur_finale = 0
+                
+                if valeur_finale == 0:
+                    continue
+                
+                # Récupération des sous-indicateurs avec montants non-nuls
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(code)
+                tous_composantes = composantes_positives + composantes_negatives
+                
+                sous_indicateurs = []
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(code, [composante])
+                    if montant != 0:
+                        sous_indicateurs.append({
+                            "sous_indicateur": composante,
+                            "montant": montant
+                        })
+                
                 indicateurs_list.append({
                     "indicateur": code,
-                    "libelle": libelles.get(code, code),
-                    "valeur": montant,
-                    "associe": associe_mapping.get(code, [])
+                    "libelle": libelle,
+                    "valeur": valeur_finale,
+                    "formule_text": formule_text,
+                    "formule_numeric": formule_numeric,
+                    "sous_indicateurs": sous_indicateurs
                 })
             result[a] = indicateurs_list
         return {"periode": "trimestre", "trimestre": trimestre_int, "indicateurs": result}
@@ -466,20 +494,45 @@ def get_sous_indicateurs_global(
     if not vue:
         return {"error": "Société inconnue"}
     navision_sig = NavisionSIGController(vue)
+    
     if periode == "annee":
         lignes = navision_sig.get_lines("annee")
         annees = sorted({l.get('annee') for l in lignes if l.get('annee')}, reverse=True)[:3]
         result = {}
         for a in annees:
             lignes_annee = [l for l in lignes if l.get('annee') == a]
-            # Utiliser la nouvelle fonction pour avoir les indicateurs
-            indicateurs_calcules = calcul_sig_adapte(lignes_annee)
+            
+            # Utiliser le nouveau SIGCalculator
+            calculator = SIGCalculator(lignes_annee)
+            indicateurs_calcules = calculator.calculer_tous_indicateurs()
             sous_indicateurs = {}
             
             # Pour chaque indicateur calculé, récupérer ses sous-indicateurs
             for ind_key in indicateurs_calcules.keys():
-                if ind_key:
-                    sous_indicateurs[ind_key] = navision_sig.get_sous_indicateurs_from_lines(lignes_annee, ind_key)
+                # Utiliser get_composantes_formule pour récupérer seulement les sous-indicateurs utilisés dans la formule
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(ind_key)
+                tous_composantes = composantes_positives + composantes_negatives
+                
+                sous_indicateurs_list = []
+                
+                # Pour chaque composante de la formule, récupérer ses informations
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(ind_key, [composante])
+                    
+                    sous_indicateurs_list.append({
+                        "sousIndicateur": composante,
+                        "libelle": MappingIndicateurSIG.get_libelle(composante),
+                        "initiales": MappingIndicateurSIG.get_initiales(composante),
+                        "formule": MappingIndicateurSIG.get_formule(composante),
+                        "montant": montant
+                    })
+                
+                sous_indicateurs[ind_key] = sous_indicateurs_list
             result[a] = sous_indicateurs
         return {"periode": "annee", "sous_indicateurs": result}
     elif periode == "trimestre":
@@ -494,14 +547,38 @@ def get_sous_indicateurs_global(
         result = {}
         for a in annees:
             lignes_trim = navision_sig.get_lines("trimestre", annee=a, trimestre=trimestre_int)
-            # Utiliser la nouvelle fonction pour avoir les indicateurs
-            indicateurs_calcules = calcul_sig_adapte(lignes_trim)
+            
+            # Utiliser le nouveau SIGCalculator
+            calculator = SIGCalculator(lignes_trim)
+            indicateurs_calcules = calculator.calculer_tous_indicateurs()
             sous_indicateurs = {}
             
             # Pour chaque indicateur calculé, récupérer ses sous-indicateurs
             for ind_key in indicateurs_calcules.keys():
-                if ind_key:
-                    sous_indicateurs[ind_key] = navision_sig.get_sous_indicateurs_from_lines(lignes_trim, ind_key)
+                # Utiliser get_composantes_formule pour récupérer seulement les sous-indicateurs utilisés dans la formule
+                composantes_positives, composantes_negatives = calculator.get_composantes_formule(ind_key)
+                tous_composantes = composantes_positives + composantes_negatives
+                
+                sous_indicateurs_list = []
+                
+                # Pour chaque composante de la formule, récupérer ses informations
+                for composante in tous_composantes:
+                    # Si c'est un indicateur calculé (MC, VA, EBE, RE), on ne l'inclut pas dans les sous-indicateurs
+                    if composante in ['MC', 'VA', 'EBE', 'RE']:
+                        continue
+                    
+                    # Récupérer le montant pour ce sous-indicateur
+                    montant = calculator._get_montant_par_indicateur_sous_ind(ind_key, [composante])
+                    
+                    sous_indicateurs_list.append({
+                        "sousIndicateur": composante,
+                        "libelle": MappingIndicateurSIG.get_libelle(composante),
+                        "initiales": MappingIndicateurSIG.get_initiales(composante),
+                        "formule": MappingIndicateurSIG.get_formule(composante),
+                        "montant": montant
+                    })
+                
+                sous_indicateurs[ind_key] = sous_indicateurs_list
             result[a] = sous_indicateurs
         return {"periode": "trimestre", "trimestre": trimestre_int, "sous_indicateurs": result}
     else:

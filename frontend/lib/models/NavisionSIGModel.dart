@@ -29,7 +29,8 @@ class NavisionCompteMensuel {
       montant: (json['montant'] as num).toDouble(),
       debit: (json['debit'] as num?)?.toDouble() ?? 0.0,
       credit: (json['credit'] as num?)?.toDouble() ?? 0.0,
-      dateEcriture: DateTime.tryParse(json['date_ecriture'] ?? '') ?? DateTime(2000),
+      dateEcriture:
+          DateTime.tryParse(json['date_ecriture'] ?? '') ?? DateTime(2000),
       document: json['document'] ?? '',
       utilisateur: json['utilisateur'] ?? '',
     );
@@ -89,7 +90,6 @@ class NavisionIndicateurMensuel {
   final String libelle;
   final String initiales;
   final double valeur;
-  final List<String> associe;
   final String formuleText;
   final String formuleNumeric;
 
@@ -98,7 +98,6 @@ class NavisionIndicateurMensuel {
     required this.libelle,
     required this.initiales,
     required this.valeur,
-    this.associe = const [],
     this.formuleText = '',
     this.formuleNumeric = '',
   });
@@ -108,8 +107,9 @@ class NavisionIndicateurMensuel {
       indicateur: json['indicateur'],
       libelle: json['libelle'],
       initiales: json['initiales'] ?? '',
-      valeur: (json['valeur'] as num).toDouble(),
-      associe: (json['associe'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      valeur: (json['valeur_calculee'] as num?)?.toDouble() ??
+          (json['valeur'] as num?)?.toDouble() ??
+          0.0,
       formuleText: json['formule_text'] ?? '',
       formuleNumeric: json['formule_numeric'] ?? '',
     );
@@ -121,7 +121,6 @@ class NavisionIndicateurMensuel {
       'libelle': libelle,
       'initiales': initiales,
       'valeur': valeur,
-      'associe': associe,
       'formule_text': formuleText,
       'formule_numeric': formuleNumeric,
     };
@@ -137,7 +136,8 @@ class NavisionIndicateursMensuelResponse {
     required this.mois,
   });
 
-  factory NavisionIndicateursMensuelResponse.fromJson(Map<String, dynamic> json) {
+  factory NavisionIndicateursMensuelResponse.fromJson(
+      Map<String, dynamic> json) {
     final moisMap = <String, List<NavisionIndicateurMensuel>>{};
     (json['mois'] as Map<String, dynamic>).forEach((mois, list) {
       final moisStr = mois.toString();
@@ -155,9 +155,9 @@ class NavisionIndicateursMensuelResponse {
     return {
       'annee': annee,
       'mois': mois.map((key, value) => MapEntry(
-        key,
-        value.map((e) => e.toJson()).toList(),
-      )),
+            key,
+            value.map((e) => e.toJson()).toList(),
+          )),
     };
   }
 }
@@ -207,8 +207,10 @@ class NavisionSousIndicateursMensuelResponse {
     required this.mois,
   });
 
-  factory NavisionSousIndicateursMensuelResponse.fromJson(Map<String, dynamic> json) {
-    final moisMap = <String, Map<String, List<NavisionSousIndicateurMensuel>>>{};
+  factory NavisionSousIndicateursMensuelResponse.fromJson(
+      Map<String, dynamic> json) {
+    final moisMap =
+        <String, Map<String, List<NavisionSousIndicateurMensuel>>>{};
     (json['mois'] as Map<String, dynamic>).forEach((mois, indicateurs) {
       // Convertir la clé mois en String (elle peut être un int ou un String dans le JSON)
       final moisStr = mois.toString();
@@ -230,12 +232,12 @@ class NavisionSousIndicateursMensuelResponse {
     return {
       'annee': annee,
       'mois': mois.map((moisKey, indicateurMap) => MapEntry(
-        moisKey,
-        indicateurMap.map((indicateurKey, list) => MapEntry(
-          indicateurKey,
-          list.map((e) => e.toJson()).toList(),
-        )),
-      )),
+            moisKey,
+            indicateurMap.map((indicateurKey, list) => MapEntry(
+                  indicateurKey,
+                  list.map((e) => e.toJson()).toList(),
+                )),
+          )),
     };
   }
 }
@@ -246,7 +248,6 @@ class NavisionIndicateurGlobal {
   final String indicateur;
   final String libelle;
   final double valeur;
-  final List<String> associe;
   final String formuleText;
   final String formuleNumeric;
 
@@ -254,7 +255,6 @@ class NavisionIndicateurGlobal {
     required this.indicateur,
     required this.libelle,
     required this.valeur,
-    required this.associe,
     this.formuleText = '',
     this.formuleNumeric = '',
   });
@@ -264,7 +264,6 @@ class NavisionIndicateurGlobal {
       indicateur: json['indicateur'] ?? '',
       libelle: json['libelle'] ?? '',
       valeur: (json['valeur_calculee'] ?? json['valeur'] ?? 0).toDouble(),
-      associe: (json['associe'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       formuleText: json['formule_text'] ?? json['formuleText'] ?? '',
       formuleNumeric: json['formule_numeric'] ?? json['formuleNumeric'] ?? '',
     );
@@ -275,7 +274,6 @@ class NavisionIndicateurGlobal {
       'indicateur': indicateur,
       'libelle': libelle,
       'valeur': valeur,
-      'associe': associe,
       'formule_text': formuleText,
       'formule_numeric': formuleNumeric,
     };
@@ -285,7 +283,8 @@ class NavisionIndicateurGlobal {
 class NavisionIndicateursGlobalResponse {
   final String periode;
   final int? trimestre;
-  final Map<String, List<NavisionIndicateurGlobal>> indicateurs; // année -> liste d'indicateurs
+  final Map<String, List<NavisionIndicateurGlobal>>
+      indicateurs; // année -> liste d'indicateurs
 
   NavisionIndicateursGlobalResponse({
     required this.periode,
@@ -293,7 +292,8 @@ class NavisionIndicateursGlobalResponse {
     required this.indicateurs,
   });
 
-  factory NavisionIndicateursGlobalResponse.fromJson(Map<String, dynamic> json) {
+  factory NavisionIndicateursGlobalResponse.fromJson(
+      Map<String, dynamic> json) {
     final indicateursMap = <String, List<NavisionIndicateurGlobal>>{};
     (json['indicateurs'] as Map<String, dynamic>).forEach((annee, list) {
       indicateursMap[annee] = (list as List)
@@ -322,9 +322,8 @@ class NavisionSousIndicateurGlobal {
     required this.initiales,
     required this.montant,
     required this.formule,
-    required this.associe,
+    this.associe = const [],
   });
-
 
   Map<String, dynamic> toJson() {
     return {
@@ -344,7 +343,10 @@ class NavisionSousIndicateurGlobal {
       initiales: json['initiales'] ?? '',
       montant: (json['montant'] as num).toDouble(),
       formule: json['formule'] ?? '',
-      associe: (json['associe'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      associe: (json['associe'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 }
@@ -352,7 +354,8 @@ class NavisionSousIndicateurGlobal {
 class NavisionSousIndicateursGlobalResponse {
   final String periode;
   final int? trimestre;
-  final Map<String, Map<String, List<NavisionSousIndicateurGlobal>>> sousIndicateurs; // année -> indicateur -> liste de sous-indicateurs
+  final Map<String, Map<String, List<NavisionSousIndicateurGlobal>>>
+      sousIndicateurs; // année -> indicateur -> liste de sous-indicateurs
 
   NavisionSousIndicateursGlobalResponse({
     required this.periode,
@@ -360,9 +363,12 @@ class NavisionSousIndicateursGlobalResponse {
     required this.sousIndicateurs,
   });
 
-  factory NavisionSousIndicateursGlobalResponse.fromJson(Map<String, dynamic> json) {
-    final sousIndicsMap = <String, Map<String, List<NavisionSousIndicateurGlobal>>>{};
-    (json['sous_indicateurs'] as Map<String, dynamic>).forEach((annee, indicateurs) {
+  factory NavisionSousIndicateursGlobalResponse.fromJson(
+      Map<String, dynamic> json) {
+    final sousIndicsMap =
+        <String, Map<String, List<NavisionSousIndicateurGlobal>>>{};
+    (json['sous_indicateurs'] as Map<String, dynamic>)
+        .forEach((annee, indicateurs) {
       final indicateurMap = <String, List<NavisionSousIndicateurGlobal>>{};
       (indicateurs as Map<String, dynamic>).forEach((indicateur, list) {
         indicateurMap[indicateur] = (list as List)
@@ -383,7 +389,8 @@ class NavisionSousIndicateursGlobalResponse {
 class NavisionComptesGlobalResponse {
   final String periode;
   final int? trimestre;
-  final Map<String, NavisionComptesMensuelPage> comptes; // année -> page paginée
+  final Map<String, NavisionComptesMensuelPage>
+      comptes; // année -> page paginée
 
   NavisionComptesGlobalResponse({
     required this.periode,
@@ -425,10 +432,13 @@ class NavisionCompteGlobal {
   /// Factory to safely create from dynamic or Map, always converting nulls to empty string and numbers to double
   factory NavisionCompteGlobal.fromDynamic(dynamic c, {int annee = 0}) {
     String code = (c['code_compte'] ?? c['codeCompte'] ?? '').toString();
-    String libelle = (c['libelle_compte'] ?? c['libelleCompte'] ?? '').toString();
-    double montant = (c['montant'] is num) ? (c['montant'] as num).toDouble() : 0.0;
+    String libelle =
+        (c['libelle_compte'] ?? c['libelleCompte'] ?? '').toString();
+    double montant =
+        (c['montant'] is num) ? (c['montant'] as num).toDouble() : 0.0;
     double debit = (c['debit'] is num) ? (c['debit'] as num).toDouble() : 0.0;
-    double credit = (c['credit'] is num) ? (c['credit'] as num).toDouble() : 0.0;
+    double credit =
+        (c['credit'] is num) ? (c['credit'] as num).toDouble() : 0.0;
     return NavisionCompteGlobal(
       codeCompte: (code == 'null') ? '' : code,
       libelleCompte: (libelle == 'null') ? '' : libelle,

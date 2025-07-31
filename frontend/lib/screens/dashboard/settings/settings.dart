@@ -6,10 +6,14 @@ import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/swipe_provider.dart';
+
 import 'package:mobaitec_decision_making/services/cache/navision_service_cache.dart';
 import 'package:mobaitec_decision_making/services/cache/odoo_service_cache.dart';
 import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
 import 'package:mobaitec_decision_making/models/OdooSIGModel.dart';
+import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
+import 'package:mobaitec_decision_making/services/indicateur/indicateur_service.dart';
+import 'package:mobaitec_decision_making/utils/diagnostic_utils.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -28,13 +32,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<String>? _userGroups;
   String? _accessToken;
   bool? _swipeEnabled;
+  bool _isCacheMode =
+      false; // Local state for cache mode (webservice by default)
 
   void _showThemeChangeDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Changement de thème'),
-        content: Text('Le changement de thème global nécessite un provider ou une logique dédiée.'),
+        content: Text(
+            'Le changement de thème global nécessite un provider ou une logique dédiée.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -83,7 +90,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _logoutKeycloak() async {
-    final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: false);
+    final keycloakProvider =
+        Provider.of<KeycloakProvider>(context, listen: false);
     final token = keycloakProvider.accessToken ?? _accessToken;
     if (token != null && token.isNotEmpty) {
       try {
@@ -134,7 +142,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     shape: BoxShape.circle,
                     color: Colors.white, // Arrière-plan blanc rond
                     border: Border.all(
-                      color: Theme.of(context).brightness == Brightness.dark 
+                      color: Theme.of(context).brightness == Brightness.dark
                           ? Color(0xFFE0E0E0) // Blanc cassé en mode sombre
                           : Colors.transparent, // Transparent en mode clair
                       width: 2,
@@ -144,29 +152,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.verified_user, size: 56, color: Colors.green),
+                    child: Icon(Icons.verified_user,
+                        size: 56, color: Colors.green),
                   ),
                 ),
                 SizedBox(height: 16),
-                Text('Bienvenue, $userName', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Ajoutez ici la logique de mise à jour des données
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Mise à jour des données en cours...')),
-                    );
-                  },
-                  icon: Icon(Icons.refresh),
-                  label: Text('Mise à jour des données'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF00A9CA),
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                SizedBox(height: 16),
+                Text('Bienvenue, $userName',
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 SizedBox(height: 16),
                 LayoutBuilder(
                   builder: (context, constraints) {
@@ -188,8 +181,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           SizedBox(height: 20),
                           // Rôles et Sociétés combinés
                           _RolesAndCompaniesCard(
-                            isClient: isClient, 
-                            isAdmin: isAdmin, 
+                            isClient: isClient,
+                            isAdmin: isAdmin,
                             hasMDMFi: hasMDMFi,
                             userGroups: userGroups,
                           ),
@@ -212,17 +205,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               onSwipeChanged: swipeProvider.setSwipeEnabled,
                             ),
                             SizedBox(width: 32),
-                            // Colonne Rôles + Groupes à droite
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _RolesAndCompaniesCard(
-                                  isClient: isClient, 
-                                  isAdmin: isAdmin, 
-                                  hasMDMFi: hasMDMFi,
-                                  userGroups: userGroups,
-                                ),
-                              ],
+                            // Colonne Rôles + Groupes au milieu
+                            _RolesAndCompaniesCard(
+                              isClient: isClient,
+                              isAdmin: isAdmin,
+                              hasMDMFi: hasMDMFi,
+                              userGroups: userGroups,
+                            ),
+                            SizedBox(width: 32),
+                            // Nouvelle carte Gestion des données à droite
+                            _DataManagementCard(
+                              isCacheMode: _isCacheMode,
+                              onCacheModeChanged: (value) {
+                                setState(() {
+                                  _isCacheMode = value;
+                                });
+                              },
                             ),
                           ],
                         ),
@@ -237,33 +235,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Icon(Icons.verified, color: Colors.green, size: 20),
                     SizedBox(width: 8),
-                    Text('Connexion sécurisée', style: TextStyle(color: Colors.green[700], fontWeight: FontWeight.w500)),
+                    Text('Connexion sécurisée',
+                        style: TextStyle(
+                            color: Colors.green[700],
+                            fontWeight: FontWeight.w500)),
                   ],
                 ),
-                SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    // Exemple d'export des données du cache Navision et Odoo
-                    final navisionCache = NavisionServiceCache();
-                    final odooCache = OdooServiceCache();
-                    // Remplace 'societe' par la valeur réelle à exporter
-                    final societe = 'demo';
-                    final navisionData = await navisionCache.loadIndicateursMensuel(societe);
-                    final odooData = await odooCache.loadIndicateursMensuel(societe);
-                    // Affiche les données dans un SnackBar (ou adapte selon besoin)
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Navision: ' + (navisionData?.toJson().toString() ?? 'Aucune donnée') + '\nOdoo: \n' + (odooData?.toJson().toString() ?? 'Aucune donnée'))),
-                    );
-                  },
-                  icon: Icon(Icons.download),
-                  label: Text('Exporter données cache'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueGrey,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
+
                 ElevatedButton.icon(
                   onPressed: _logoutKeycloak,
                   icon: Icon(Icons.logout),
@@ -272,7 +250,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
               ],
@@ -331,8 +310,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       shape: BoxShape.circle,
                       color: Colors.white,
                       border: Border.all(
-                        color: Theme.of(context).brightness == Brightness.dark 
-                            ? Color(0xFFE0E0E0) 
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Color(0xFFE0E0E0)
                             : Colors.transparent,
                         width: 2,
                       ),
@@ -353,7 +332,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
-                  
+
                   Text(
                     'Connexion',
                     style: TextStyle(
@@ -365,9 +344,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
+
                   SizedBox(height: 8),
-                  
+
                   Text(
                     'Connectez-vous pour accéder à vos données SIG',
                     style: TextStyle(
@@ -378,9 +357,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
+
                   SizedBox(height: 32),
-                  
+
                   // Champ Email amélioré
                   Container(
                     decoration: BoxDecoration(
@@ -403,7 +382,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           color: Color(0xFF00A9CA), // Couleur #00a9ca
                         ),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         labelStyle: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.grey[400]
@@ -411,12 +391,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       keyboardType: TextInputType.emailAddress,
-                      validator: (value) => value == null || value.isEmpty ? 'Email requis' : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Email requis'
+                          : null,
                     ),
                   ),
-                  
+
                   SizedBox(height: 20),
-                  
+
                   // Champ Mot de passe amélioré
                   Container(
                     decoration: BoxDecoration(
@@ -439,7 +421,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           color: Color(0xFF00A9CA), // Couleur #00a9ca
                         ),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         labelStyle: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? Colors.grey[400]
@@ -447,12 +430,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       obscureText: true,
-                      validator: (value) => value == null || value.isEmpty ? 'Mot de passe requis' : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Mot de passe requis'
+                          : null,
                     ),
                   ),
-                  
+
                   SizedBox(height: 24),
-                  
+
                   // Message d'erreur stylé
                   if (_error != null)
                     Container(
@@ -465,7 +450,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline, color: Colors.red, size: 20),
+                          Icon(Icons.error_outline,
+                              color: Colors.red, size: 20),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -476,7 +462,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ],
                       ),
                     ),
-                  
+
                   // Bouton de connexion amélioré
                   Container(
                     height: 56,
@@ -485,7 +471,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       gradient: _loading
                           ? null
                           : LinearGradient(
-                              colors: [Color(0xFF00A9CA), Color(0xFF0095B3)], // Couleur #00a9ca et variante
+                              colors: [
+                                Color(0xFF00A9CA),
+                                Color(0xFF0095B3)
+                              ], // Couleur #00a9ca et variante
                             ),
                       color: _loading ? Colors.grey[400] : null,
                     ),
@@ -537,9 +526,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                     ),
                   ),
-                  
+
                   SizedBox(height: 24),
-                  
+
                   // Footer avec info sécurité
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -590,7 +579,7 @@ class _PreferencesCard extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: 340,
-      height: 300, // Hauteur fixe pour égaliser les cards
+      height: 400, // Hauteur fixe pour égaliser les cards
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
@@ -599,84 +588,13 @@ class _PreferencesCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Préférences', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          Text('Préférences',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    // Test : Stocker des données dans le cache Navision et Odoo
-                    final navisionCache = NavisionServiceCache();
-                    final odooCache = OdooServiceCache();
-                    final societe = 'demo';
-                    // Création d'un objet NavisionIndicateursMensuelResponse
-                    final navisionTestData = NavisionIndicateursMensuelResponse(
-                      annee: DateTime.now().year,
-                      mois: {
-                        '07': [
-                          NavisionIndicateurMensuel(
-                            indicateur: 'CA',
-                            libelle: 'Chiffre d’Affaires',
-                            valeur: 12345.0,
-                            associe: [],
-                            formuleText: 'CA = ...',
-                            formuleNumeric: '12345',
-                            initiales: 'CA',
-                          ),
-                          NavisionIndicateurMensuel(
-                            indicateur: 'RES',
-                            libelle: 'Résultat',
-                            valeur: 6789.0,
-                            associe: [],
-                            formuleText: 'RES = ...',
-                            formuleNumeric: '6789',
-                            initiales: 'RES',
-                          ),
-                        ],
-                      },
-                    );
-                    // Création d'un objet OdooIndicateursMensuelResponse
-                    final odooTestData = OdooIndicateursMensuelResponse(
-                      annee: DateTime.now().year,
-                      mois: {
-                        '07': [
-                          OdooIndicateurMensuel(
-                            indicateur: 'CA',
-                            libelle: 'Chiffre d’Affaires',
-                            valeur: 54321.0,
-                            associe: [],
-                            formuleText: 'CA = ...',
-                            formuleNumeric: '54321',
-                            initiales: 'CA',
-                          ),
-                          OdooIndicateurMensuel(
-                            indicateur: 'RES',
-                            libelle: 'Résultat',
-                            valeur: 9876.0,
-                            associe: [],
-                            formuleText: 'RES = ...',
-                            formuleNumeric: '9876',
-                            initiales: 'RES',
-                          ),
-                        ],
-                      },
-                    );
-                    await navisionCache.saveIndicateursMensuel(societe, navisionTestData);
-                    await odooCache.saveIndicateursMensuel(societe, odooTestData);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Données de test stockées dans le cache !')),
-                    );
-                  },
-                  icon: Icon(Icons.save),
-                  label: Text('Stocker données test dans cache'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
           Row(
             children: [
-              Icon(Icons.person, color: isDarkMode ? Colors.white70 : Colors.blueGrey),
+              Icon(Icons.person,
+                  color: isDarkMode ? Colors.white70 : Colors.blueGrey),
               SizedBox(width: 8),
               Text(userName, style: TextStyle(fontSize: 16)),
             ],
@@ -685,7 +603,8 @@ class _PreferencesCard extends StatelessWidget {
           if (email.isNotEmpty)
             Row(
               children: [
-                Icon(Icons.email, color: isDarkMode ? Colors.white70 : Colors.blueGrey),
+                Icon(Icons.email,
+                    color: isDarkMode ? Colors.white70 : Colors.blueGrey),
                 SizedBox(width: 8),
                 Text(email, style: TextStyle(fontSize: 16)),
               ],
@@ -695,7 +614,8 @@ class _PreferencesCard extends StatelessWidget {
             title: Text(isDarkMode ? 'Mode Nuit' : 'Mode Jour'),
             value: isDarkMode,
             onChanged: onThemeChanged,
-            secondary: Icon(isDarkMode ? Icons.nightlight_round : Icons.wb_sunny),
+            secondary:
+                Icon(isDarkMode ? Icons.nightlight_round : Icons.wb_sunny),
           ),
           SwitchListTile(
             title: Text('Défilement par glissement'),
@@ -714,26 +634,29 @@ class _RolesAndCompaniesCard extends StatelessWidget {
   final bool isAdmin;
   final bool hasMDMFi;
   final List<String>? userGroups;
-  
+
   const _RolesAndCompaniesCard({
-    required this.isClient, 
-    required this.isAdmin, 
+    required this.isClient,
+    required this.isAdmin,
     required this.hasMDMFi,
     this.userGroups,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: false);
-    
+    final keycloakProvider =
+        Provider.of<KeycloakProvider>(context, listen: false);
+
     // Debug : afficher les groupes dans la console
-    print('[RolesAndCompaniesCard] userGroups reçus: ${userGroups?.toString()}');
-    print('[RolesAndCompaniesCard] accessibleCompanies: ${keycloakProvider.accessibleCompanies.toString()}');
-    
+    print(
+        '[RolesAndCompaniesCard] userGroups reçus: ${userGroups?.toString()}');
+    print(
+        '[RolesAndCompaniesCard] accessibleCompanies: ${keycloakProvider.accessibleCompanies.toString()}');
+
     return Container(
       width: 340,
-      // height: 300, // Hauteur fixe supprimée
+      height: 400, // Hauteur fixe pour égaliser les cards
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
@@ -744,7 +667,8 @@ class _RolesAndCompaniesCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Section Rôles
-            Text('Rôles', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            Text('Rôles',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -752,28 +676,30 @@ class _RolesAndCompaniesCard extends StatelessWidget {
               children: [
                 if (isClient)
                   Chip(
-                    label: Text('Client', style: TextStyle(color: Colors.white)), 
-                    backgroundColor: Color(0xFF00A9CA)
-                  ),
+                      label:
+                          Text('Client', style: TextStyle(color: Colors.white)),
+                      backgroundColor: Color(0xFF00A9CA)),
                 if (isAdmin)
                   Chip(
-                    label: Text('Admin', style: TextStyle(color: Colors.white)), 
-                    backgroundColor: Colors.red
-                  ),
+                      label:
+                          Text('Admin', style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.red),
                 if (hasMDMFi)
                   Chip(
-                    label: Text('MDM-Fi', style: TextStyle(color: Colors.white)), 
-                    backgroundColor: isDarkMode ? Color(0xFF2C5C4C) : Colors.teal
-                  ),
+                      label:
+                          Text('MDM-Fi', style: TextStyle(color: Colors.white)),
+                      backgroundColor:
+                          isDarkMode ? Color(0xFF2C5C4C) : Colors.teal),
               ],
             ),
-            
+
             // Section Sociétés (si groupes disponibles)
             if (userGroups != null && userGroups!.isNotEmpty) ...[
               SizedBox(height: 20),
               Divider(color: isDarkMode ? Colors.grey[600] : Colors.grey[400]),
               SizedBox(height: 12),
-              Text('Groupe(s) utilisateur', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              Text('Groupe(s) utilisateur',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
               SizedBox(height: 12),
               Wrap(
                 spacing: 6,
@@ -789,24 +715,27 @@ class _RolesAndCompaniesCard extends StatelessWidget {
                   return Container(
                     margin: EdgeInsets.symmetric(vertical: 2),
                     child: Chip(
-                      label: Text(
-                        displayName,
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white : Colors.black87,
-                          fontSize: 12,
-                        )
-                      ),
-                      backgroundColor: isDarkMode ? Color(0xFF404040) : Colors.grey[300],
+                      label: Text(displayName,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                            fontSize: 12,
+                          )),
+                      backgroundColor:
+                          isDarkMode ? Color(0xFF404040) : Colors.grey[300],
                     ),
                   );
                 }).toList(),
               ),
             ],
-            
+
             // Section Sociétés accessibles (depuis le provider)
             if (keycloakProvider.accessibleCompanies.isNotEmpty) ...[
               SizedBox(height: 16),
-              Text('Société(s) accessibles', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
+              Text('Société(s) accessibles',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black)),
               SizedBox(height: 8),
               Wrap(
                 spacing: 6,
@@ -815,15 +744,14 @@ class _RolesAndCompaniesCard extends StatelessWidget {
                   return Container(
                     margin: EdgeInsets.symmetric(vertical: 2),
                     child: Chip(
-                      label: Text(
-                        company['name'] ?? '',
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white : Colors.black87,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        )
-                      ),
-                      backgroundColor: isDarkMode ? Color(0xFF404040) : Colors.grey[300],
+                      label: Text(company['name'] ?? '',
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black87,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          )),
+                      backgroundColor:
+                          isDarkMode ? Color(0xFF404040) : Colors.grey[300],
                     ),
                   );
                 }).toList(),
@@ -831,6 +759,168 @@ class _RolesAndCompaniesCard extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+// Nouvelle carte pour la gestion des données
+class _DataManagementCard extends StatelessWidget {
+  final bool isCacheMode;
+  final Function(bool) onCacheModeChanged;
+
+  const _DataManagementCard({
+    required this.isCacheMode,
+    required this.onCacheModeChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      width: 340,
+      height: 400, // Hauteur fixe pour égaliser les cards
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Gestion des données',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          SizedBox(height: 12),
+
+          // Mode de données
+          Text('Mode de données',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+          SizedBox(height: 8),
+          SwitchListTile(
+            title: Text('Mode Cache'),
+            subtitle: Text(isCacheMode
+                ? 'Mode Cache (données locales)'
+                : 'Mode Webservice (données temps réel)'),
+            value: isCacheMode,
+            onChanged: (value) async {
+              onCacheModeChanged(value);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content:
+                      Text('Mode ${value ? "Cache" : "Webservice"} activé'),
+                  backgroundColor: value ? Colors.green : Colors.blue,
+                ),
+              );
+            },
+            secondary: Icon(
+              isCacheMode ? Icons.storage : Icons.cloud,
+              color: isCacheMode ? Colors.orange : Colors.blue,
+            ),
+          ),
+          SizedBox(height: 16),
+
+          // Bouton Exporter le cache
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                // Exemple d'export des données du cache Navision et Odoo
+                final navisionCache = NavisionServiceCache();
+                final odooCache = OdooServiceCache();
+                // Remplace 'societe' par la valeur réelle à exporter
+                final societe = 'demo';
+                final navisionData =
+                    await navisionCache.loadIndicateursMensuel(societe);
+                final odooData =
+                    await odooCache.loadIndicateursMensuel(societe);
+                // Affiche les données dans un SnackBar (ou adapte selon besoin)
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('Navision: ' +
+                          (navisionData?.toJson().toString() ??
+                              'Aucune donnée') +
+                          '\nOdoo: \n' +
+                          (odooData?.toJson().toString() ?? 'Aucune donnée'))),
+                );
+              },
+              icon: Icon(Icons.download),
+              label: Text('Exporter le cache'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueGrey,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          // Bouton Vider le cache
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                try {
+                  await IndicateurService.clearAllCaches();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('🗑️ Cache Hive vidé avec succès')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('❌ Erreur lors du vidage du cache: $e')),
+                  );
+                }
+              },
+              icon: Icon(Icons.clear_all),
+              label: Text('Vider le cache'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          // Bouton Mettre à jour les données
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                try {
+                  // Forcer le rafraîchissement du cache
+                  await IndicateurService.forceRefreshCache(
+                      context, 'demo', '2024', '01');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('🔄 Données mises à jour avec succès')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('❌ Erreur lors de la mise à jour: $e')),
+                  );
+                }
+              },
+              icon: Icon(Icons.refresh),
+              label: Text('Mettre à jour les données'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF00A9CA),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

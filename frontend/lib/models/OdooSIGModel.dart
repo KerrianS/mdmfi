@@ -29,7 +29,8 @@ class OdooCompteMensuel {
       montant: (json['montant'] as num).toDouble(),
       debit: (json['debit'] as num?)?.toDouble() ?? 0.0,
       credit: (json['credit'] as num?)?.toDouble() ?? 0.0,
-      dateEcriture: DateTime.tryParse(json['date_ecriture'] ?? '') ?? DateTime(2000),
+      dateEcriture:
+          DateTime.tryParse(json['date_ecriture'] ?? '') ?? DateTime(2000),
       document: json['document'] ?? '',
       utilisateur: json['utilisateur'] ?? '',
     );
@@ -88,7 +89,6 @@ class OdooIndicateurMensuel {
   final String libelle;
   final String initiales;
   final double valeur;
-  final List<String> associe;
   final String formuleText;
   final String formuleNumeric;
 
@@ -97,7 +97,6 @@ class OdooIndicateurMensuel {
     required this.libelle,
     required this.initiales,
     required this.valeur,
-    this.associe = const [],
     this.formuleText = '',
     this.formuleNumeric = '',
   });
@@ -107,8 +106,9 @@ class OdooIndicateurMensuel {
       indicateur: json['indicateur'],
       libelle: json['libelle'],
       initiales: json['initiales'] ?? '',
-      valeur: (json['valeur'] as num).toDouble(),
-      associe: (json['associe'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      valeur: (json['valeur_calculee'] as num?)?.toDouble() ??
+          (json['valeur'] as num?)?.toDouble() ??
+          0.0,
       formuleText: json['formule_text'] ?? '',
       formuleNumeric: json['formule_numeric'] ?? '',
     );
@@ -120,7 +120,6 @@ class OdooIndicateurMensuel {
       'libelle': libelle,
       'initiales': initiales,
       'valeur': valeur,
-      'associe': associe,
       'formule_text': formuleText,
       'formule_numeric': formuleNumeric,
     };
@@ -140,9 +139,8 @@ class OdooIndicateursMensuelResponse {
     final moisMap = <String, List<OdooIndicateurMensuel>>{};
     (json['mois'] as Map<String, dynamic>).forEach((mois, list) {
       final moisStr = mois.toString();
-      moisMap[moisStr] = (list as List)
-          .map((e) => OdooIndicateurMensuel.fromJson(e))
-          .toList();
+      moisMap[moisStr] =
+          (list as List).map((e) => OdooIndicateurMensuel.fromJson(e)).toList();
     });
     return OdooIndicateursMensuelResponse(
       annee: json['annee'],
@@ -154,9 +152,9 @@ class OdooIndicateursMensuelResponse {
     return {
       'annee': annee,
       'mois': mois.map((key, value) => MapEntry(
-        key,
-        value.map((e) => e.toJson()).toList(),
-      )),
+            key,
+            value.map((e) => e.toJson()).toList(),
+          )),
     };
   }
 }
@@ -206,7 +204,8 @@ class OdooSousIndicateursMensuelResponse {
     required this.mois,
   });
 
-  factory OdooSousIndicateursMensuelResponse.fromJson(Map<String, dynamic> json) {
+  factory OdooSousIndicateursMensuelResponse.fromJson(
+      Map<String, dynamic> json) {
     final moisMap = <String, Map<String, List<OdooSousIndicateurMensuel>>>{};
     (json['mois'] as Map<String, dynamic>).forEach((mois, indicateurs) {
       final moisStr = mois.toString();
@@ -228,12 +227,12 @@ class OdooSousIndicateursMensuelResponse {
     return {
       'annee': annee,
       'mois': mois.map((moisKey, indicateurMap) => MapEntry(
-        moisKey,
-        indicateurMap.map((indicateurKey, list) => MapEntry(
-          indicateurKey,
-          list.map((e) => e.toJson()).toList(),
-        )),
-      )),
+            moisKey,
+            indicateurMap.map((indicateurKey, list) => MapEntry(
+                  indicateurKey,
+                  list.map((e) => e.toJson()).toList(),
+                )),
+          )),
     };
   }
 }
@@ -244,7 +243,6 @@ class OdooIndicateurGlobal {
   final String indicateur;
   final String libelle;
   final double valeur;
-  final List<String> associe;
   final String formuleText;
   final String formuleNumeric;
 
@@ -252,7 +250,6 @@ class OdooIndicateurGlobal {
     required this.indicateur,
     required this.libelle,
     required this.valeur,
-    required this.associe,
     this.formuleText = '',
     this.formuleNumeric = '',
   });
@@ -262,7 +259,6 @@ class OdooIndicateurGlobal {
       indicateur: json['indicateur'] ?? '',
       libelle: json['libelle'] ?? '',
       valeur: (json['valeur'] as num).toDouble(),
-      associe: (json['associe'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       formuleText: json['formule_text'] ?? '',
       formuleNumeric: json['formule_numeric'] ?? '',
     );
@@ -273,7 +269,6 @@ class OdooIndicateurGlobal {
       'indicateur': indicateur,
       'libelle': libelle,
       'valeur': valeur,
-      'associe': associe,
       'formule_text': formuleText,
       'formule_numeric': formuleNumeric,
     };
@@ -294,9 +289,8 @@ class OdooIndicateursGlobalResponse {
   factory OdooIndicateursGlobalResponse.fromJson(Map<String, dynamic> json) {
     final indicateursMap = <String, List<OdooIndicateurGlobal>>{};
     (json['indicateurs'] as Map<String, dynamic>).forEach((annee, list) {
-      indicateursMap[annee] = (list as List)
-          .map((e) => OdooIndicateurGlobal.fromJson(e))
-          .toList();
+      indicateursMap[annee] =
+          (list as List).map((e) => OdooIndicateurGlobal.fromJson(e)).toList();
     });
     return OdooIndicateursGlobalResponse(
       periode: json['periode'],
@@ -312,7 +306,6 @@ class OdooSousIndicateurGlobal {
   final String initiales;
   final double montant;
   final String formule;
-  final List<String> associe;
 
   OdooSousIndicateurGlobal({
     required this.sousIndicateur,
@@ -320,7 +313,6 @@ class OdooSousIndicateurGlobal {
     required this.initiales,
     required this.montant,
     required this.formule,
-    required this.associe,
   });
 
   Map<String, dynamic> toJson() {
@@ -330,7 +322,6 @@ class OdooSousIndicateurGlobal {
       'initiales': initiales,
       'montant': montant,
       'formule': formule,
-      'associe': associe,
     };
   }
 
@@ -341,7 +332,6 @@ class OdooSousIndicateurGlobal {
       initiales: json['initiales'] ?? '',
       montant: (json['montant'] as num).toDouble(),
       formule: json['formule'] ?? '',
-      associe: (json['associe'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
     );
   }
 }
@@ -349,7 +339,8 @@ class OdooSousIndicateurGlobal {
 class OdooSousIndicateursGlobalResponse {
   final String periode;
   final int? trimestre;
-  final Map<String, Map<String, List<OdooSousIndicateurGlobal>>> sousIndicateurs;
+  final Map<String, Map<String, List<OdooSousIndicateurGlobal>>>
+      sousIndicateurs;
 
   OdooSousIndicateursGlobalResponse({
     required this.periode,
@@ -357,9 +348,12 @@ class OdooSousIndicateursGlobalResponse {
     required this.sousIndicateurs,
   });
 
-  factory OdooSousIndicateursGlobalResponse.fromJson(Map<String, dynamic> json) {
-    final sousIndicsMap = <String, Map<String, List<OdooSousIndicateurGlobal>>>{};
-    (json['sous_indicateurs'] as Map<String, dynamic>).forEach((annee, indicateurs) {
+  factory OdooSousIndicateursGlobalResponse.fromJson(
+      Map<String, dynamic> json) {
+    final sousIndicsMap =
+        <String, Map<String, List<OdooSousIndicateurGlobal>>>{};
+    (json['sous_indicateurs'] as Map<String, dynamic>)
+        .forEach((annee, indicateurs) {
       final indicateurMap = <String, List<OdooSousIndicateurGlobal>>{};
       (indicateurs as Map<String, dynamic>).forEach((indicateur, list) {
         indicateurMap[indicateur] = (list as List)
@@ -419,10 +413,13 @@ class OdooCompteGlobal {
 
   factory OdooCompteGlobal.fromDynamic(dynamic c, {int annee = 0}) {
     String code = (c['code_compte'] ?? c['codeCompte'] ?? '').toString();
-    String libelle = (c['libelle_compte'] ?? c['libelleCompte'] ?? '').toString();
-    double montant = (c['montant'] is num) ? (c['montant'] as num).toDouble() : 0.0;
+    String libelle =
+        (c['libelle_compte'] ?? c['libelleCompte'] ?? '').toString();
+    double montant =
+        (c['montant'] is num) ? (c['montant'] as num).toDouble() : 0.0;
     double debit = (c['debit'] is num) ? (c['debit'] as num).toDouble() : 0.0;
-    double credit = (c['credit'] is num) ? (c['credit'] as num).toDouble() : 0.0;
+    double credit =
+        (c['credit'] is num) ? (c['credit'] as num).toDouble() : 0.0;
     return OdooCompteGlobal(
       codeCompte: (code == 'null') ? '' : code,
       libelleCompte: (libelle == 'null') ? '' : libelle,

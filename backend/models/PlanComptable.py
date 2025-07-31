@@ -172,70 +172,70 @@ class MappingIndicateurSIG:
         """
         return {
             # Classe 1 : Capitaux
-            'CAPITAL': 'CAP',
-            'RESERVES': 'RES',
-            'COMPTE DE LEXPLOITANT': 'CDL',
+            'CAPITAL': 'CA',
+            'RESERVES': 'RE',
+            'COMPTE DE LEXPLOITANT': 'CL',
             
             # Classe 2 : Immobilisations
-            'INCORPORELLES': 'INC',
-            'CORPORELLES': 'CORP',
+            'INCORPORELLES': 'IN',
+            'CORPORELLES': 'CO',
             'EN COURS': 'EC',
-            'FINANCIERES': 'FIN',
+            'FINANCIERES': 'FI',
             
             # Classe 3 : Stocks
             'MATIERES PREMIERES': 'MP',
-            'AUTRES APPROVISIONNEMENTS': 'APPR',
-            'EN-COURS DE PRODUCTION': 'ECDP',
-            'STOCKS DE PRODUITS': 'SDP',
-            'STOCKS DE MARCHANDISES': 'SDM',
+            'AUTRES APPROVISIONNEMENTS': 'AA',
+            'EN-COURS DE PRODUCTION': 'EP',
+            'STOCKS DE PRODUITS': 'SP',
+            'STOCKS DE MARCHANDISES': 'SM',
             
             # Classe 4 : Tiers
-            'FOURNISSEURS': 'FRN',
-            'FACTURES NON PARVENUES': 'FNP',
-            'CLIENTS': 'CLI',
-            'AVANCES ET ACOMPTES CLIENTS': 'AAC',
-            'PERSONNEL': 'PERS',
-            'ORGANISMES SOCIAUX': 'ORGSOC',
-            'TVA': 'TVA',
+            'FOURNISSEURS': 'FO',
+            'FACTURES NON PARVENUES': 'FP',
+            'CLIENTS': 'CL',
+            'AVANCES ET ACOMPTES CLIENTS': 'AC',
+            'PERSONNEL': 'PE',
+            'ORGANISMES SOCIAUX': 'OS',
+            'TVA': 'TV',
             'TVA DEDUCTIBLE': 'TD',
             'TVA COLLECTEE': 'TC',
-            'DIVERS': 'DIV',
-            'TRANSITOIRES': 'TRANS',
+            'DIVERS': 'DI',
+            'TRANSITOIRES': 'TR',
             
             # Classe 5 : Financiers
-            'VMP': 'VMP',
-            'BANQUES': 'BQ',
-            'CAISSE': 'CAISSE',
+            'VMP': 'VM',
+            'BANQUES': 'BA',
+            'CAISSE': 'CA',
             
             # Classe 6 : Charges
             'ACHATS STOCKES': 'AS',
-            'ACHATS NON STOCKES': 'ANS',
-            'FOURNITURES': 'FRN',
+            'ACHATS NON STOCKES': 'AN',
+            'FOURNITURES': 'FO',
             'FOURNITURES ADMINISTRATIVES': 'FA',
-            'ACHATS DE MARCHANDISES': 'ADM',
+            'ACHATS DE MARCHANDISES': 'AM',
             'SERVICES EXTÉRIEURS': 'SE',
-            'AUTRES SERVICES EXTÉRIEURS': 'ASE',
+            'AUTRES SERVICES EXTÉRIEURS': 'AS',
             'IMPÔTS ET TAXES': 'IT',
-            'CHARGES DE PERSONNEL': 'CDP',
-            'AUTRES CHARGES DE GESTION COURANTE': 'ACGC',
+            'CHARGES DE PERSONNEL': 'CP',
+            'AUTRES CHARGES DE GESTION COURANTE': 'AC',
             'CHARGES FINANCIÈRES': 'CF',
             'CHARGES EXCEPTIONNELLES': 'CE',
             'DOTATIONS AMORTISSEMENTS': 'DA',
-            'IMPÔTS SUR LES BÉNÉFICES': 'ISLB',
+            'IMPÔTS SUR LES BÉNÉFICES': 'IB',
             
             # Classe 7 : Produits
-            'VENTES DE PRODUITS FINIS': 'VDPF',
-            'VENTES DE SERVICES': 'VDS',
-            'PRESTATIONS DE SERVICES': 'PDS',
-            'VENTES DE MARCHANDISES': 'VDM',
+            'VENTES DE PRODUITS FINIS': 'VP',
+            'VENTES DE SERVICES': 'VS',
+            'PRESTATIONS DE SERVICES': 'PS',
+            'VENTES DE MARCHANDISES': 'VM',
             'PRODUCTION STOCKÉE': 'PS',
             'PRODUCTION IMMOBILISÉE': 'PI',
             'SUBVENTIONS D\'EXPLOITATION': 'SE',
-            'AUTRES PRODUITS DE GESTION COURANTE': 'APDGC',
+            'AUTRES PRODUITS DE GESTION COURANTE': 'AP',
             'PRODUITS FINANCIERS': 'PF',
             'PRODUITS EXCEPTIONNELS': 'PE',
             'REPRISES AMORTISSEMENTS': 'RA',
-            'TRANSFERTS DE CHARGES': 'TDC',
+            'TRANSFERTS DE CHARGES': 'TC',
             
             # Classe 8 : Speciaux
             'ENGAGEMENTS DONNES': 'ED',
@@ -256,48 +256,48 @@ class MappingIndicateurSIG:
         Retourne la formule de calcul pour un sous-indicateur donné.
         """
         formules = {
-            # Classe 3 : Stocks
-            'MATIERES PREMIERES': 'Σ (Crédit - Débit) des comptes 31*',
-            'AUTRES APPROVISIONNEMENTS': 'Σ (Crédit - Débit) des comptes 32*',
-            'EN-COURS DE PRODUCTION': 'Σ (Crédit - Débit) des comptes 33*',
-            'STOCKS DE PRODUITS': 'Σ (Crédit - Débit) des comptes 34*',
-            'STOCKS DE MARCHANDISES': 'Σ (Crédit - Débit) des comptes 35*',
+            # Classe 3 : Stocks (Actif - Solde = Débit - Crédit)
+            'MATIERES PREMIERES': 'Σ (Débit - Crédit) des comptes 31*',
+            'AUTRES APPROVISIONNEMENTS': 'Σ (Débit - Crédit) des comptes 32*',
+            'EN-COURS DE PRODUCTION': 'Σ (Débit - Crédit) des comptes 33*',
+            'STOCKS DE PRODUITS': 'Σ (Débit - Crédit) des comptes 34*',
+            'STOCKS DE MARCHANDISES': 'Σ (Débit - Crédit) des comptes 35*',
             
-            # Classe 4 : Tiers
-            'FOURNISSEURS': 'Σ (Crédit - Débit) des comptes 40*',
-            'FACTURES NON PARVENUES': 'Σ (Crédit - Débit) des comptes 408*',
-            'CLIENTS': 'Σ (Crédit - Débit) des comptes 41*',
-            'AVANCES ET ACOMPTES CLIENTS': 'Σ (Crédit - Débit) des comptes 419*',
-            'PERSONNEL': 'Σ (Crédit - Débit) des comptes 42*',
-            'ORGANISMES SOCIAUX': 'Σ (Crédit - Débit) des comptes 43*',
-            'TVA': 'Σ (Crédit - Débit) des comptes 445*',
-            'TVA DEDUCTIBLE': 'Σ (Crédit - Débit) des comptes 4456*',
-            'TVA COLLECTEE': 'Σ (Crédit - Débit) des comptes 4457*',
-            'DIVERS': 'Σ (Crédit - Débit) des comptes 46*',
-            'TRANSITOIRES': 'Σ (Crédit - Débit) des comptes 47*',
+            # Classe 4 : Tiers (Actif - Solde = Débit - Crédit)
+            'FOURNISSEURS': 'Σ (Débit - Crédit) des comptes 40*',
+            'FACTURES NON PARVENUES': 'Σ (Débit - Crédit) des comptes 408*',
+            'CLIENTS': 'Σ (Débit - Crédit) des comptes 41*',
+            'AVANCES ET ACOMPTES CLIENTS': 'Σ (Débit - Crédit) des comptes 419*',
+            'PERSONNEL': 'Σ (Débit - Crédit) des comptes 42*',
+            'ORGANISMES SOCIAUX': 'Σ (Débit - Crédit) des comptes 43*',
+            'TVA': 'Σ (Débit - Crédit) des comptes 445*',
+            'TVA DEDUCTIBLE': 'Σ (Débit - Crédit) des comptes 4456*',
+            'TVA COLLECTEE': 'Σ (Débit - Crédit) des comptes 4457*',
+            'DIVERS': 'Σ (Débit - Crédit) des comptes 46*',
+            'TRANSITOIRES': 'Σ (Débit - Crédit) des comptes 47*',
             
-            # Classe 5 : Financiers
-            'VMP': 'Σ (Crédit - Débit) des comptes 50*',
-            'BANQUES': 'Σ (Crédit - Débit) des comptes 51*',
-            'CAISSE': 'Σ (Crédit - Débit) des comptes 53*',
+            # Classe 5 : Financiers (Actif - Solde = Débit - Crédit)
+            'VMP': 'Σ (Débit - Crédit) des comptes 50*',
+            'BANQUES': 'Σ (Débit - Crédit) des comptes 51*',
+            'CAISSE': 'Σ (Débit - Crédit) des comptes 53*',
             
-            # Classe 6 : Charges
-            'ACHATS STOCKES': 'Σ (Crédit - Débit) des comptes 601*',
-            'ACHATS NON STOCKES': 'Σ (Crédit - Débit) des comptes 602*',
-            'FOURNITURES': 'Σ (Crédit - Débit) des comptes 606*',
-            'FOURNITURES ADMINISTRATIVES': 'Σ (Crédit - Débit) des comptes 6061*',
-            'ACHATS DE MARCHANDISES': 'Σ (Crédit - Débit) des comptes 607*',
-            'SERVICES EXTÉRIEURS': 'Σ (Crédit - Débit) des comptes 61*',
-            'AUTRES SERVICES EXTÉRIEURS': 'Σ (Crédit - Débit) des comptes 62*',
-            'IMPÔTS ET TAXES': 'Σ (Crédit - Débit) des comptes 63*',
-            'CHARGES DE PERSONNEL': 'Σ (Crédit - Débit) des comptes 64*',
-            'AUTRES CHARGES DE GESTION COURANTE': 'Σ (Crédit - Débit) des comptes 65*',
-            'CHARGES FINANCIÈRES': 'Σ (Crédit - Débit) des comptes 66*',
-            'CHARGES EXCEPTIONNELLES': 'Σ (Crédit - Débit) des comptes 67*',
-            'DOTATIONS AMORTISSEMENTS': 'Σ (Crédit - Débit) des comptes 68*',
-            'IMPÔTS SUR LES BÉNÉFICES': 'Σ (Crédit - Débit) des comptes 69*',
+            # Classe 6 : Charges (Actif - Solde = Débit - Crédit)
+            'ACHATS STOCKES': 'Σ (Débit - Crédit) des comptes 601*',
+            'ACHATS NON STOCKES': 'Σ (Débit - Crédit) des comptes 602*',
+            'FOURNITURES': 'Σ (Débit - Crédit) des comptes 606*',
+            'FOURNITURES ADMINISTRATIVES': 'Σ (Débit - Crédit) des comptes 6061*',
+            'ACHATS DE MARCHANDISES': 'Σ (Débit - Crédit) des comptes 607*',
+            'SERVICES EXTÉRIEURS': 'Σ (Débit - Crédit) des comptes 61*',
+            'AUTRES SERVICES EXTÉRIEURS': 'Σ (Débit - Crédit) des comptes 62*',
+            'IMPÔTS ET TAXES': 'Σ (Débit - Crédit) des comptes 63*',
+            'CHARGES DE PERSONNEL': 'Σ (Débit - Crédit) des comptes 64*',
+            'AUTRES CHARGES DE GESTION COURANTE': 'Σ (Débit - Crédit) des comptes 65*',
+            'CHARGES FINANCIÈRES': 'Σ (Débit - Crédit) des comptes 66*',
+            'CHARGES EXCEPTIONNELLES': 'Σ (Débit - Crédit) des comptes 67*',
+            'DOTATIONS AMORTISSEMENTS': 'Σ (Débit - Crédit) des comptes 68*',
+            'IMPÔTS SUR LES BÉNÉFICES': 'Σ (Débit - Crédit) des comptes 69*',
             
-            # Classe 7 : Produits
+            # Classe 7 : Produits (Passif - Solde = Crédit - Débit)
             'VENTES DE PRODUITS FINIS': 'Σ (Crédit - Débit) des comptes 701*',
             'VENTES DE SERVICES': 'Σ (Crédit - Débit) des comptes 702*',
             'PRESTATIONS DE SERVICES': 'Σ (Crédit - Débit) des comptes 706*',
@@ -311,46 +311,66 @@ class MappingIndicateurSIG:
             'REPRISES AMORTISSEMENTS': 'Σ (Crédit - Débit) des comptes 78*',
             'TRANSFERTS DE CHARGES': 'Σ (Crédit - Débit) des comptes 79*',
             
-            # Classe 1 : Capitaux
-            'CAPITAL': 'Σ (Crédit - Débit) des comptes 10*',
-            'RESERVES': 'Σ (Crédit - Débit) des comptes 106*',
-            'COMPTE DE LEXPLOITANT': 'Σ (Crédit - Débit) des comptes 108*',
+            # Classe 1 : Capitaux (Actif - Solde = Débit - Crédit)
+            'CAPITAL': 'Σ (Débit - Crédit) des comptes 10*',
+            'RESERVES': 'Σ (Débit - Crédit) des comptes 106*',
+            'COMPTE DE LEXPLOITANT': 'Σ (Débit - Crédit) des comptes 108*',
             
-            # Classe 2 : Immobilisations
-            'INCORPORELLES': 'Σ (Crédit - Débit) des comptes 20*',
-            'CORPORELLES': 'Σ (Crédit - Débit) des comptes 21*',
-            'EN COURS': 'Σ (Crédit - Débit) des comptes 22*',
-            'FINANCIERES': 'Σ (Crédit - Débit) des comptes 23*',
+            # Classe 2 : Immobilisations (Actif - Solde = Débit - Crédit)
+            'INCORPORELLES': 'Σ (Débit - Crédit) des comptes 20*',
+            'CORPORELLES': 'Σ (Débit - Crédit) des comptes 21*',
+            'EN COURS': 'Σ (Débit - Crédit) des comptes 22*',
+            'FINANCIERES': 'Σ (Débit - Crédit) des comptes 23*',
             
-            # Classe 8 : Speciaux
-            'ENGAGEMENTS DONNES': 'Σ (Crédit - Débit) des comptes 86*',
-            'ENGAGEMENTS RECUS': 'Σ (Crédit - Débit) des comptes 87*',
+            # Classe 8 : Speciaux (Actif - Solde = Débit - Crédit)
+            'ENGAGEMENTS DONNES': 'Σ (Débit - Crédit) des comptes 86*',
+            'ENGAGEMENTS RECUS': 'Σ (Débit - Crédit) des comptes 87*',
         }
         
         return formules.get(sous_indicateur, f'Σ (Crédit - Débit) des comptes liés à "{sous_indicateur}"')
 
     @staticmethod
-    def get_associe_mapping():
+    def get_sous_indicateurs_possibles():
         """
-        Mapping exhaustif des indicateurs SIG vers tous les sous-indicateurs impliqués dans leur formule.
+        Retourne le mapping des sous-indicateurs possibles pour chaque indicateur principal.
         """
         return {
             'MC': [
-                'VENTES DE MARCHANDISES', 'VENTES DE PRODUITS FINIS', 'VENTES DE SERVICES', 'PRESTATIONS DE SERVICES', 'TVA COLLECTEE',
-                'ACHATS DE MARCHANDISES'
+                "VENTES DE MARCHANDISES",
+                "VENTES DE PRODUITS FINIS",
+                "VENTES DE SERVICES",
+                "PRESTATIONS DE SERVICES",
+                "TVA COLLECTEE",
+                "ACHATS DE MARCHANDISES"
             ],
             'VA': [
-                'MC', 'PRESTATIONS DE SERVICES', 'VENTES DE PRODUITS', 'PRODUCTION STOCKÉE', 'PRODUCTION IMMOBILISÉE',
-                'ACHATS', 'FOURNITURES', 'SERVICES EXTÉRIEURS', 'AUTRES SERVICES EXTÉRIEURS'
+                "PRESTATIONS DE SERVICES",
+                "VENTES DE PRODUITS FINIS",
+                "PRODUCTION STOCKÉE",
+                "PRODUCTION IMMOBILISÉE",
+                "ACHATS STOCKES",
+                "ACHATS NON STOCKES",
+                "FOURNITURES",
+                "SERVICES EXTÉRIEURS",
+                "AUTRES SERVICES EXTÉRIEURS"
             ],
             'EBE': [
-                'VA', "SUBVENTIONS D'EXPLOITATION", 'IMPÔTS ET TAXES', 'CHARGES DE PERSONNEL'
+                "SUBVENTIONS D'EXPLOITATION",
+                "IMPÔTS ET TAXES",
+                "CHARGES DE PERSONNEL"
             ],
             'RE': [
-                'EBE', 'AUTRES PRODUITS DE GESTION COURANTE', 'REPRISES AMORTISSEMENTS',
-                'AUTRES CHARGES DE GESTION COURANTE', 'DOTATIONS AMORTISSEMENTS'
+                "AUTRES PRODUITS DE GESTION COURANTE",
+                "REPRISES AMORTISSEMENTS",
+                "AUTRES CHARGES DE GESTION COURANTE",
+                "DOTATIONS AMORTISSEMENTS"
             ],
             'R': [
-                'RE', 'PRODUITS FINANCIERS', 'CHARGES FINANCIÈRES', 'PRODUITS EXCEPTIONNELS', 'CHARGES EXCEPTIONNELLES', 'IMPÔTS SUR LES BÉNÉFICES'
-            ],
+                "PRODUITS FINANCIERS",
+                "CHARGES FINANCIÈRES",
+                "PRODUITS EXCEPTIONNELS",
+                "CHARGES EXCEPTIONNELLES",
+                "IMPÔTS SUR LES BÉNÉFICES"
+            ]
         }
+

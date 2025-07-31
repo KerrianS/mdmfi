@@ -17,7 +17,7 @@ class GlobalAccountDataTable extends StatelessWidget {
   const GlobalAccountDataTable({
     super.key,
     required this.comptes,
-    required Map<String, Map<String, dynamic>> montantsParAnnee,
+    required this.montantsParAnnee,
     required this.annees,
     required this.total,
     required this.currentPage,
@@ -27,7 +27,7 @@ class GlobalAccountDataTable extends StatelessWidget {
     this.onSelectCompte,
     this.comptesResponse,
     this.isKEuros = false,
-  }) : montantsParAnnee = montantsParAnnee;
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -66,238 +66,415 @@ class GlobalAccountDataTable extends StatelessWidget {
     });
 
     final hasComptes = comptes.isNotEmpty;
+    final totalPages = (total / pageSize).ceil();
+    final safeCurrentPage =
+        totalPages > 0 ? currentPage.clamp(1, totalPages) : 1;
+    final startIndex = (safeCurrentPage - 1) * pageSize;
+    final endIndex = (startIndex + pageSize).clamp(0, comptes.length);
+    final displayedComptes =
+        hasComptes ? comptes.sublist(startIndex, endIndex) : [];
 
     return SingleChildScrollView(
-      child: DataTable(
-        showCheckboxColumn: false,
-        columnSpacing: 16,
-        headingRowHeight: 32,
-        dataRowMinHeight: 28,
-        dataRowMaxHeight: 32,
-        columns: [
-          const DataColumn(label: SizedBox(width: 100, child: Text('Compte', style: TextStyle(fontSize: 13)))),
-          DataColumn(
-            label: Container(
-              width: 150,
-              alignment: Alignment.centerLeft,
-              child: Text('Libellé', style: TextStyle(fontSize: 13), textAlign: TextAlign.left),
-            ),
-          ),
-          ...annees.map((an) => DataColumn(
+      child: Column(
+        children: [
+          // Tableau
+          DataTable(
+            showCheckboxColumn: false,
+            columnSpacing: 16,
+            headingRowHeight: 32,
+            dataRowMinHeight: 28,
+            dataRowMaxHeight: 32,
+            columns: [
+              const DataColumn(
+                  label: SizedBox(
+                      width: 100,
+                      child: Text('Compte', style: TextStyle(fontSize: 13)))),
+              DataColumn(
                 label: Container(
-                  width: 120,
-                  alignment: Alignment.centerRight,
-                  child: Text(an, style: TextStyle(fontSize: 13), textAlign: TextAlign.right),
+                  width: 150,
+                  alignment: Alignment.centerLeft,
+                  child: Text('Libellé',
+                      style: const TextStyle(fontSize: 13),
+                      textAlign: TextAlign.left),
                 ),
-              )),
-        ],
-        rows: hasComptes
-            ? comptes.map((compte) {
-                final codeCompte = compte.codeCompte?.toString() ?? '';
-                final libelle = compte.libelleCompte?.toString() ?? '';
-                final key = '$codeCompte|$libelle';
-                final isSelected = selectedCompte == codeCompte;
-                final montants = upgradedMontantsParAnnee[key] ?? {};
+              ),
+              ...annees.map((an) => DataColumn(
+                    label: Container(
+                      width: 120,
+                      alignment: Alignment.centerRight,
+                      child: Text(an,
+                          style: const TextStyle(fontSize: 13),
+                          textAlign: TextAlign.right),
+                    ),
+                  )),
+            ],
+            rows: hasComptes
+                ? displayedComptes.map((compte) {
+                    final codeCompte = compte.codeCompte?.toString() ?? '';
+                    final libelle = compte.libelleCompte?.toString() ?? '';
+                    final key = '$codeCompte|$libelle';
+                    final isSelected = selectedCompte == codeCompte;
+                    final montants = upgradedMontantsParAnnee[key] ?? {};
 
-                return DataRow(
-                  selected: isSelected,
-                  onSelectChanged: onSelectCompte != null ? (_) => onSelectCompte!(codeCompte) : null,
-                  color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
-                    if (isSelected) {
-                      return Colors.grey.shade300;
-                    }
-                    if (states.contains(MaterialState.hovered)) {
-                      return Colors.grey.withOpacity(0.1);
-                    }
-                    return null;
-                  }),
-                  cells: [
-                    DataCell(
-                      Container(
-                        width: 100,
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          codeCompte,
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DataCell(
-                      Container(
-                        width: 200,
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                libelle,
-                                style: TextStyle(fontSize: 12),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                    return DataRow(
+                      selected: isSelected,
+                      onSelectChanged: onSelectCompte != null
+                          ? (_) => onSelectCompte!(codeCompte)
+                          : null,
+                      color: WidgetStateProperty.resolveWith<Color?>(
+                          (Set<WidgetState> states) {
+                        if (isSelected) {
+                          return Colors.grey.shade300;
+                        }
+                        if (states.contains(WidgetState.hovered)) {
+                          return Colors.grey.withOpacity(0.1);
+                        }
+                        return null;
+                      }),
+                      cells: [
+                        DataCell(
+                          Container(
+                            width: 100,
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              codeCompte,
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            SizedBox(width: 2),
-                            GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) {
-                                    return AlertDialog(
-                                      title: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text('Infos : $codeCompte', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                                          SizedBox(width: 12),
-                                          Text('- Libellé : $libelle', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                                        ],
-                                      ),
-                                      content: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          SizedBox(height: 12),
-                                          // Années sur une seule ligne
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                ...annees.map((an) => Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                  child: Text(an, style: TextStyle(fontSize: 13, fontWeight: FontWeight.normal)),
-                                                ))
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          // Montants pour chaque année
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                ...annees.map((an) {
-                                                  final anneeData = montants[an];
-                                                  double montant = 0.0;
-                                                  double debit = 0.0;
-                                                  double credit = 0.0;
-                                                  if (anneeData != null && anneeData is Map<String, dynamic>) {
-                                                    final map = anneeData;
-                                                    final montantVal = map['montant'];
-                                                    final debitVal = map['debit'];
-                                                    final creditVal = map['credit'];
-                                                    montant = (montantVal is num)
-                                                        ? montantVal.toDouble()
-                                                        : double.tryParse(montantVal?.toString() ?? '') ?? 0.0;
-                                                    debit = (debitVal is num)
-                                                        ? debitVal.toDouble()
-                                                        : double.tryParse(debitVal?.toString() ?? '') ?? 0.0;
-                                                    credit = (creditVal is num)
-                                                        ? creditVal.toDouble()
-                                                        : double.tryParse(creditVal?.toString() ?? '') ?? 0.0;
-                                                  } else if (anneeData is double) {
-                                                    montant = anneeData;
-                                                  }
-                                                  return Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                    child: Text(Currency.format(montant, isKEuros: isKEuros), style: TextStyle(fontSize: 13)),
-                                                  );
-                                                }).toList(),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          // Crédit et Débit pour chaque année
-                                          SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                ...annees.map((an) {
-                                                  final anneeData = montants[an];
-                                                  double debit = 0.0;
-                                                  double credit = 0.0;
-                                                  if (anneeData != null && anneeData is Map<String, dynamic>) {
-                                                    final map = anneeData;
-                                                    final debitVal = map['debit'];
-                                                    final creditVal = map['credit'];
-                                                    debit = (debitVal is num)
-                                                        ? debitVal.toDouble()
-                                                        : double.tryParse(debitVal?.toString() ?? '') ?? 0.0;
-                                                    credit = (creditVal is num)
-                                                        ? creditVal.toDouble()
-                                                        : double.tryParse(creditVal?.toString() ?? '') ?? 0.0;
-                                                  }
-                                                  return Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                    child: Row(
-                                                      children: [
-                                                        Text('C: ${Currency.format(credit, isKEuros: isKEuros)}', style: TextStyle(fontSize: 12)),
-                                                        SizedBox(width: 4),
-                                                        Text('D: ${Currency.format(debit, isKEuros: isKEuros)}', style: TextStyle(fontSize: 12)),
-                                                      ],
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.of(context).pop(),
-                                          child: Text("Fermer"),
-                                        )
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              child: Icon(Icons.info_outline, size: 18, color: Colors.blue),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    ...annees.map((an) {
-                      final anneeData = montants[an];
-                      double montant = 0.0;
-                      if (anneeData is Map && anneeData.containsKey('montant')) {
-                        final val = anneeData['montant'];
-                        montant = (val is num) ? val.toDouble() : double.tryParse(val?.toString() ?? '') ?? 0.0;
-                      } else if (anneeData is num) {
-                        montant = anneeData.toDouble();
-                      }
-                      return DataCell(
-                        Container(
-                          width: 120,
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            Currency.format(montant, isKEuros: isKEuros),
-                            style: TextStyle(fontSize: 12),
-                            textAlign: TextAlign.right,
                           ),
                         ),
-                      );
-                    }),
+                        DataCell(
+                          Container(
+                            width: 200,
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    libelle,
+                                    style: TextStyle(fontSize: 12),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 2),
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) {
+                                        return AlertDialog(
+                                          title: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text('Infos : $codeCompte',
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 15)),
+                                              const SizedBox(width: 12),
+                                              Text('- Libellé : $libelle',
+                                                  style: const TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ],
+                                          ),
+                                          content: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const SizedBox(height: 12),
+                                                // Tableau structuré pour un meilleur alignement
+                                                DataTable(
+                                                  columnSpacing: 20,
+                                                  headingRowHeight: 40,
+                                                  dataRowMinHeight: 40,
+                                                  dataRowMaxHeight: 40,
+                                                  columns: [
+                                                    // En-tête avec les années
+                                                    ...annees
+                                                        .map((an) => DataColumn(
+                                                              label: Container(
+                                                                width: 120,
+                                                                child: Text(
+                                                                  an,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          13,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                ),
+                                                              ),
+                                                            )),
+                                                  ],
+                                                  rows: [
+                                                    // Ligne des montants totaux
+                                                    DataRow(
+                                                      cells: annees.map((an) {
+                                                        final anneeData =
+                                                            montants[an];
+                                                        double montant = 0.0;
+                                                        if (anneeData != null &&
+                                                            anneeData is Map<
+                                                                String,
+                                                                dynamic>) {
+                                                          final map = anneeData;
+                                                          final montantVal =
+                                                              map['montant'];
+                                                          montant = (montantVal
+                                                                  is num)
+                                                              ? montantVal
+                                                                  .toDouble()
+                                                              : double.tryParse(
+                                                                      montantVal
+                                                                              ?.toString() ??
+                                                                          '') ??
+                                                                  0.0;
+                                                        } else if (anneeData
+                                                            is double) {
+                                                          montant = anneeData;
+                                                        }
+                                                        return DataCell(
+                                                          Container(
+                                                            width: 120,
+                                                            child: Text(
+                                                              Currency.format(
+                                                                  montant,
+                                                                  isKEuros:
+                                                                      isKEuros),
+                                                              style: TextStyle(
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                    // Ligne des crédits et débits
+                                                    DataRow(
+                                                      cells: annees.map((an) {
+                                                        final anneeData =
+                                                            montants[an];
+                                                        double debit = 0.0;
+                                                        double credit = 0.0;
+                                                        if (anneeData != null &&
+                                                            anneeData is Map<
+                                                                String,
+                                                                dynamic>) {
+                                                          final map = anneeData;
+                                                          final debitVal =
+                                                              map['debit'];
+                                                          final creditVal =
+                                                              map['credit'];
+                                                          debit = (debitVal is num)
+                                                              ? debitVal
+                                                                  .toDouble()
+                                                              : double.tryParse(
+                                                                      debitVal?.toString() ??
+                                                                          '') ??
+                                                                  0.0;
+                                                          credit = (creditVal
+                                                                  is num)
+                                                              ? creditVal
+                                                                  .toDouble()
+                                                              : double.tryParse(
+                                                                      creditVal
+                                                                              ?.toString() ??
+                                                                          '') ??
+                                                                  0.0;
+                                                        }
+                                                        return DataCell(
+                                                          Container(
+                                                            width: 120,
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  'C: ${Currency.format(credit, isKEuros: isKEuros)}',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          11,
+                                                                      color: Colors
+                                                                              .green[
+                                                                          700]),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                ),
+                                                                SizedBox(
+                                                                    height: 2),
+                                                                Text(
+                                                                  'D: ${Currency.format(debit, isKEuros: isKEuros)}',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          11,
+                                                                      color: Colors
+                                                                              .red[
+                                                                          700]),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: Text("Fermer"),
+                                            )
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Icon(Icons.info_outline,
+                                      size: 18, color: Colors.blue),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        ...annees.map((an) {
+                          final anneeData = montants[an];
+                          double montant = 0.0;
+                          if (anneeData is Map &&
+                              anneeData.containsKey('montant')) {
+                            final val = anneeData['montant'];
+                            montant = (val is num)
+                                ? val.toDouble()
+                                : double.tryParse(val?.toString() ?? '') ?? 0.0;
+                          } else if (anneeData is num) {
+                            montant = anneeData.toDouble();
+                          }
+                          return DataCell(
+                            Container(
+                              width: 120,
+                              alignment: Alignment.centerRight,
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                Currency.format(montant, isKEuros: isKEuros),
+                                style: TextStyle(fontSize: 12),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    );
+                  }).toList()
+                : [
+                    DataRow(cells: [
+                      DataCell(
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Text('Aucun compte à afficher',
+                              style: TextStyle(fontSize: 12)),
+                        ),
+                      ),
+                      const DataCell(Text('')),
+                      ...List.generate(
+                          annees.length, (index) => const DataCell(Text(''))),
+                    ])
                   ],
-                );
-              }).toList()
-            : [
-                DataRow(cells: [
-                  DataCell(
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text('Aucun compte à afficher', style: TextStyle(fontSize: 12)),
+          ),
+
+          // Contrôles de pagination
+          if (hasComptes && totalPages > 1)
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                border: Border(
+                  top: BorderSide(color: Colors.grey.shade300, width: 1),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Informations sur la pagination
+                  Text(
+                    'Affichage ${startIndex + 1}-${endIndex} sur $total comptes',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
                     ),
                   ),
-                  const DataCell(Text('')),
-                  ...List.generate(annees.length, (index) => const DataCell(Text(''))),
-                ])
-              ],
+
+                  // Contrôles de navigation
+                  Row(
+                    children: [
+                      // Bouton précédent
+                      IconButton(
+                        onPressed: currentPage > 1
+                            ? () => onPageChanged?.call(currentPage - 1)
+                            : null,
+                        icon: Icon(Icons.chevron_left, size: 20),
+                        color: currentPage > 1
+                            ? Colors.blue
+                            : Colors.grey.shade400,
+                        tooltip: 'Page précédente',
+                      ),
+
+                      // Indicateur de page actuelle
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '$currentPage / $totalPages',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      // Bouton suivant
+                      IconButton(
+                        onPressed: currentPage < totalPages
+                            ? () => onPageChanged?.call(currentPage + 1)
+                            : null,
+                        icon: Icon(Icons.chevron_right, size: 20),
+                        color: currentPage < totalPages
+                            ? Colors.blue
+                            : Colors.grey.shade400,
+                        tooltip: 'Page suivante',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
