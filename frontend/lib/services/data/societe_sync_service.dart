@@ -7,6 +7,7 @@ class SocieteSyncService {
     'rsp-bgs': 'rsp-bgs',
     'rsp-neg': 'rsp-neg',
     'rsp-sb': 'rsp-sb',
+    'aitecservice': 'aitecservice', // Mapping aitecservice vers rsp-neg
     // Ajoutez d'autres mappings selon vos besoins
   };
 

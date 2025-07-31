@@ -1,0 +1,63 @@
+{
+  "periode": "annee",
+  "indicateurs": {
+    "2025": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -76539.57,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (76539.57)) = -76539.57",
+        "formule_numeric": "MC = -(76539.57) = -76539.57",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 76539.57000000002
+          }
+        ]
+      },
+      {
+        "indicateur": "R",
+        "libelle": "Résultat net",
+        "valeur": 1877.88,
+        "formule_text": "R = CHARGES FINANCIÈRES (1877.88) = 1877.88",
+        "formule_numeric": "R = 1877.88 = 1877.88",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "CHARGES FINANCIÈRES",
+            "montant": 1877.88
+          }
+        ]
+      }
+    ],
+    "2024": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -45476.83,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (45476.83)) = -45476.83",
+        "formule_numeric": "MC = -(45476.83) = -45476.83",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 45476.83000000001
+          }
+        ]
+      }
+    ],
+    "2023": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -10554.59,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (10554.59)) = -10554.59",
+        "formule_numeric": "MC = -(10554.59) = -10554.59",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 10554.589999999998
+          }
+        ]
+      }
+    ]
+  }
+}

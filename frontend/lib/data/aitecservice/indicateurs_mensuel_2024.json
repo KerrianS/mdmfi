@@ -1,0 +1,185 @@
+{
+  "annee": 2024,
+  "mois": {
+    "1": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -18514.56,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (18514.56)) = -18514.56",
+        "formule_numeric": "MC = -(18514.56) = -18514.56",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 18514.559999999998
+          }
+        ]
+      }
+    ],
+    "2": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -4175.47,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (4175.47)) = -4175.47",
+        "formule_numeric": "MC = -(4175.47) = -4175.47",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 4175.47
+          }
+        ]
+      }
+    ],
+    "3": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -3121.41,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (3121.41)) = -3121.41",
+        "formule_numeric": "MC = -(3121.41) = -3121.41",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 3121.41
+          }
+        ]
+      }
+    ],
+    "4": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -5277.39,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (5277.39)) = -5277.39",
+        "formule_numeric": "MC = -(5277.39) = -5277.39",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 5277.389999999999
+          }
+        ]
+      }
+    ],
+    "5": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -6706.73,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (6706.73)) = -6706.73",
+        "formule_numeric": "MC = -(6706.73) = -6706.73",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 6706.729999999999
+          }
+        ]
+      }
+    ],
+    "6": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -31.84,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (31.84)) = -31.84",
+        "formule_numeric": "MC = -(31.84) = -31.84",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 31.84
+          }
+        ]
+      }
+    ],
+    "7": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -412.28,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (412.28)) = -412.28",
+        "formule_numeric": "MC = -(412.28) = -412.28",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 412.28000000000003
+          }
+        ]
+      }
+    ],
+    "8": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -16.89,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (16.89)) = -16.89",
+        "formule_numeric": "MC = -(16.89) = -16.89",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 16.89
+          }
+        ]
+      }
+    ],
+    "9": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -2203.19,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (2203.19)) = -2203.19",
+        "formule_numeric": "MC = -(2203.19) = -2203.19",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 2203.1899999999996
+          }
+        ]
+      }
+    ],
+    "10": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -154.64,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (154.64)) = -154.64",
+        "formule_numeric": "MC = -(154.64) = -154.64",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 154.64
+          }
+        ]
+      }
+    ],
+    "11": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -249.47,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (249.47)) = -249.47",
+        "formule_numeric": "MC = -(249.47) = -249.47",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 249.47
+          }
+        ]
+      }
+    ],
+    "12": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -4612.96,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (4612.96)) = -4612.96",
+        "formule_numeric": "MC = -(4612.96) = -4612.96",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 4612.96
+          }
+        ]
+      }
+    ]
+  }
+}

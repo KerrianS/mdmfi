@@ -1,0 +1,58 @@
+{
+  "periode": "annee",
+  "sous_indicateurs": {
+    "2025": {
+      "MC": [
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 76539.57000000002
+        }
+      ],
+      "VA": [],
+      "EBE": [],
+      "RE": [],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 1877.88
+        }
+      ]
+    },
+    "2024": {
+      "MC": [
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 45476.83000000001
+        }
+      ],
+      "VA": [],
+      "EBE": [],
+      "RE": [],
+      "R": []
+    },
+    "2023": {
+      "MC": [
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 10554.589999999998
+        }
+      ],
+      "VA": [],
+      "EBE": [],
+      "RE": [],
+      "R": []
+    }
+  }
+}

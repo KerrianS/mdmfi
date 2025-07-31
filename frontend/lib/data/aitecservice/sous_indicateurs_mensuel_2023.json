@@ -1,0 +1,65 @@
+{
+  "annee": 2023,
+  "mois": {
+    "6": {
+      "MC": [
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 1330.1
+        }
+      ],
+      "VA": [],
+      "EBE": [],
+      "RE": [],
+      "R": []
+    },
+    "7": {
+      "MC": [
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 721.8
+        }
+      ],
+      "VA": [],
+      "EBE": [],
+      "RE": [],
+      "R": []
+    },
+    "11": {
+      "MC": [
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 947.6999999999999
+        }
+      ],
+      "VA": [],
+      "EBE": [],
+      "RE": [],
+      "R": []
+    },
+    "12": {
+      "MC": [
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 7554.99
+        }
+      ],
+      "VA": [],
+      "EBE": [],
+      "RE": [],
+      "R": []
+    }
+  }
+}

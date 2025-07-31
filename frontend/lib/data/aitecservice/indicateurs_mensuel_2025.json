@@ -1,0 +1,136 @@
+{
+  "annee": 2025,
+  "mois": {
+    "1": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -14677.37,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (14677.37)) = -14677.37",
+        "formule_numeric": "MC = -(14677.37) = -14677.37",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 14677.37
+          }
+        ]
+      }
+    ],
+    "2": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -11502.72,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (11502.72)) = -11502.72",
+        "formule_numeric": "MC = -(11502.72) = -11502.72",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 11502.72
+          }
+        ]
+      }
+    ],
+    "3": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -11148.88,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (11148.88)) = -11148.88",
+        "formule_numeric": "MC = -(11148.88) = -11148.88",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 11148.879999999997
+          }
+        ]
+      }
+    ],
+    "4": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -13108.81,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (13108.81)) = -13108.81",
+        "formule_numeric": "MC = -(13108.81) = -13108.81",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 13108.810000000001
+          }
+        ]
+      },
+      {
+        "indicateur": "R",
+        "libelle": "Résultat net",
+        "valeur": 938.94,
+        "formule_text": "R = CHARGES FINANCIÈRES (938.94) = 938.94",
+        "formule_numeric": "R = 938.94 = 938.94",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "CHARGES FINANCIÈRES",
+            "montant": 938.94
+          }
+        ]
+      }
+    ],
+    "5": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -15104.28,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (15104.28)) = -15104.28",
+        "formule_numeric": "MC = -(15104.28) = -15104.28",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 15104.279999999997
+          }
+        ]
+      },
+      {
+        "indicateur": "R",
+        "libelle": "Résultat net",
+        "valeur": 938.94,
+        "formule_text": "R = CHARGES FINANCIÈRES (938.94) = 938.94",
+        "formule_numeric": "R = 938.94 = 938.94",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "CHARGES FINANCIÈRES",
+            "montant": 938.94
+          }
+        ]
+      }
+    ],
+    "6": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -8999.86,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (8999.86)) = -8999.86",
+        "formule_numeric": "MC = -(8999.86) = -8999.86",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 8999.859999999999
+          }
+        ]
+      }
+    ],
+    "7": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": -1997.65,
+        "formule_text": "MC = -(ACHATS DE MARCHANDISES (1997.65)) = -1997.65",
+        "formule_numeric": "MC = -(1997.65) = -1997.65",
+        "sous_indicateurs": [
+          {
+            "sous_indicateur": "ACHATS DE MARCHANDISES",
+            "montant": 1997.6499999999999
+          }
+        ]
+      }
+    ]
+  }
+}

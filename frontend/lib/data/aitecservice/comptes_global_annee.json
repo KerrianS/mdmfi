@@ -1,0 +1,172 @@
+{
+  "periode": "annee",
+  "comptes": {
+    "2025": {
+      "VENTES DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "707200",
+            "libelle_compte": "Goods for resale (or group) B",
+            "montant": -122738.8000000004,
+            "debit": 60240.35999999994,
+            "credit": 182979.16000000032
+          },
+          {
+            "code_compte": "707100",
+            "libelle_compte": "Goods for resale (or group) A",
+            "montant": -17801.189999999995,
+            "debit": 5491.02,
+            "credit": 23292.209999999995
+          }
+        ]
+      },
+      "ACHATS DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "607100",
+            "libelle_compte": "Purchase of goods (or group) A",
+            "montant": 74916.51000000001,
+            "debit": 75467.49000000002,
+            "credit": 550.98
+          },
+          {
+            "code_compte": "607200",
+            "libelle_compte": "Purchase of goods (or group) B",
+            "montant": 1623.06,
+            "debit": 1623.06,
+            "credit": 0.0
+          }
+        ]
+      },
+      "PRESTATIONS DE SERVICES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "706000",
+            "libelle_compte": "Services supplied",
+            "montant": -238637.8400000005,
+            "debit": 64773.24999999999,
+            "credit": 303411.0900000004
+          }
+        ]
+      }
+    },
+    "2024": {
+      "VENTES DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "707200",
+            "libelle_compte": "Goods for resale (or group) B",
+            "montant": -187553.70999999988,
+            "debit": 26911.78999999999,
+            "credit": 214465.49999999983
+          },
+          {
+            "code_compte": "707100",
+            "libelle_compte": "Goods for resale (or group) A",
+            "montant": -120843.98000000005,
+            "debit": 50027.65,
+            "credit": 170871.63
+          }
+        ]
+      },
+      "ACHATS DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "607100",
+            "libelle_compte": "Purchase of goods (or group) A",
+            "montant": 30477.429999999997,
+            "debit": 32839.53,
+            "credit": 2362.1
+          },
+          {
+            "code_compte": "607200",
+            "libelle_compte": "Purchase of goods (or group) B",
+            "montant": 14999.399999999996,
+            "debit": 14999.399999999996,
+            "credit": 0.0
+          }
+        ]
+      },
+      "PRESTATIONS DE SERVICES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "706000",
+            "libelle_compte": "Services supplied",
+            "montant": -355751.7900000009,
+            "debit": 24101.149999999998,
+            "credit": 379852.9400000014
+          }
+        ]
+      }
+    },
+    "2023": {
+      "VENTES DE MARCHANDISES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "707100",
+            "libelle_compte": "Goods for resale (or group) A",
+            "montant": 0.0,
+            "debit": 41.58,
+            "credit": 41.58
+          }
+        ]
+      },
+      "ACHATS DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "607100",
+            "libelle_compte": "Purchase of goods (or group) A",
+            "montant": 9622.09,
+            "debit": 9691.09,
+            "credit": 69.0
+          },
+          {
+            "code_compte": "607200",
+            "libelle_compte": "Purchase of goods (or group) B",
+            "montant": 932.5,
+            "debit": 932.5,
+            "credit": 0.0
+          }
+        ]
+      },
+      "PRESTATIONS DE SERVICES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "706000",
+            "libelle_compte": "Services supplied",
+            "montant": 0.0,
+            "debit": 3.21,
+            "credit": 3.21
+          }
+        ]
+      }
+    }
+  }
+}
