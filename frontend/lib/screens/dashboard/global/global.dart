@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
-import 'package:mobaitec_decision_making/models/OdooSIGModel.dart';
-import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
-import 'package:mobaitec_decision_making/services/indicateur/odoo_service_sig.dart';
-import 'package:mobaitec_decision_making/services/indicateur/indicateur_service.dart';
+import 'package:mobaitec_decision_making/models/SIGModel.dart';
+import 'package:mobaitec_decision_making/services/data/unified_sig_service.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_account_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_indicateur_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/global/global_sub_indicateur_datatable.dart';
@@ -84,36 +81,20 @@ class _GlobalState extends State<Global> {
       isLoading = true;
     });
     try {
-      // Exemple d'utilisation du nouveau service avec mode cache/webservice
-      final dataModeInfo = IndicateurService.getModeInfo(context);
-      print('[Global] Mode de données: $dataModeInfo');
+      // Utiliser le nouveau service de données locales
+      print('[Global] Chargement depuis les données locales');
 
-      final isOdoo =
-          Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
-      if (isOdoo) {
-        indicateursResponse = await OdooSIGService().fetchIndicateursGlobal(
-          societe: _lastSociete!,
-          periode: _getPeriodeParam(),
-          trimestre: selectedTrimestre,
-        );
-        sousIndicsResponse = await OdooSIGService().fetchSousIndicateursGlobal(
-          societe: _lastSociete!,
-          periode: _getPeriodeParam(),
-          trimestre: selectedTrimestre,
-        );
-      } else {
-        indicateursResponse = await NavisionSIGService().fetchIndicateursGlobal(
-          societe: _lastSociete!,
-          periode: _getPeriodeParam(),
-          trimestre: selectedTrimestre,
-        );
-        sousIndicsResponse =
-            await NavisionSIGService().fetchSousIndicateursGlobal(
-          societe: _lastSociete!,
-          periode: _getPeriodeParam(),
-          trimestre: selectedTrimestre,
-        );
-      }
+      indicateursResponse = await UnifiedSIGService.fetchIndicateursGlobal(
+        societe: _lastSociete!,
+        periode: _getPeriodeParam(),
+        trimestre: selectedTrimestre,
+      );
+      sousIndicsResponse = await UnifiedSIGService.fetchSousIndicateursGlobal(
+        societe: _lastSociete!,
+        periode: _getPeriodeParam(),
+        trimestre: selectedTrimestre,
+      );
+
       if (indicateursResponse!.indicateurs.isNotEmpty) {
         selectedAnnee = indicateursResponse!.indicateurs.keys.first;
       }
@@ -142,25 +123,14 @@ class _GlobalState extends State<Global> {
       isLoadingComptes[sousIndicateur] = true;
     });
     try {
-      final isOdoo =
-          Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
-      final comptesResp = isOdoo
-          ? await OdooSIGService().fetchComptesGlobal(
-              societe: _lastSociete!,
-              sousIndicateur: sousIndicateur,
-              periode: _getPeriodeParam(),
-              trimestre: selectedTrimestre,
-              limit: comptesLimit,
-              offset: comptesOffset,
-            )
-          : await NavisionSIGService().fetchComptesGlobal(
-              societe: _lastSociete!,
-              sousIndicateur: sousIndicateur,
-              periode: _getPeriodeParam(),
-              trimestre: selectedTrimestre,
-              limit: comptesLimit,
-              offset: comptesOffset,
-            );
+      final comptesResp = await UnifiedSIGService.fetchComptesGlobal(
+        societe: _lastSociete!,
+        sousIndicateur: sousIndicateur,
+        periode: _getPeriodeParam(),
+        trimestre: selectedTrimestre,
+        limit: comptesLimit,
+        offset: comptesOffset,
+      );
       comptesResponses[sousIndicateur] = comptesResp;
       comptesResponse = comptesResp;
       if (mounted) {
@@ -520,7 +490,7 @@ class _GlobalState extends State<Global> {
     return indicateursResponse?.indicateurs.keys.toList() ?? [];
   }
 
-  List<NavisionCompteGlobal> getComptesForAnnee(String annee) {
+  List<SIGCompteGlobal> getComptesForAnnee(String annee) {
     if (comptesResponse == null) return [];
     final comptes = comptesResponse!.comptes[annee]?.comptes ?? [];
     print(
@@ -529,7 +499,7 @@ class _GlobalState extends State<Global> {
       print('  - ${c.codeCompte} | ${c.libelleCompte} | ${c.montant}');
     }
     return comptes
-        .map((c) => NavisionCompteGlobal(
+        .map((c) => SIGCompteGlobal(
               codeCompte: c.codeCompte,
               libelleCompte: c.libelleCompte,
               montant: c.montant,
@@ -547,7 +517,7 @@ class _GlobalState extends State<Global> {
   }
 
   // Retourne la liste des comptes uniques (code+libellé)
-  List<NavisionCompteGlobal> getComptesGlobalTable(List<String> annees) {
+  List<SIGCompteGlobal> getComptesGlobalTable(List<String> annees) {
     if (comptesResponse == null) return [];
     final Map<String, String> codeToLibelle = {};
     final Set<String> allCodes = {};
@@ -561,7 +531,7 @@ class _GlobalState extends State<Global> {
     print(
         '[DEBUG] getComptesGlobalTable: ${allCodes.length} comptes trouvés: ${allCodes.toList()}');
     return allCodes
-        .map((code) => NavisionCompteGlobal(
+        .map((code) => SIGCompteGlobal(
               codeCompte: code,
               libelleCompte: codeToLibelle[code] ?? '',
               montant: 0,
@@ -594,7 +564,7 @@ class _GlobalState extends State<Global> {
     return resp.comptes.keys.toList();
   }
 
-  List<NavisionCompteGlobal> getComptesGlobalTableForResp(
+  List<SIGCompteGlobal> getComptesGlobalTableForResp(
       List<String> annees, dynamic resp) {
     final Map<String, String> keyToLibelle = {};
     final Set<String> allKeys = {};
@@ -611,7 +581,7 @@ class _GlobalState extends State<Global> {
     }
     return allKeys.map((key) {
       final parts = key.split('|');
-      return NavisionCompteGlobal(
+      return SIGCompteGlobal(
         codeCompte: parts[0],
         libelleCompte: parts.sublist(1).join('|'),
         montant: 0,

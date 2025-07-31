@@ -7,13 +7,7 @@ import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dar
 import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/swipe_provider.dart';
 
-import 'package:mobaitec_decision_making/services/cache/navision_service_cache.dart';
-import 'package:mobaitec_decision_making/services/cache/odoo_service_cache.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
-import 'package:mobaitec_decision_making/models/OdooSIGModel.dart';
-import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
-import 'package:mobaitec_decision_making/services/indicateur/indicateur_service.dart';
-import 'package:mobaitec_decision_making/utils/diagnostic_utils.dart';
+import 'package:mobaitec_decision_making/services/data/local_data_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -228,6 +222,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     }
                   },
                 ),
+                SizedBox(height: 32),
+                // Widget de statut du mode déconnecté
+                // OfflineStatusWidget(), // Widget supprimé car non disponible
                 SizedBox(height: 32),
                 Divider(),
                 Row(
@@ -765,7 +762,7 @@ class _RolesAndCompaniesCard extends StatelessWidget {
 }
 
 // Nouvelle carte pour la gestion des données
-class _DataManagementCard extends StatelessWidget {
+class _DataManagementCard extends StatefulWidget {
   final bool isCacheMode;
   final Function(bool) onCacheModeChanged;
 
@@ -773,6 +770,38 @@ class _DataManagementCard extends StatelessWidget {
     required this.isCacheMode,
     required this.onCacheModeChanged,
   });
+
+  @override
+  State<_DataManagementCard> createState() => _DataManagementCardState();
+}
+
+class _DataManagementCardState extends State<_DataManagementCard> {
+  bool _isLoading = false;
+  Map<String, dynamic> _cacheInfo = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCacheInfo();
+  }
+
+  Future<void> _loadCacheInfo() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final info = await LocalDataService.getCacheInfo();
+      setState(() {
+        _cacheInfo = info;
+      });
+    } catch (e) {
+      print('Erreur lors du chargement des infos cache: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -786,142 +815,229 @@ class _DataManagementCard extends StatelessWidget {
         color: isDarkMode ? Color(0xFF2A2A2A) : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Gestion des données',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          SizedBox(height: 12),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Gestion du cache',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            SizedBox(height: 12),
 
-          // Mode de données
-          Text('Mode de données',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-          SizedBox(height: 8),
-          SwitchListTile(
-            title: Text('Mode Cache'),
-            subtitle: Text(isCacheMode
-                ? 'Mode Cache (données locales)'
-                : 'Mode Webservice (données temps réel)'),
-            value: isCacheMode,
-            onChanged: (value) async {
-              onCacheModeChanged(value);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content:
-                      Text('Mode ${value ? "Cache" : "Webservice"} activé'),
-                  backgroundColor: value ? Colors.green : Colors.blue,
+            // Informations sur le cache
+            if (_isLoading)
+              Center(child: CircularProgressIndicator())
+            else ...[
+              // Statut du cache
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? Color(0xFF404040) : Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              );
-            },
-            secondary: Icon(
-              isCacheMode ? Icons.storage : Icons.cloud,
-              color: isCacheMode ? Colors.orange : Colors.blue,
-            ),
-          ),
-          SizedBox(height: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Statut du cache',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 14)),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          _cacheInfo['has_navision_data'] == true ||
+                                  _cacheInfo['has_odoo_data'] == true
+                              ? Icons.check_circle
+                              : Icons.error,
+                          color: _cacheInfo['has_navision_data'] == true ||
+                                  _cacheInfo['has_odoo_data'] == true
+                              ? Colors.green
+                              : Colors.red,
+                          size: 16,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          _cacheInfo['has_navision_data'] == true ||
+                                  _cacheInfo['has_odoo_data'] == true
+                              ? 'Données disponibles'
+                              : 'Aucune donnée en cache',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                    if (_cacheInfo['navision_indicateurs_last_update'] !=
+                        null) ...[
+                      SizedBox(height: 4),
+                      Text(
+                        'Navision: ${_formatDate(_cacheInfo['navision_indicateurs_last_update'])}',
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+                    ],
+                    if (_cacheInfo['odoo_indicateurs_last_update'] != null) ...[
+                      Text(
+                        'Odoo: ${_formatDate(_cacheInfo['odoo_indicateurs_last_update'])}',
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              SizedBox(height: 16),
+            ],
 
-          // Bouton Exporter le cache
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () async {
-                // Exemple d'export des données du cache Navision et Odoo
-                final navisionCache = NavisionServiceCache();
-                final odooCache = OdooServiceCache();
-                // Remplace 'societe' par la valeur réelle à exporter
-                final societe = 'demo';
-                final navisionData =
-                    await navisionCache.loadIndicateursMensuel(societe);
-                final odooData =
-                    await odooCache.loadIndicateursMensuel(societe);
-                // Affiche les données dans un SnackBar (ou adapte selon besoin)
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('Navision: ' +
-                          (navisionData?.toJson().toString() ??
-                              'Aucune donnée') +
-                          '\nOdoo: \n' +
-                          (odooData?.toJson().toString() ?? 'Aucune donnée'))),
-                );
-              },
-              icon: Icon(Icons.download),
-              label: Text('Exporter le cache'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueGrey,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+            // Bouton Précharger les données
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        try {
+                          await LocalDataService.initialize();
+                          await _loadCacheInfo();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('✅ Données préchargées avec succès'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('❌ Erreur lors du préchargement: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } finally {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+                      },
+                icon: Icon(Icons.download),
+                label: Text('Précharger les données'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
               ),
             ),
-          ),
 
-          SizedBox(height: 8),
+            SizedBox(height: 8),
 
-          // Bouton Vider le cache
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () async {
-                try {
-                  await IndicateurService.clearAllCaches();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('🗑️ Cache Hive vidé avec succès')),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('❌ Erreur lors du vidage du cache: $e')),
-                  );
-                }
-              },
-              icon: Icon(Icons.clear_all),
-              label: Text('Vider le cache'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+            // Bouton Forcer le rechargement
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        try {
+                          await LocalDataService.initialize();
+                          await _loadCacheInfo();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('🔄 Données rechargées avec succès'),
+                              backgroundColor: Colors.orange,
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('❌ Erreur lors du rechargement: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } finally {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+                      },
+                icon: Icon(Icons.refresh),
+                label: Text('Forcer le rechargement'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
               ),
             ),
-          ),
 
-          SizedBox(height: 8),
+            SizedBox(height: 8),
 
-          // Bouton Mettre à jour les données
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () async {
-                try {
-                  // Forcer le rafraîchissement du cache
-                  await IndicateurService.forceRefreshCache(
-                      context, 'demo', '2024', '01');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('🔄 Données mises à jour avec succès')),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('❌ Erreur lors de la mise à jour: $e')),
-                  );
-                }
-              },
-              icon: Icon(Icons.refresh),
-              label: Text('Mettre à jour les données'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF00A9CA),
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+            // Bouton Vider le cache
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        try {
+                          // Pour les données locales, on ne peut pas vider le cache
+                          // car les données sont chargées depuis les assets
+                          print('Cache local non vidable - données depuis assets');
+                          await _loadCacheInfo();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('🗑️ Cache vidé avec succès'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('❌ Erreur lors du vidage: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } finally {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+                      },
+                icon: Icon(Icons.clear_all),
+                label: Text('Vider le cache'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  String _formatDate(String? dateString) {
+    if (dateString == null) return 'Non disponible';
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    } catch (e) {
+      return 'Format invalide';
+    }
   }
 }

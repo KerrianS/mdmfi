@@ -1,0 +1,89 @@
+{
+  "annee": 2022,
+  "mois": {
+    "1": [],
+    "2": [
+      {
+        "indicateur": "EBE",
+        "libelle": "Excédent brut d'exploitation",
+        "valeur": 120.0,
+        "formule_text": "EBE = VA (120.00) = 120.00",
+        "formule_numeric": "EBE = 120.00 = 120.00",
+        "sous_indicateurs": []
+      },
+      {
+        "indicateur": "RE",
+        "libelle": "Résultat d'exploitation",
+        "valeur": 120.0,
+        "formule_text": "RE = EBE (120.00) = 120.00",
+        "formule_numeric": "RE = 120.00 = 120.00",
+        "sous_indicateurs": []
+      },
+      {
+        "indicateur": "R",
+        "libelle": "Résultat net",
+        "valeur": 120.0,
+        "formule_text": "R = RE (120.00) = 120.00",
+        "formule_numeric": "R = 120.00 = 120.00",
+        "sous_indicateurs": []
+      }
+    ],
+    "3": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": 1706.5,
+        "formule_text": "MC = VENTES DE MARCHANDISES (706.00) + VENTES DE PRODUITS FINIS (1000.50) = 1706.50",
+        "formule_numeric": "MC = 706.00 + 1000.50 = 1706.50",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "VENTES DE MARCHANDISES",
+            "libelle": "VENTES DE MARCHANDISES",
+            "initiales": "VM",
+            "formule": "Σ (Crédit - Débit) des comptes 707*",
+            "montant": 706.0
+          },
+          {
+            "sousIndicateur": "VENTES DE PRODUITS FINIS",
+            "libelle": "VENTES DE PRODUITS FINIS",
+            "initiales": "VP",
+            "formule": "Σ (Crédit - Débit) des comptes 701*",
+            "montant": 1000.5
+          }
+        ]
+      },
+      {
+        "indicateur": "VA",
+        "libelle": "Valeur ajoutée",
+        "valeur": 1706.5,
+        "formule_text": "VA = MC (1706.50) = 1706.50",
+        "formule_numeric": "VA = 1706.50 = 1706.50",
+        "sous_indicateurs": []
+      },
+      {
+        "indicateur": "EBE",
+        "libelle": "Excédent brut d'exploitation",
+        "valeur": 1706.5,
+        "formule_text": "EBE = VA (1706.50) = 1706.50",
+        "formule_numeric": "EBE = 1706.50 = 1706.50",
+        "sous_indicateurs": []
+      },
+      {
+        "indicateur": "RE",
+        "libelle": "Résultat d'exploitation",
+        "valeur": 1706.5,
+        "formule_text": "RE = EBE (1706.50) = 1706.50",
+        "formule_numeric": "RE = 1706.50 = 1706.50",
+        "sous_indicateurs": []
+      },
+      {
+        "indicateur": "R",
+        "libelle": "Résultat net",
+        "valeur": 1706.5,
+        "formule_text": "R = RE (1706.50) = 1706.50",
+        "formule_numeric": "R = 1706.50 = 1706.50",
+        "sous_indicateurs": []
+      }
+    ]
+  }
+}

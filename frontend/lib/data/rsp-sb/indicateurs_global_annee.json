@@ -1,0 +1,266 @@
+{
+  "periode": "annee",
+  "indicateurs": {
+    "2022": [],
+    "2021": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": 3063561.61,
+        "formule_text": "MC = VENTES DE MARCHANDISES (12671.74) + VENTES DE PRODUITS FINIS (2748626.76) + PRESTATIONS DE SERVICES (316356.35) - ACHATS DE MARCHANDISES (14093.24) = 3063561.61",
+        "formule_numeric": "MC = (12671.74 + 2748626.76 + 316356.35) - (14093.24) = 3063561.61",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "VENTES DE MARCHANDISES",
+            "libelle": "VENTES DE MARCHANDISES",
+            "initiales": "VM",
+            "formule": "Σ (Crédit - Débit) des comptes 707*",
+            "montant": 12671.74
+          },
+          {
+            "sousIndicateur": "VENTES DE PRODUITS FINIS",
+            "libelle": "VENTES DE PRODUITS FINIS",
+            "initiales": "VP",
+            "formule": "Σ (Crédit - Débit) des comptes 701*",
+            "montant": 2748626.7600000002
+          },
+          {
+            "sousIndicateur": "PRESTATIONS DE SERVICES",
+            "libelle": "PRESTATIONS DE SERVICES",
+            "initiales": "PS",
+            "formule": "Σ (Crédit - Débit) des comptes 706*",
+            "montant": 316356.35
+          },
+          {
+            "sousIndicateur": "ACHATS DE MARCHANDISES",
+            "libelle": "ACHATS DE MARCHANDISES",
+            "initiales": "AM",
+            "formule": "Σ (Débit - Crédit) des comptes 607*",
+            "montant": 14093.24
+          }
+        ]
+      },
+      {
+        "indicateur": "VA",
+        "libelle": "Valeur ajoutée",
+        "valeur": 2174568.4,
+        "formule_text": "VA = MC (3063561.61) - ACHATS STOCKES (886679.74) + FOURNITURES (2313.47) = 2174568.40",
+        "formule_numeric": "VA = (3063561.61) - (886679.74 + 2313.47) = 2174568.40",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "ACHATS STOCKES",
+            "libelle": "ACHATS STOCKES",
+            "initiales": "AS",
+            "formule": "Σ (Débit - Crédit) des comptes 601*",
+            "montant": 886679.7400000002
+          },
+          {
+            "sousIndicateur": "FOURNITURES",
+            "libelle": "FOURNITURES",
+            "initiales": "FO",
+            "formule": "Σ (Débit - Crédit) des comptes 606*",
+            "montant": 2313.47
+          }
+        ]
+      },
+      {
+        "indicateur": "EBE",
+        "libelle": "Excédent brut d'exploitation",
+        "valeur": 2304264.04,
+        "formule_text": "EBE = VA (2174568.40) + CHARGES DE PERSONNEL (129695.64) = 2304264.04",
+        "formule_numeric": "EBE = 2174568.40 + 129695.64 = 2304264.04",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "CHARGES DE PERSONNEL",
+            "libelle": "CHARGES DE PERSONNEL",
+            "initiales": "CP",
+            "formule": "Σ (Débit - Crédit) des comptes 64*",
+            "montant": 129695.63999999993
+          }
+        ]
+      },
+      {
+        "indicateur": "RE",
+        "libelle": "Résultat d'exploitation",
+        "valeur": 2163038.99,
+        "formule_text": "RE = EBE (2044872.76) + REPRISES AMORTISSEMENTS (5242.32) + AUTRES CHARGES DE GESTION COURANTE (2427.71) + DOTATIONS AMORTISSEMENTS (110496.20) = 2163038.99",
+        "formule_numeric": "RE = 2044872.76 + 5242.32 + 2427.71 + 110496.20 = 2163038.99",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "REPRISES AMORTISSEMENTS",
+            "libelle": "REPRISES AMORTISSEMENTS",
+            "initiales": "RA",
+            "formule": "Σ (Crédit - Débit) des comptes 78*",
+            "montant": 5242.32
+          },
+          {
+            "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+            "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+            "initiales": "AC",
+            "formule": "Σ (Débit - Crédit) des comptes 65*",
+            "montant": 2427.7100000000005
+          },
+          {
+            "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+            "libelle": "DOTATIONS AMORTISSEMENTS",
+            "initiales": "DA",
+            "formule": "Σ (Débit - Crédit) des comptes 68*",
+            "montant": 110496.2
+          }
+        ]
+      },
+      {
+        "indicateur": "R",
+        "libelle": "Résultat net",
+        "valeur": 2023657.97,
+        "formule_text": "R = RE (1937191.17) + CHARGES FINANCIÈRES (1498.17) + PRODUITS EXCEPTIONNELS (7606.63) + CHARGES EXCEPTIONNELLES (6000.00) + IMPÔTS SUR LES BÉNÉFICES (71362.00) = 2023657.97",
+        "formule_numeric": "R = 1937191.17 + 1498.17 + 7606.63 + 6000.00 + 71362.00 = 2023657.97",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "CHARGES FINANCIÈRES",
+            "libelle": "CHARGES FINANCIÈRES",
+            "initiales": "CF",
+            "formule": "Σ (Débit - Crédit) des comptes 66*",
+            "montant": 1498.17
+          },
+          {
+            "sousIndicateur": "PRODUITS EXCEPTIONNELS",
+            "libelle": "PRODUITS EXCEPTIONNELS",
+            "initiales": "PE",
+            "formule": "Σ (Crédit - Débit) des comptes 76* + 77*",
+            "montant": 7606.63
+          },
+          {
+            "sousIndicateur": "CHARGES EXCEPTIONNELLES",
+            "libelle": "CHARGES EXCEPTIONNELLES",
+            "initiales": "CE",
+            "formule": "Σ (Débit - Crédit) des comptes 67*",
+            "montant": 6000.0
+          },
+          {
+            "sousIndicateur": "IMPÔTS SUR LES BÉNÉFICES",
+            "libelle": "IMPÔTS SUR LES BÉNÉFICES",
+            "initiales": "IB",
+            "formule": "Σ (Débit - Crédit) des comptes 69*",
+            "montant": 71362.0
+          }
+        ]
+      }
+    ],
+    "2020": [
+      {
+        "indicateur": "MC",
+        "libelle": "Marge commerciale",
+        "valeur": 59200.45,
+        "formule_text": "MC = VENTES DE MARCHANDISES (7102.50) + PRESTATIONS DE SERVICES (58334.63) - ACHATS DE MARCHANDISES (6236.68) = 59200.45",
+        "formule_numeric": "MC = (7102.50 + 58334.63) - (6236.68) = 59200.45",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "VENTES DE MARCHANDISES",
+            "libelle": "VENTES DE MARCHANDISES",
+            "initiales": "VM",
+            "formule": "Σ (Crédit - Débit) des comptes 707*",
+            "montant": 7102.5
+          },
+          {
+            "sousIndicateur": "PRESTATIONS DE SERVICES",
+            "libelle": "PRESTATIONS DE SERVICES",
+            "initiales": "PS",
+            "formule": "Σ (Crédit - Débit) des comptes 706*",
+            "montant": 58334.63000000006
+          },
+          {
+            "sousIndicateur": "ACHATS DE MARCHANDISES",
+            "libelle": "ACHATS DE MARCHANDISES",
+            "initiales": "AM",
+            "formule": "Σ (Débit - Crédit) des comptes 607*",
+            "montant": 6236.680000000002
+          }
+        ]
+      },
+      {
+        "indicateur": "VA",
+        "libelle": "Valeur ajoutée",
+        "valeur": -4975.2,
+        "formule_text": "VA = MC (42378.24) - ACHATS STOCKES (41451.80) + FOURNITURES (5901.64) = -4975.20",
+        "formule_numeric": "VA = (42378.24) - (41451.80 + 5901.64) = -4975.20",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "ACHATS STOCKES",
+            "libelle": "ACHATS STOCKES",
+            "initiales": "AS",
+            "formule": "Σ (Débit - Crédit) des comptes 601*",
+            "montant": 41451.80000000009
+          },
+          {
+            "sousIndicateur": "FOURNITURES",
+            "libelle": "FOURNITURES",
+            "initiales": "FO",
+            "formule": "Σ (Débit - Crédit) des comptes 606*",
+            "montant": 5901.639999999999
+          }
+        ]
+      },
+      {
+        "indicateur": "RE",
+        "libelle": "Résultat d'exploitation",
+        "valeur": 7864.73,
+        "formule_text": "RE = REPRISES AMORTISSEMENTS (180.57) + DOTATIONS AMORTISSEMENTS (7684.16) = 7864.73",
+        "formule_numeric": "RE = 180.57 + 7684.16 = 7864.73",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "REPRISES AMORTISSEMENTS",
+            "libelle": "REPRISES AMORTISSEMENTS",
+            "initiales": "RA",
+            "formule": "Σ (Crédit - Débit) des comptes 78*",
+            "montant": 180.57
+          },
+          {
+            "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+            "libelle": "DOTATIONS AMORTISSEMENTS",
+            "initiales": "DA",
+            "formule": "Σ (Débit - Crédit) des comptes 68*",
+            "montant": 7684.160000000004
+          },
+          {
+            "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+            "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+            "initiales": "AC",
+            "formule": "Σ (Débit - Crédit) des comptes 65*",
+            "montant": -700.6
+          }
+        ]
+      },
+      {
+        "indicateur": "R",
+        "libelle": "Résultat net",
+        "valeur": 22712.34,
+        "formule_text": "R = CHARGES FINANCIÈRES (2650.95) + PRODUITS EXCEPTIONNELS (12522.67) + CHARGES EXCEPTIONNELLES (7538.72) = 22712.34",
+        "formule_numeric": "R = 2650.95 + 12522.67 + 7538.72 = 22712.34",
+        "sous_indicateurs": [
+          {
+            "sousIndicateur": "CHARGES FINANCIÈRES",
+            "libelle": "CHARGES FINANCIÈRES",
+            "initiales": "CF",
+            "formule": "Σ (Débit - Crédit) des comptes 66*",
+            "montant": 2650.950000000006
+          },
+          {
+            "sousIndicateur": "PRODUITS EXCEPTIONNELS",
+            "libelle": "PRODUITS EXCEPTIONNELS",
+            "initiales": "PE",
+            "formule": "Σ (Crédit - Débit) des comptes 76* + 77*",
+            "montant": 12522.670000000013
+          },
+          {
+            "sousIndicateur": "CHARGES EXCEPTIONNELLES",
+            "libelle": "CHARGES EXCEPTIONNELLES",
+            "initiales": "CE",
+            "formule": "Σ (Débit - Crédit) des comptes 67*",
+            "montant": 7538.720000000001
+          }
+        ]
+      }
+    ]
+  }
+}

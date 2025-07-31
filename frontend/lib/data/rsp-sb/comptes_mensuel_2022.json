@@ -1,0 +1,102 @@
+{
+  "annee": 2022,
+  "mois": {
+    "1": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 4,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.92,
+            "debit": 117.92,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.45,
+            "debit": 88.45,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE>ADLER 21/22",
+            "montant": 174.66,
+            "debit": 174.66,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM janvier",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "2": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.92,
+            "debit": 117.92,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.44,
+            "debit": 88.44,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE>ADLER 21/22",
+            "montant": 174.67,
+            "debit": 174.67,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "3": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.92,
+            "debit": 117.92,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.45,
+            "debit": 88.45,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE>ADLER 21/22",
+            "montant": 174.67,
+            "debit": 174.67,
+            "credit": 0.0
+          }
+        ]
+      }
+    }
+  }
+}

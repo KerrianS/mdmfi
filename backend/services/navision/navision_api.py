@@ -19,7 +19,11 @@ class NavisionService:
             "Content-Type": "application/json; charset=utf-8",
             "Accept": "application/json; charset=utf-8"
         }
-        self.auth = HTTPBasicAuth(self.basic_user, self.basic_pass)
+        # Utiliser Basic Auth seulement si configuré
+        if self.basic_user and self.basic_pass:
+            self.auth = HTTPBasicAuth(self.basic_user, self.basic_pass)
+        else:
+            self.auth = None
 
     def get(self, table, params=None):
         req_url = f"{self.url}/rest/v1/{table}"

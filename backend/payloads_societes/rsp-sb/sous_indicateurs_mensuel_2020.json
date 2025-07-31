@@ -1,0 +1,873 @@
+{
+  "annee": 2020,
+  "mois": {
+    "1": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 3316.5
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 196172.25000000015
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 85580.5
+        },
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 527.6600000000001
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 65444.24
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 11015.069999999998
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.21
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 4229.0
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 235.77999999999997
+        }
+      ]
+    },
+    "2": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 3055.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 228926.89000000013
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 113190.0
+        },
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 1934.98
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 75897.0
+        },
+        {
+          "sousIndicateur": "FOURNITURES",
+          "libelle": "FOURNITURES",
+          "initiales": "FO",
+          "formule": "Σ (Débit - Crédit) des comptes 606*",
+          "montant": 542.4
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 14474.479999999996
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.13999999999999999
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 4226.0
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 442.7900000000001
+        }
+      ]
+    },
+    "3": {},
+    "4": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 706.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 155456.5499999999
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 80395.0
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 55700.87
+        },
+        {
+          "sousIndicateur": "FOURNITURES",
+          "libelle": "FOURNITURES",
+          "initiales": "FO",
+          "formule": "Σ (Débit - Crédit) des comptes 606*",
+          "montant": 400.0
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 8715.970000000001
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 4237.0
+        },
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": -0.06
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 517.2900000000001
+        }
+      ]
+    },
+    "5": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 540.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 134260.37
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 69478.5
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 48143.340000000004
+        },
+        {
+          "sousIndicateur": "FOURNITURES",
+          "libelle": "FOURNITURES",
+          "initiales": "FO",
+          "formule": "Σ (Débit - Crédit) des comptes 606*",
+          "montant": 276.93
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 8873.369999999995
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.45
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 5915.68
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 304.85999999999984
+        },
+        {
+          "sousIndicateur": "CHARGES EXCEPTIONNELLES",
+          "libelle": "CHARGES EXCEPTIONNELLES",
+          "initiales": "CE",
+          "formule": "Σ (Débit - Crédit) des comptes 67*",
+          "montant": 750.0
+        }
+      ]
+    },
+    "6": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 1976.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 201102.9099999999
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 97244.5
+        },
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 812.0
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 70561.7
+        },
+        {
+          "sousIndicateur": "FOURNITURES",
+          "libelle": "FOURNITURES",
+          "initiales": "FO",
+          "formule": "Σ (Débit - Crédit) des comptes 606*",
+          "montant": 4440.0
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 11453.129999999997
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "REPRISES AMORTISSEMENTS",
+          "libelle": "REPRISES AMORTISSEMENTS",
+          "initiales": "RA",
+          "formule": "Σ (Crédit - Débit) des comptes 78*",
+          "montant": 180.57
+        },
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.16999999999999998
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 4721.1
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 595.92
+        }
+      ]
+    },
+    "7": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 828.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 187180.39999999997
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 77349.5
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 62676.85999999999
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 9297.539999999999
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.77
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 4238.0
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 286.1099999999999
+        }
+      ]
+    },
+    "8": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 422.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 123089.92000000004
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 54456.0
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 51999.97
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 5359.610000000001
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 1.22
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 4401.0
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 347.89
+        }
+      ]
+    },
+    "9": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 328.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 151056.40999999977
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 66352.5
+        },
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 1779.49
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 60275.66
+        },
+        {
+          "sousIndicateur": "FOURNITURES",
+          "libelle": "FOURNITURES",
+          "initiales": "FO",
+          "formule": "Σ (Débit - Crédit) des comptes 606*",
+          "montant": 43.0
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 3715.609999999999
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.37
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 4448.0
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 320.81999999999994
+        },
+        {
+          "sousIndicateur": "PRODUITS EXCEPTIONNELS",
+          "libelle": "PRODUITS EXCEPTIONNELS",
+          "initiales": "PE",
+          "formule": "Σ (Crédit - Débit) des comptes 76* + 77*",
+          "montant": 2342.67
+        }
+      ]
+    },
+    "10": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 1799.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 166588.5700000001
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 83992.0
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 64169.66
+        },
+        {
+          "sousIndicateur": "FOURNITURES",
+          "libelle": "FOURNITURES",
+          "initiales": "FO",
+          "formule": "Σ (Débit - Crédit) des comptes 606*",
+          "montant": 711.65
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 9527.919999999995
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.24
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 4443.0
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 381.69999999999993
+        }
+      ]
+    },
+    "11": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 3599.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 166242.68
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 92404.0
+        },
+        {
+          "sousIndicateur": "ACHATS DE MARCHANDISES",
+          "libelle": "ACHATS DE MARCHANDISES",
+          "initiales": "AM",
+          "formule": "Σ (Débit - Crédit) des comptes 607*",
+          "montant": 3823.02
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 80119.06999999999
+        },
+        {
+          "sousIndicateur": "FOURNITURES",
+          "libelle": "FOURNITURES",
+          "initiales": "FO",
+          "formule": "Σ (Débit - Crédit) des comptes 606*",
+          "montant": 72.4
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 8611.669999999998
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.33999999999999997
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 5258.0
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 377.04999999999995
+        }
+      ]
+    },
+    "12": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 1350.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 188638.89999999982
+        },
+        {
+          "sousIndicateur": "PRESTATIONS DE SERVICES",
+          "libelle": "PRESTATIONS DE SERVICES",
+          "initiales": "PS",
+          "formule": "Σ (Crédit - Débit) des comptes 706*",
+          "montant": 95525.8
+        }
+      ],
+      "VA": [
+        {
+          "sousIndicateur": "ACHATS STOCKES",
+          "libelle": "ACHATS STOCKES",
+          "initiales": "AS",
+          "formule": "Σ (Débit - Crédit) des comptes 601*",
+          "montant": 67964.08
+        }
+      ],
+      "EBE": [
+        {
+          "sousIndicateur": "CHARGES DE PERSONNEL",
+          "libelle": "CHARGES DE PERSONNEL",
+          "initiales": "CP",
+          "formule": "Σ (Débit - Crédit) des comptes 64*",
+          "montant": 8869.539999999999
+        }
+      ],
+      "RE": [
+        {
+          "sousIndicateur": "AUTRES CHARGES DE GESTION COURANTE",
+          "libelle": "AUTRES CHARGES DE GESTION COURANTE",
+          "initiales": "AC",
+          "formule": "Σ (Débit - Crédit) des comptes 65*",
+          "montant": 0.15
+        },
+        {
+          "sousIndicateur": "DOTATIONS AMORTISSEMENTS",
+          "libelle": "DOTATIONS AMORTISSEMENTS",
+          "initiales": "DA",
+          "formule": "Σ (Débit - Crédit) des comptes 68*",
+          "montant": 6754.0
+        }
+      ],
+      "R": [
+        {
+          "sousIndicateur": "CHARGES FINANCIÈRES",
+          "libelle": "CHARGES FINANCIÈRES",
+          "initiales": "CF",
+          "formule": "Σ (Débit - Crédit) des comptes 66*",
+          "montant": 119.79000000000002
+        },
+        {
+          "sousIndicateur": "PRODUITS EXCEPTIONNELS",
+          "libelle": "PRODUITS EXCEPTIONNELS",
+          "initiales": "PE",
+          "formule": "Σ (Crédit - Débit) des comptes 76* + 77*",
+          "montant": 10260.0
+        },
+        {
+          "sousIndicateur": "CHARGES EXCEPTIONNELLES",
+          "libelle": "CHARGES EXCEPTIONNELLES",
+          "initiales": "CE",
+          "formule": "Σ (Débit - Crédit) des comptes 67*",
+          "montant": 9359.95
+        }
+      ]
+    }
+  }
+}

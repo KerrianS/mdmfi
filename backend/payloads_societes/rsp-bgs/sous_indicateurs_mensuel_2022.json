@@ -1,0 +1,33 @@
+{
+  "annee": 2022,
+  "mois": {
+    "1": {},
+    "2": {
+      "EBE": [],
+      "RE": [],
+      "R": []
+    },
+    "3": {
+      "MC": [
+        {
+          "sousIndicateur": "VENTES DE MARCHANDISES",
+          "libelle": "VENTES DE MARCHANDISES",
+          "initiales": "VM",
+          "formule": "Σ (Crédit - Débit) des comptes 707*",
+          "montant": 706.0
+        },
+        {
+          "sousIndicateur": "VENTES DE PRODUITS FINIS",
+          "libelle": "VENTES DE PRODUITS FINIS",
+          "initiales": "VP",
+          "formule": "Σ (Crédit - Débit) des comptes 701*",
+          "montant": 1000.5
+        }
+      ],
+      "VA": [],
+      "EBE": [],
+      "RE": [],
+      "R": []
+    }
+  }
+}

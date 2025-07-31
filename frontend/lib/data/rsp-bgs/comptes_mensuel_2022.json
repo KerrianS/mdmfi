@@ -1,0 +1,74 @@
+{
+  "annee": 2022,
+  "mois": {
+    "1": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CCA HAZAN",
+            "montant": 230.27000000000004,
+            "debit": 230.27000000000004,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "2": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CCA HAZAN",
+            "montant": 230.27000000000004,
+            "debit": 230.27000000000004,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "3": {
+      "VENTES DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70710110",
+            "libelle_compte": "Commande CLIENTS DIVERS",
+            "montant": 680.0,
+            "debit": 0.0,
+            "credit": 680.0
+          },
+          {
+            "code_compte": "70710110",
+            "libelle_compte": "Commande CANTEL Thierry",
+            "montant": 26.0,
+            "debit": 0.0,
+            "credit": 26.0
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CCA HAZAN",
+            "montant": 230.27000000000004,
+            "debit": 230.27000000000004,
+            "credit": 0.0
+          }
+        ]
+      }
+    }
+  }
+}

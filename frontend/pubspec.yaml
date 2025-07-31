@@ -32,3 +32,4 @@ flutter:
   assets:
     - assets/mobaitec-logo.png
     - assets/keycloak.png
+    - lib/data/

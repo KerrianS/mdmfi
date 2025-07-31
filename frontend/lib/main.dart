@@ -9,29 +9,42 @@ import 'package:mobaitec_decision_making/services/theme/theme_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/swipe_provider.dart';
 import 'package:mobaitec_decision_making/services/theme/data_mode_provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mobaitec_decision_making/services/data/local_data_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
-  // Vider le cache pour résoudre les problèmes de données
-  try {
-    var box = await Hive.openBox('navision_cache');
-    await box.clear();
-    print('Cache Hive vidé avec succès');
-  } catch (e) {
-    print('Erreur lors du vidage du cache: $e');
-  }
+  // Initialiser les boîtes Hive pour le cache
+  await Hive.openBox('navision_cache');
+  await Hive.openBox('odoo_cache');
 
-  var box = await Hive.openBox('navision_cache');
-  print('Hive path: [32m${box.path}[0m');
+  // NOUVELLE LOGIQUE: Charger les données depuis les fichiers JSON locaux
+  print('[Main] 🚀 Initialisation du service de données locales...');
+  try {
+    await LocalDataService.initialize();
+    print('[Main] ✅ Service de données locales initialisé avec succès');
+
+    // Afficher les statistiques des données chargées
+    final stats = LocalDataService.getDataStats();
+    print('[Main] 📊 Statistiques des données:');
+    print('[Main]   - Sociétés disponibles: ${stats['societes_disponibles']}');
+    print('[Main]   - Sociétés: ${stats['societes']}');
+    print('[Main]   - Données chargées: ${stats['donnees_chargees']}');
+  } catch (e) {
+    print(
+        '[Main] ❌ Erreur lors de l\'initialisation du service de données locales: $e');
+    print('[Main] Fallback vers le mode normal...');
+    // Précharger les données au démarrage (fallback)
+    print('[Main] Début du préchargement des données...');
+  }
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => KeycloakProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => SwipeProvider()),
-        ChangeNotifierProvider(create: (_) => DataModeProvider())
+        ChangeNotifierProvider(create: (_) => DataModeProvider()),
       ],
       child: MyApp(),
     ),

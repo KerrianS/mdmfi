@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobaitec_decision_making/components/adaptive_table_container.dart';
-import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
-import 'package:mobaitec_decision_making/services/indicateur/odoo_service_sig.dart';
+import 'package:mobaitec_decision_making/services/data/unified_sig_service.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/mensuel/mensuel_account_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/mensuel/mensuel_indicateur_datatable.dart';
 import 'package:mobaitec_decision_making/screens/dashboard/mensuel/mensuel_sub_indicateur_datatable.dart';
@@ -133,20 +132,14 @@ class _MensuelState extends State<Mensuel> {
     });
     try {
       final anneeInt = int.parse(selectedAnnee);
-      final isOdoo =
-          Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
-      if (isOdoo) {
-        indicateursResponse = await OdooSIGService()
-            .fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
-        sousIndicsResponse = await OdooSIGService().fetchSousIndicateursMensuel(
-            societe: _lastSociete!, annee: anneeInt);
-      } else {
-        indicateursResponse = await NavisionSIGService()
-            .fetchIndicateursMensuel(societe: _lastSociete!, annee: anneeInt);
-        sousIndicsResponse = await NavisionSIGService()
-            .fetchSousIndicateursMensuel(
-                societe: _lastSociete!, annee: anneeInt);
-      }
+
+      // Utiliser le nouveau service de données locales
+      print('[Mensuel] Chargement depuis les données locales');
+
+      indicateursResponse = await UnifiedSIGService.fetchIndicateursMensuel(
+          societe: _lastSociete!, annee: anneeInt);
+      sousIndicsResponse = await UnifiedSIGService.fetchSousIndicateursMensuel(
+          societe: _lastSociete!, annee: anneeInt);
 
       if (!mounted) return;
       setState(() {
@@ -174,9 +167,6 @@ class _MensuelState extends State<Mensuel> {
       isLoadingComptes[selectedSousIndicateur!] = true;
     });
     try {
-      final isOdoo =
-          Provider.of<KeycloakProvider>(context, listen: false).isOdooSelected;
-
       // Récupérer les mois qui ont des données pour ce sous-indicateur
       List<int> moisAvecDonnees = [];
       if (sousIndicsResponse != null) {
@@ -198,27 +188,16 @@ class _MensuelState extends State<Mensuel> {
       List<dynamic> allComptes = [];
       for (int mois in moisAvecDonnees) {
         try {
-          final comptesPage = isOdoo
-              ? await OdooSIGService().fetchComptesMensuel(
-                  societe: _lastSociete!,
-                  annee: int.parse(selectedAnnee),
-                  mois: mois,
-                  sousIndicateur: selectedSousIndicateur!,
-                  limit: comptesLimit,
-                  offset: comptesOffset,
-                )
-              : await NavisionSIGService().fetchComptesMensuel(
-                  societe: _lastSociete!,
-                  annee: int.parse(selectedAnnee),
-                  mois: mois,
-                  sousIndicateur: selectedSousIndicateur!,
-                  limit: comptesLimit,
-                  offset: comptesOffset,
-                );
+          final comptesPage = await UnifiedSIGService.fetchComptesMensuel(
+            societe: _lastSociete!,
+            annee: int.parse(selectedAnnee),
+            mois: mois,
+            sousIndicateur: selectedSousIndicateur!,
+            limit: comptesLimit,
+            offset: comptesOffset,
+          );
 
-          if (comptesPage != null &&
-              comptesPage is Map &&
-              comptesPage['comptes'] != null) {
+          if (comptesPage != null && comptesPage['comptes'] != null) {
             print(
                 '[DEBUG] _loadComptes - Month $mois: ${comptesPage['comptes'].length} comptes');
             allComptes.addAll(comptesPage['comptes']);

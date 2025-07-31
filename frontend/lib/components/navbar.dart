@@ -8,7 +8,16 @@ import 'package:mobaitec_decision_making/screens/dashboard/graph_sig_detail/grap
 import 'package:mobaitec_decision_making/screens/dashboard/settings/settings.dart';
 import 'package:mobaitec_decision_making/utils/colors.dart';
 
-enum Pages { parametres, global, axe, mensuel, graphMensuel, graphSig, graphSigDet, simulation }
+enum Pages {
+  parametres,
+  global,
+  axe,
+  mensuel,
+  graphMensuel,
+  graphSig,
+  graphSigDet,
+  simulation
+}
 
 extension PagesLabel on Pages {
   String get label {
@@ -142,49 +151,52 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
-    final List<Pages> normalPages = Pages.values.where((page) => page != Pages.parametres).toList();
+    final List<Pages> normalPages =
+        Pages.values.where((page) => page != Pages.parametres).toList();
     final settingsPage = Pages.parametres;
-    
+
     return Container(
       color: Colors.grey.shade800,
       height: 70,
       child: Row(
         children: [
-          if (!widget.isConnected) 
+          if (!widget.isConnected)
             Expanded(
               child: HoverButton(
                 page: settingsPage,
-                isSelected: widget.selectedIndex == Pages.values.indexOf(settingsPage),
+                isSelected:
+                    widget.selectedIndex == Pages.values.indexOf(settingsPage),
                 onTap: () {
-                  widget.changeWidget(settingsPage);
+                  widget.changeWidget(Pages.values.indexOf(settingsPage));
                 },
               ),
             ),
-          
+
           // Pages normales
           ...normalPages.map((page) {
             final index = Pages.values.indexOf(page);
             final isSelected = widget.selectedIndex == index;
-            
+
             return Expanded(
               child: HoverButton(
                 page: page,
                 isSelected: isSelected,
                 onTap: () {
-                  widget.changeWidget(page);
+                  widget.changeWidget(index);
                 },
               ),
             );
           }).toList(),
-          
+
           // Si connecté, paramètres à droite avec même largeur
-          if (widget.isConnected) 
+          if (widget.isConnected)
             Expanded(
               child: HoverButton(
                 page: settingsPage,
-                isSelected: widget.selectedIndex == Pages.values.indexOf(settingsPage),
+                isSelected:
+                    widget.selectedIndex == Pages.values.indexOf(settingsPage),
                 onTap: () {
-                  widget.changeWidget(settingsPage);
+                  widget.changeWidget(Pages.values.indexOf(settingsPage));
                 },
               ),
             ),
@@ -215,10 +227,10 @@ class _HoverButtonState extends State<HoverButton> {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = widget.isSelected 
+    final backgroundColor = widget.isSelected
         ? Color(0xFF00A9CA).withOpacity(0.2)
-        : isHovered 
-            ? Colors.grey.withOpacity(0.1) 
+        : isHovered
+            ? Colors.grey.withOpacity(0.1)
             : Colors.transparent;
 
     return MouseRegion(
@@ -241,8 +253,12 @@ class _HoverButtonState extends State<HoverButton> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    widget.isSelected ? widget.page.icon : widget.page.iconOutline,
-                    color: widget.isSelected ? McaColors.bleu.color : McaColors.gris.color,
+                    widget.isSelected
+                        ? widget.page.icon
+                        : widget.page.iconOutline,
+                    color: widget.isSelected
+                        ? McaColors.bleu.color
+                        : McaColors.gris.color,
                     size: widget.isSelected ? 30 : 24,
                   ),
                   const SizedBox(height: 4),
@@ -250,8 +266,12 @@ class _HoverButtonState extends State<HoverButton> {
                     widget.page.label,
                     style: TextStyle(
                       fontSize: 12,
-                      color: widget.isSelected ? McaColors.bleu.color : Colors.grey,
-                      fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: widget.isSelected
+                          ? McaColors.bleu.color
+                          : Colors.grey,
+                      fontWeight: widget.isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                     textAlign: TextAlign.center,
                   ),

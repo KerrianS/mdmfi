@@ -1,11 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobaitec_decision_making/components/table_header.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
-import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
+import 'package:mobaitec_decision_making/models/SIGModel.dart';
 import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/utils/shimmer_utils.dart';
+import 'package:mobaitec_decision_making/services/data/unified_sig_service.dart';
+import 'package:mobaitec_decision_making/components/adaptive_table_container.dart';
 
 class GraphSigDetail extends StatefulWidget {
   @override
@@ -21,8 +22,8 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
   String chartType = 'line'; // 'line' ou 'pie'
   String? selectedSousIndicateurForPie; // Pour le pie chart
   bool showKeuros = false; // Affichage K€uros
-  NavisionIndicateursGlobalResponse? indicateursResponse;
-  NavisionSousIndicateursGlobalResponse? sousIndicsResponse;
+  dynamic indicateursResponse;
+  dynamic sousIndicsResponse;
   List<String> selectedSousIndicateurs = [];
   // Couleurs pour les différents sous-indicateurs
   final List<Color> sousIndicateurColors = [
@@ -42,7 +43,8 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
 
   String _formatNumberWithSpaces(num value) {
     String s = value.abs().toStringAsFixed(0);
-    String withSpaces = s.replaceAllMapped(RegExp(r"\B(?=(\d{3})+(?!\d))"), (match) => ' ');
+    String withSpaces =
+        s.replaceAllMapped(RegExp(r"\B(?=(\d{3})+(?!\d))"), (match) => ' ');
     return withSpaces;
   }
 
@@ -57,13 +59,15 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final keycloakProvider = Provider.of<KeycloakProvider>(context); // RETIRER listen: false
+    final keycloakProvider =
+        Provider.of<KeycloakProvider>(context); // RETIRER listen: false
     final societe = keycloakProvider.selectedCompany;
-    
+
     if (societe != null && societe != _lastSociete) {
-      print('[GraphSigDetail] Changement de société détecté: $_lastSociete -> $societe');
+      print(
+          '[GraphSigDetail] Changement de société détecté: $_lastSociete -> $societe');
       _lastSociete = societe;
-      
+
       // Réinitialiser les données et l'état
       setState(() {
         indicateursResponse = null;
@@ -71,41 +75,50 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
         selectedIndicateur = null;
         selectedSousIndicateurForPie = null;
       });
-      
+
       _loadData();
     }
   }
 
   Future<void> _loadData() async {
     if (_lastSociete == null) return;
-    
-    print('[GraphSigDetail] Début du chargement des données pour $_lastSociete');
-    
+
+    print(
+        '[GraphSigDetail] Début du chargement des données pour $_lastSociete');
+
     if (!mounted) return;
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
     try {
-      print('[GraphSigDetail] Chargement des données pour $_lastSociete, période: $selectedPeriode');
-      
-      indicateursResponse = await NavisionSIGService().fetchIndicateursGlobal(
+      print(
+          '[GraphSigDetail] Chargement des données depuis les données locales');
+
+      indicateursResponse = await UnifiedSIGService.fetchIndicateursGlobal(
         societe: _lastSociete!,
         periode: _getPeriodeParam(),
         trimestre: selectedTrimestre,
       );
-      print('[GraphSigDetail] Indicateurs chargés: ${indicateursResponse?.indicateurs.length} années');
-      
-      sousIndicsResponse = await NavisionSIGService().fetchSousIndicateursGlobal(
+      print(
+          '[GraphSigDetail] Indicateurs chargés: ${indicateursResponse?.indicateurs.length} années');
+
+      sousIndicsResponse = await UnifiedSIGService.fetchSousIndicateursGlobal(
         societe: _lastSociete!,
         periode: _getPeriodeParam(),
         trimestre: selectedTrimestre,
       );
       print('[GraphSigDetail] Sous-indicateurs chargés');
-      
+
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
       print('[GraphSigDetail] Erreur lors du chargement: $e');
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -132,11 +145,13 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
               padding: const EdgeInsets.only(right: 8),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
+                  backgroundColor:
+                      isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
                   foregroundColor: isSelected ? Colors.white : Colors.black,
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   elevation: isSelected ? 2 : 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
                 ),
                 onPressed: () {
                   setState(() {
@@ -147,18 +162,23 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
                     _loadData();
                   });
                 },
-                child: Text(periode, style: TextStyle(fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                child: Text(periode,
+                    style: TextStyle(
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal)),
               ),
             );
           }).toList(),
           SizedBox(width: 8),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: showKeuros ? Color(0xFF65887a) : Color(0xFF00A9CA),
+              backgroundColor:
+                  showKeuros ? Color(0xFF65887a) : Color(0xFF00A9CA),
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               elevation: showKeuros ? 1 : 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
               textStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             ),
             onPressed: () {
@@ -217,7 +237,8 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
               onChanged: (value) {
                 setState(() {
                   selectedIndicateur = value;
-                  if (chartType == 'pie' && selectedSousIndicateurForPie == null) {
+                  if (chartType == 'pie' &&
+                      selectedSousIndicateurForPie == null) {
                     final sousIndicateurs = _getSousIndicateurNames();
                     if (sousIndicateurs.isNotEmpty) {
                       selectedSousIndicateurForPie = sousIndicateurs.first;
@@ -234,7 +255,10 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
 
   List<String> _getOrderedAnnees() {
     if (sousIndicsResponse == null) return [];
-    final anneesList = sousIndicsResponse!.sousIndicateurs.keys.map((a) => int.parse(a)).toList()..sort();
+    final anneesList = sousIndicsResponse!.sousIndicateurs.keys
+        .map((a) => int.parse(a))
+        .toList()
+      ..sort();
     return anneesList.map((a) => a.toString()).toList();
   }
 
@@ -252,8 +276,10 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
   List<String> _getSousIndicateurNames() {
     if (sousIndicsResponse == null || selectedIndicateur == null) return [];
     final Set<String> sousIndicateurs = {};
-    for (final anneeSousIndicateurs in sousIndicsResponse!.sousIndicateurs.values) {
-      final sousIndicsForIndicateur = anneeSousIndicateurs[selectedIndicateur!] ?? [];
+    for (final anneeSousIndicateurs
+        in sousIndicsResponse!.sousIndicateurs.values) {
+      final sousIndicsForIndicateur =
+          anneeSousIndicateurs[selectedIndicateur!] ?? [];
       for (final sousInd in sousIndicsForIndicateur) {
         sousIndicateurs.add(sousInd.sousIndicateur);
       }
@@ -264,11 +290,12 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
   Map<String, Map<String, double>> _getSousIndicateurData() {
     final Map<String, Map<String, double>> data = {};
     if (sousIndicsResponse == null || selectedIndicateur == null) return data;
-    
+
     for (final anneeEntry in sousIndicsResponse!.sousIndicateurs.entries) {
       final annee = anneeEntry.key;
-      final sousIndicateursForIndicateur = anneeEntry.value[selectedIndicateur!] ?? [];
-      
+      final sousIndicateursForIndicateur =
+          anneeEntry.value[selectedIndicateur!] ?? [];
+
       for (final sousInd in sousIndicateursForIndicateur) {
         data.putIfAbsent(sousInd.sousIndicateur, () => {});
         data[sousInd.sousIndicateur]![annee] = sousInd.montant;
@@ -280,7 +307,9 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
   List<LineChartBarData> _getLineChartBarData() {
     final sousIndicateurData = _getSousIndicateurData();
     final annees = _getOrderedAnnees();
-    final sousIndicateurs = selectedSousIndicateurs.isNotEmpty ? selectedSousIndicateurs : _getSousIndicateurNames();
+    final sousIndicateurs = selectedSousIndicateurs.isNotEmpty
+        ? selectedSousIndicateurs
+        : _getSousIndicateurNames();
     List<LineChartBarData> lines = [];
     for (int i = 0; i < sousIndicateurs.length; i++) {
       final sousIndicateur = sousIndicateurs[i];
@@ -302,12 +331,12 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
           dotData: FlDotData(
             show: true,
             getDotPainter: (spot, percent, barData, index) =>
-              FlDotCirclePainter(
-                radius: 4,
-                color: sousIndicateurColors[i % sousIndicateurColors.length],
-                strokeWidth: 2,
-                strokeColor: Colors.white,
-              ),
+                FlDotCirclePainter(
+              radius: 4,
+              color: sousIndicateurColors[i % sousIndicateurColors.length],
+              strokeWidth: 2,
+              strokeColor: Colors.white,
+            ),
           ),
           belowBarData: BarAreaData(show: false),
         ),
@@ -388,8 +417,10 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
         children: sousIndicateurs.asMap().entries.map((entry) {
           final index = entry.key;
           final sousIndicateur = entry.value;
-          final color = sousIndicateurColors[index % sousIndicateurColors.length];
-          final isSelected = selectedSousIndicateurs.isEmpty || selectedSousIndicateurs.contains(sousIndicateur);
+          final color =
+              sousIndicateurColors[index % sousIndicateurColors.length];
+          final isSelected = selectedSousIndicateurs.isEmpty ||
+              selectedSousIndicateurs.contains(sousIndicateur);
           return InkWell(
             borderRadius: BorderRadius.circular(20),
             onTap: () {
@@ -411,9 +442,12 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: isSelected ? color.withOpacity(0.2) : Colors.grey.shade100,
+                color:
+                    isSelected ? color.withOpacity(0.2) : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: color.withOpacity(isSelected ? 0.7 : 0.3), width: 1.5),
+                border: Border.all(
+                    color: color.withOpacity(isSelected ? 0.7 : 0.3),
+                    width: 1.5),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -427,7 +461,8 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  Text(sousIndicateur, style: TextStyle(fontWeight: FontWeight.w500)),
+                  Text(sousIndicateur,
+                      style: TextStyle(fontWeight: FontWeight.w500)),
                   if (isSelected) ...[
                     SizedBox(width: 8),
                     Icon(Icons.check, color: color, size: 18),
@@ -447,9 +482,11 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
     if (annees.isEmpty || selectedSousIndicateurForPie == null) return [];
 
     final sousIndicateurData = _getSousIndicateurData();
-    final montantsParAnnee = sousIndicateurData[selectedSousIndicateurForPie!] ?? {};
-    
-    double total = montantsParAnnee.values.fold(0, (sum, val) => sum + val.abs());
+    final montantsParAnnee =
+        sousIndicateurData[selectedSousIndicateurForPie!] ?? {};
+
+    double total =
+        montantsParAnnee.values.fold(0, (sum, val) => sum + val.abs());
     if (total == 0) return [];
 
     List<PieChartSectionData> sections = [];
@@ -474,7 +511,9 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: sousIndicateurColors[i % sousIndicateurColors.length]),
+                border: Border.all(
+                    color:
+                        sousIndicateurColors[i % sousIndicateurColors.length]),
               ),
               child: Text(
                 anneeKey,
@@ -495,10 +534,12 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
 
   Widget _buildPieLegend() {
     final annees = _getOrderedAnnees();
-    if (annees.isEmpty || selectedSousIndicateurForPie == null) return SizedBox();
+    if (annees.isEmpty || selectedSousIndicateurForPie == null)
+      return SizedBox();
 
     final sousIndicateurData = _getSousIndicateurData();
-    final montantsParAnnee = sousIndicateurData[selectedSousIndicateurForPie!] ?? {};
+    final montantsParAnnee =
+        sousIndicateurData[selectedSousIndicateurForPie!] ?? {};
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -509,10 +550,11 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
           final index = entry.key;
           final anneeKey = entry.value;
           final montant = montantsParAnnee[anneeKey] ?? 0;
-          final color = sousIndicateurColors[index % sousIndicateurColors.length];
-          
+          final color =
+              sousIndicateurColors[index % sousIndicateurColors.length];
+
           if (montant == 0) return SizedBox();
-          
+
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -541,7 +583,8 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Text('Type de graphique: ', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('Type de graphique: ',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(width: 8),
           SegmentedButton<String>(
             segments: [
@@ -560,7 +603,8 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
             onSelectionChanged: (Set<String> selection) {
               setState(() {
                 chartType = selection.first;
-                if (chartType == 'pie' && selectedSousIndicateurForPie == null) {
+                if (chartType == 'pie' &&
+                    selectedSousIndicateurForPie == null) {
                   final sousIndicateurs = _getSousIndicateurNames();
                   if (sousIndicateurs.isNotEmpty) {
                     selectedSousIndicateurForPie = sousIndicateurs.first;
@@ -571,7 +615,8 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
           ),
           if (chartType == 'pie') ...[
             SizedBox(width: 16),
-            Text('Sous-indicateur: ', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Sous-indicateur: ',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(width: 8),
             DropdownButton<String>(
               value: selectedSousIndicateurForPie,
@@ -618,12 +663,14 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
   }
 
   Widget _buildChart() {
-    if (sousIndicsResponse == null || selectedIndicateur == null || _getSousIndicateurNames().isEmpty) {
+    if (sousIndicsResponse == null ||
+        selectedIndicateur == null ||
+        _getSousIndicateurNames().isEmpty) {
       return Center(
         child: Text(
-          selectedIndicateur == null 
-            ? 'Veuillez sélectionner un indicateur'
-            : 'Aucune donnée disponible pour cet indicateur',
+          selectedIndicateur == null
+              ? 'Veuillez sélectionner un indicateur'
+              : 'Aucune donnée disponible pour cet indicateur',
           style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
         ),
       );
@@ -685,53 +732,57 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
       children: [
         // Boutons de sélection de période
         _buildPeriodeButtons(),
-        
+
         // Section du graphique
         Expanded(
           child: Padding(
             padding: EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TableHeader(title: 'Graphique des Sous-Indicateurs SIG'),
-                  
-                  // Sélecteur d'indicateur
-                  if (!isLoading && _getIndicateurNames().isNotEmpty) 
-                    _buildIndicateurSelector(),
-                  
-                  // Sélecteur de type de graphique
-                  if (!isLoading && selectedIndicateur != null && _getSousIndicateurNames().isNotEmpty) 
-                    _buildChartTypeSelector(),
-                  
-                  // Légende appropriée selon le type de graphique
-                  if (!isLoading && selectedIndicateur != null && _getSousIndicateurNames().isNotEmpty)
-                    chartType == 'pie' ? _buildPieLegend() : _buildLegend(),
-                  
-                  // Graphique
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                        ),
-                        borderRadius: BorderRadius.circular(4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TableHeader(title: 'Graphique des Sous-Indicateurs SIG'),
+
+                // Sélecteur d'indicateur
+                if (!isLoading && _getIndicateurNames().isNotEmpty)
+                  _buildIndicateurSelector(),
+
+                // Sélecteur de type de graphique
+                if (!isLoading &&
+                    selectedIndicateur != null &&
+                    _getSousIndicateurNames().isNotEmpty)
+                  _buildChartTypeSelector(),
+
+                // Légende appropriée selon le type de graphique
+                if (!isLoading &&
+                    selectedIndicateur != null &&
+                    _getSousIndicateurNames().isNotEmpty)
+                  chartType == 'pie' ? _buildPieLegend() : _buildLegend(),
+
+                // Graphique
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.shade300,
                       ),
-                      child: isLoading
-                          ? ShimmerUtils.createLoadingContainer(
-                              context: context,
-                              height: double.infinity,
-                              width: double.infinity,
-                              margin: EdgeInsets.zero,
-                              borderRadius: BorderRadius.circular(4),
-                            )
-                          : _buildChart(),
+                      borderRadius: BorderRadius.circular(4),
                     ),
+                    child: isLoading
+                        ? ShimmerUtils.createLoadingContainer(
+                            context: context,
+                            height: double.infinity,
+                            width: double.infinity,
+                            margin: EdgeInsets.zero,
+                            borderRadius: BorderRadius.circular(4),
+                          )
+                        : _buildChart(),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
+      ],
     );
   }
 }

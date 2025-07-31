@@ -1,11 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobaitec_decision_making/components/table_header.dart';
-import 'package:mobaitec_decision_making/models/NavisionSIGModel.dart';
-import 'package:mobaitec_decision_making/services/indicateur/navision_service_sig.dart';
+import 'package:mobaitec_decision_making/models/SIGModel.dart';
 import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/utils/shimmer_utils.dart';
+import 'package:mobaitec_decision_making/services/data/unified_sig_service.dart';
+import 'package:mobaitec_decision_making/components/adaptive_table_container.dart';
 
 class GraphMensuel extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ class _GraphMensuelState extends State<GraphMensuel> {
     }
     return buffer.toString();
   }
+
   String selectedAnnee = (DateTime.now().year - 1).toString();
   // Liste des indicateurs sélectionnés à afficher
   List<String> selectedIndicateurs = [];
@@ -32,7 +34,7 @@ class _GraphMensuelState extends State<GraphMensuel> {
   String chartType = 'line'; // 'line' ou 'pie'
   String? selectedIndicateurForPie; // Pour le pie chart
 
-  NavisionIndicateursMensuelResponse? indicateursResponse;
+  dynamic indicateursResponse;
 
   // Couleurs pour les différents indicateurs
   final List<Color> indicateurColors = [
@@ -45,26 +47,29 @@ class _GraphMensuelState extends State<GraphMensuel> {
     Colors.pink,
     Colors.indigo,
   ];
-  bool _isInitialized = false; // Flag pour éviter les réinitialisations multiples
+  bool _isInitialized =
+      false; // Flag pour éviter les réinitialisations multiples
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
+
     // Ne faire le check qu'une seule fois par build
     if (!_isInitialized) {
       _isInitialized = true;
-      final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: false);
+      final keycloakProvider =
+          Provider.of<KeycloakProvider>(context, listen: false);
       final societe = keycloakProvider.selectedCompany;
-      
+
       if (societe != null && societe != _lastSociete) {
-        print('[GraphMensuel] Changement de société détecté: $_lastSociete -> $societe');
+        print(
+            '[GraphMensuel] Changement de société détecté: $_lastSociete -> $societe');
         _lastSociete = societe;
-        
+
         // Réinitialiser directement sans setState
         indicateursResponse = null;
         selectedIndicateurForPie = null;
-        
+
         // Planifier le chargement pour le prochain frame
         Future.microtask(() {
           if (mounted) {
@@ -83,11 +88,14 @@ class _GraphMensuelState extends State<GraphMensuel> {
 
   Future<void> _loadAnnees(String societe) async {
     print('[GraphMensuel] Début du chargement pour $societe');
-    final keycloakProvider = Provider.of<KeycloakProvider>(context, listen: false);
+    final keycloakProvider =
+        Provider.of<KeycloakProvider>(context, listen: false);
     keycloakProvider.setDataReloading(true);
-    
+
     if (!mounted) return;
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
     try {
       // Générer les années de l'année actuelle jusqu'à 2020
       final currentYear = DateTime.now().year;
@@ -95,7 +103,7 @@ class _GraphMensuelState extends State<GraphMensuel> {
       for (int year = currentYear; year >= 2020; year--) {
         allAnnees.add(year.toString());
       }
-      
+
       if (!mounted) return;
       setState(() {
         selectedAnnee = allAnnees.first;
@@ -105,30 +113,34 @@ class _GraphMensuelState extends State<GraphMensuel> {
     } catch (e) {
       print('[GraphMensuel] Erreur lors du chargement des années: $e');
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
       keycloakProvider.setDataReloading(false);
     }
   }
 
   Future<void> _loadData() async {
     if (_lastSociete == null) return;
-    
+
     if (!mounted) return;
-    setState(() { isLoading = true; });
+    setState(() {
+      isLoading = true;
+    });
     try {
       final anneeInt = int.parse(selectedAnnee);
-      print('[GraphMensuel] Chargement des données pour $_lastSociete, année: $anneeInt');
-      
-      indicateursResponse = await NavisionSIGService().fetchIndicateursMensuel(
-        societe: _lastSociete!, 
-        annee: anneeInt
-      );
-      print('[GraphMensuel] Indicateurs chargés: ${indicateursResponse?.mois.length} mois');
+      print('[GraphMensuel] Chargement des données depuis les données locales');
+
+      indicateursResponse = await UnifiedSIGService.fetchIndicateursMensuel(
+          societe: _lastSociete!, annee: anneeInt);
+      print(
+          '[GraphMensuel] Indicateurs chargés: ${indicateursResponse?.mois.length} mois');
       // Initialiser la sélection à tous les indicateurs si vide
       if (indicateursResponse != null && selectedIndicateurs.isEmpty) {
         final allIndics = <String>{};
         for (final mois in indicateursResponse!.mois.keys) {
-          final indicateursList = indicateursResponse!.mois[mois] as List<NavisionIndicateurMensuel>;
+          final indicateursList = indicateursResponse!.mois[mois]
+              as List<SIGIndicateurMensuel>;
           for (final ind in indicateursList) {
             allIndics.add(ind.indicateur);
           }
@@ -136,17 +148,21 @@ class _GraphMensuelState extends State<GraphMensuel> {
         selectedIndicateurs = allIndics.toList();
       }
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
       print('[GraphMensuel] Erreur lors du chargement: $e');
       if (!mounted) return;
-      setState(() { isLoading = false; });
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
   Widget _buildAnneeButtons() {
     if (allAnnees.isEmpty) return SizedBox.shrink();
-    
+
     return Padding(
       padding: const EdgeInsets.only(left: 8, right: 8, bottom: 16, top: 0),
       child: SingleChildScrollView(
@@ -159,11 +175,13 @@ class _GraphMensuelState extends State<GraphMensuel> {
                 padding: const EdgeInsets.only(right: 8),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
+                    backgroundColor:
+                        isSelected ? Color(0xFF00A9CA) : Colors.grey.shade200,
                     foregroundColor: isSelected ? Colors.white : Colors.black,
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     elevation: isSelected ? 2 : 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
                   ),
                   onPressed: () {
                     setState(() {
@@ -171,17 +189,23 @@ class _GraphMensuelState extends State<GraphMensuel> {
                       _loadData();
                     });
                   },
-                  child: Text(annee, style: TextStyle(fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                  child: Text(annee,
+                      style: TextStyle(
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal)),
                 ),
               );
             }),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: isKEuros ? Color(0xFF65887a) : Color(0xFF00A9CA),
+                backgroundColor:
+                    isKEuros ? Color(0xFF65887a) : Color(0xFF00A9CA),
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 elevation: 1,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
               ),
               onPressed: () {
                 setState(() {
@@ -189,7 +213,8 @@ class _GraphMensuelState extends State<GraphMensuel> {
                 });
               },
               icon: Icon(Icons.euro, size: 16),
-              label: Text(isKEuros ? 'Euros' : 'KEuros', style: TextStyle(fontWeight: FontWeight.w500)),
+              label: Text(isKEuros ? 'Euros' : 'KEuros',
+                  style: TextStyle(fontWeight: FontWeight.w500)),
             ),
           ],
         ),
@@ -199,7 +224,10 @@ class _GraphMensuelState extends State<GraphMensuel> {
 
   List<String> _getOrderedMois() {
     if (indicateursResponse == null) return [];
-    final moisList = indicateursResponse!.mois.keys.map((m) => int.parse(m)).toList()..sort();
+    final moisList = indicateursResponse!.mois.keys
+        .map((m) => int.parse(m))
+        .toList()
+      ..sort();
     return moisList.map((m) => m.toString()).toList();
   }
 
@@ -217,11 +245,11 @@ class _GraphMensuelState extends State<GraphMensuel> {
   Map<String, Map<String, double>> _getIndicateurData() {
     final Map<String, Map<String, double>> data = {};
     if (indicateursResponse == null) return data;
-    
+
     for (final moisEntry in indicateursResponse!.mois.entries) {
       final mois = moisEntry.key;
       final indicateurs = moisEntry.value;
-      
+
       for (final ind in indicateurs) {
         data.putIfAbsent(ind.indicateur, () => {});
         data[ind.indicateur]![mois] = ind.valeur;
@@ -254,12 +282,12 @@ class _GraphMensuelState extends State<GraphMensuel> {
           dotData: FlDotData(
             show: true,
             getDotPainter: (spot, percent, barData, index) =>
-              FlDotCirclePainter(
-                radius: 4,
-                color: indicateurColors[i % indicateurColors.length],
-                strokeWidth: 2,
-                strokeColor: Colors.white,
-              ),
+                FlDotCirclePainter(
+              radius: 4,
+              color: indicateurColors[i % indicateurColors.length],
+              strokeWidth: 2,
+              strokeColor: Colors.white,
+            ),
           ),
           belowBarData: BarAreaData(show: false),
         ),
@@ -270,7 +298,7 @@ class _GraphMensuelState extends State<GraphMensuel> {
 
   FlTitlesData _getTitlesData() {
     final mois = _getOrderedMois();
-    
+
     return FlTitlesData(
       leftTitles: AxisTitles(
         sideTitles: SideTitles(
@@ -278,9 +306,11 @@ class _GraphMensuelState extends State<GraphMensuel> {
           reservedSize: 80,
           getTitlesWidget: (value, meta) {
             if (isKEuros) {
-              return Text('${(value / 1000).toStringAsFixed(1)} K€', style: TextStyle(fontSize: 10));
+              return Text('${(value / 1000).toStringAsFixed(1)} K€',
+                  style: TextStyle(fontSize: 10));
             } else {
-              return Text('${_formatNumberWithSpaces(value)} €', style: TextStyle(fontSize: 10));
+              return Text('${_formatNumberWithSpaces(value)} €',
+                  style: TextStyle(fontSize: 10));
             }
           },
         ),
@@ -361,9 +391,12 @@ class _GraphMensuelState extends State<GraphMensuel> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: isSelected ? color.withOpacity(0.2) : Colors.grey.shade100,
+                color:
+                    isSelected ? color.withOpacity(0.2) : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: color.withOpacity(isSelected ? 0.7 : 0.3), width: 1.5),
+                border: Border.all(
+                    color: color.withOpacity(isSelected ? 0.7 : 0.3),
+                    width: 1.5),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -377,7 +410,8 @@ class _GraphMensuelState extends State<GraphMensuel> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  Text(indicateur, style: TextStyle(fontWeight: FontWeight.w500)),
+                  Text(indicateur,
+                      style: TextStyle(fontWeight: FontWeight.w500)),
                   if (isSelected) ...[
                     SizedBox(width: 8),
                     Icon(Icons.check, color: color, size: 18),
@@ -398,8 +432,9 @@ class _GraphMensuelState extends State<GraphMensuel> {
 
     final indicateurData = _getIndicateurData();
     final montantsParMois = indicateurData[selectedIndicateurForPie!] ?? {};
-    
-    double total = montantsParMois.values.fold(0, (sum, val) => sum + val.abs());
+
+    double total =
+        montantsParMois.values.fold(0, (sum, val) => sum + val.abs());
     if (total == 0) return [];
 
     List<PieChartSectionData> sections = [];
@@ -424,7 +459,8 @@ class _GraphMensuelState extends State<GraphMensuel> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: indicateurColors[i % indicateurColors.length]),
+                border: Border.all(
+                    color: indicateurColors[i % indicateurColors.length]),
               ),
               child: Text(
                 'M${moisKey}',
@@ -460,9 +496,9 @@ class _GraphMensuelState extends State<GraphMensuel> {
           final moisKey = entry.value;
           final montant = montantsParMois[moisKey] ?? 0;
           final color = indicateurColors[index % indicateurColors.length];
-          
+
           if (montant == 0) return SizedBox();
-          
+
           return Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -491,7 +527,8 @@ class _GraphMensuelState extends State<GraphMensuel> {
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Text('Type de graphique: ', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('Type de graphique: ',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(width: 8),
           SegmentedButton<String>(
             segments: [
@@ -656,49 +693,49 @@ class _GraphMensuelState extends State<GraphMensuel> {
       children: [
         // Boutons de sélection d'année
         _buildAnneeButtons(),
-        
+
         // Section du graphique
         Expanded(
           child: Padding(
             padding: EdgeInsets.all(8),
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TableHeader(title: 'Graphique Mensuel des Indicateurs SIG'),
-                  
-                  // Sélecteur de type de graphique
-                  if (!isLoading && _getIndicateurNames().isNotEmpty) 
-                    _buildChartTypeSelector(),
-                  
-                  // Légende appropriée selon le type de graphique
-                  if (!isLoading && _getIndicateurNames().isNotEmpty)
-                    chartType == 'pie' ? _buildPieLegend() : _buildLegend(),
-                  
-                  // Graphique
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                        ),
-                        borderRadius: BorderRadius.circular(4),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TableHeader(title: 'Graphique Mensuel des Indicateurs SIG'),
+
+                // Sélecteur de type de graphique
+                if (!isLoading && _getIndicateurNames().isNotEmpty)
+                  _buildChartTypeSelector(),
+
+                // Légende appropriée selon le type de graphique
+                if (!isLoading && _getIndicateurNames().isNotEmpty)
+                  chartType == 'pie' ? _buildPieLegend() : _buildLegend(),
+
+                // Graphique
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.shade300,
                       ),
-                      child: isLoading
-                          ? ShimmerUtils.createLoadingContainer(
-                              context: context,
-                              height: double.infinity,
-                              width: double.infinity,
-                              margin: EdgeInsets.zero,
-                              borderRadius: BorderRadius.circular(4),
-                            )
-                          : _buildChart(),
+                      borderRadius: BorderRadius.circular(4),
                     ),
+                    child: isLoading
+                        ? ShimmerUtils.createLoadingContainer(
+                            context: context,
+                            height: double.infinity,
+                            width: double.infinity,
+                            margin: EdgeInsets.zero,
+                            borderRadius: BorderRadius.circular(4),
+                          )
+                        : _buildChart(),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
+      ],
     );
   }
 }

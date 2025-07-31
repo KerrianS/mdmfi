@@ -1,0 +1,74 @@
+{
+  "annee": 2022,
+  "mois": {
+    "1": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CCA HAZAN",
+            "montant": 82.34,
+            "debit": 82.34,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61553099",
+            "libelle_compte": "CCA STRADA",
+            "montant": 23.83,
+            "debit": 23.83,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "2": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CCA HAZAN",
+            "montant": 82.35,
+            "debit": 82.35,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61553099",
+            "libelle_compte": "CCA STRADA",
+            "montant": 23.83,
+            "debit": 23.83,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "3": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CCA HAZAN",
+            "montant": 82.35,
+            "debit": 82.35,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61553099",
+            "libelle_compte": "CCA STRADA",
+            "montant": 23.83,
+            "debit": 23.83,
+            "credit": 0.0
+          }
+        ]
+      }
+    }
+  }
+}

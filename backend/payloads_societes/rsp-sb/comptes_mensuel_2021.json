@@ -1,0 +1,5202 @@
+{
+  "annee": 2021,
+  "mois": {
+    "1": {
+      "VENTES DE MARCHANDISES": {
+        "total": 9,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture MESTRE BRUNO",
+            "montant": 40.0,
+            "debit": 0.0,
+            "credit": 40.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture NEOTRAVAUX",
+            "montant": 60.0,
+            "debit": 0.0,
+            "credit": 60.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture ROSS Axel",
+            "montant": 60.0,
+            "debit": 0.0,
+            "credit": 60.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture LEJEUNE Isabelle",
+            "montant": 85.0,
+            "debit": 0.0,
+            "credit": 85.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Avoir ",
+            "montant": -240.0,
+            "debit": 240.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture MURA JEAN MARC",
+            "montant": 75.0,
+            "debit": 0.0,
+            "credit": 75.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture AGUILAR",
+            "montant": 220.0,
+            "debit": 0.0,
+            "credit": 220.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture MAIRIE DE CABRIERES",
+            "montant": 250.0,
+            "debit": 0.0,
+            "credit": 250.0
+          },
+          {
+            "code_compte": "70710002",
+            "libelle_compte": "Facture LOCA COM ",
+            "montant": 616.0,
+            "debit": 0.0,
+            "credit": 616.0
+          }
+        ]
+      },
+      "PRESTATIONS DE SERVICES": {
+        "total": 131,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture NAB MACONNERIE GENERALE",
+            "montant": 885.0,
+            "debit": 0.0,
+            "credit": 885.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture NAB MACONNERIE GENERALE",
+            "montant": 1510.0,
+            "debit": 0.0,
+            "credit": 1510.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture MESTRE BRUNO",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture YOUDAM",
+            "montant": 615.0,
+            "debit": 0.0,
+            "credit": 615.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture CHABAUD Michel",
+            "montant": 135.0,
+            "debit": 0.0,
+            "credit": 135.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture VAISSE LAURENT",
+            "montant": 160.0,
+            "debit": 0.0,
+            "credit": 160.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Avoir PRECISION PROJECTS",
+            "montant": -5.4,
+            "debit": 5.4,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture HONORAT CHANTAL",
+            "montant": 125.0,
+            "debit": 0.0,
+            "credit": 125.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture ACAJOU",
+            "montant": 543.0,
+            "debit": 0.0,
+            "credit": 543.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture ACAJOU",
+            "montant": 1250.0,
+            "debit": 0.0,
+            "credit": 1250.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture EL BOUDALI AMAR",
+            "montant": 152.0,
+            "debit": 0.0,
+            "credit": 152.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture MEZARD O PISCINES",
+            "montant": 434.0,
+            "debit": 0.0,
+            "credit": 434.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture LUBERON CONSTRUTION 84",
+            "montant": 240.0,
+            "debit": 0.0,
+            "credit": 240.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture VILLAS SPEOS",
+            "montant": 1640.0,
+            "debit": 0.0,
+            "credit": 1640.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture VILLAS SPEOS",
+            "montant": 1516.0,
+            "debit": 0.0,
+            "credit": 1516.0
+          },
+          {
+            "code_compte": "70610199",
+            "libelle_compte": "Facture PROVENCALE DE TP",
+            "montant": 2100.0,
+            "debit": 0.0,
+            "credit": 2100.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PROVENCALE DE TP",
+            "montant": 2760.0,
+            "debit": 0.0,
+            "credit": 2760.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BASTIDES &DEMEURES PROVENCALES",
+            "montant": 840.0,
+            "debit": 0.0,
+            "credit": 840.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture BASTIDES &DEMEURES PROVENCALES",
+            "montant": 2252.0,
+            "debit": 0.0,
+            "credit": 2252.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture HIOL père et fils",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture M.D.S",
+            "montant": 114.0,
+            "debit": 0.0,
+            "credit": 114.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture M.D.S",
+            "montant": 499.0,
+            "debit": 0.0,
+            "credit": 499.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SABA Mario SARL",
+            "montant": 2600.0,
+            "debit": 0.0,
+            "credit": 2600.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture SABA Mario SARL",
+            "montant": 3186.0,
+            "debit": 0.0,
+            "credit": 3186.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture LUBERON Traditions",
+            "montant": 280.0,
+            "debit": 0.0,
+            "credit": 280.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BOCK et fils",
+            "montant": 280.0,
+            "debit": 0.0,
+            "credit": 280.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture BOCK et fils",
+            "montant": 592.5,
+            "debit": 0.0,
+            "credit": 592.5
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PELKA RESEAUX ET CANALISATIONS ",
+            "montant": 1764.0,
+            "debit": 0.0,
+            "credit": 1764.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture AMTP",
+            "montant": 960.0,
+            "debit": 0.0,
+            "credit": 960.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SOLUTIONS MACONNERIE PROVENCE",
+            "montant": 713.0,
+            "debit": 0.0,
+            "credit": 713.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture SOLUTIONS MACONNERIE PROVENCE",
+            "montant": 633.0,
+            "debit": 0.0,
+            "credit": 633.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture CABRIERES",
+            "montant": 280.0,
+            "debit": 0.0,
+            "credit": 280.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture CABRIERES",
+            "montant": 680.0,
+            "debit": 0.0,
+            "credit": 680.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BATIK",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture BATIK",
+            "montant": 454.0,
+            "debit": 0.0,
+            "credit": 454.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture NEOTRAVAUX",
+            "montant": 1672.0,
+            "debit": 0.0,
+            "credit": 1672.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture NEOTRAVAUX",
+            "montant": 1970.0,
+            "debit": 0.0,
+            "credit": 1970.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SILVASUD ENVIRONNEMENT",
+            "montant": 168.0,
+            "debit": 0.0,
+            "credit": 168.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture CEVENNES CHAPE FLUIDE",
+            "montant": 562.0,
+            "debit": 0.0,
+            "credit": 562.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture TAKOUDAT",
+            "montant": 240.0,
+            "debit": 0.0,
+            "credit": 240.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PRO CHAP",
+            "montant": 625.0,
+            "debit": 0.0,
+            "credit": 625.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PISCINE PLAGE",
+            "montant": 515.0,
+            "debit": 0.0,
+            "credit": 515.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture REYNIER TP",
+            "montant": 760.0,
+            "debit": 0.0,
+            "credit": 760.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture DECODAL",
+            "montant": 540.0,
+            "debit": 0.0,
+            "credit": 540.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture GROUPEMENT D'ARTISANS",
+            "montant": 1200.0,
+            "debit": 0.0,
+            "credit": 1200.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture GROUPEMENT D'ARTISANS",
+            "montant": 2280.0,
+            "debit": 0.0,
+            "credit": 2280.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture TAILLE DE PIERRE LAPELERIE",
+            "montant": 152.0,
+            "debit": 0.0,
+            "credit": 152.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture R2F",
+            "montant": 802.0,
+            "debit": 0.0,
+            "credit": 802.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture R2F",
+            "montant": 1065.0,
+            "debit": 0.0,
+            "credit": 1065.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture MAISON DU SUD",
+            "montant": 336.0,
+            "debit": 0.0,
+            "credit": 336.0
+          }
+        ]
+      },
+      "FOURNITURES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60640000",
+            "libelle_compte": "Facture SYLVESTRE MATERIAUX",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "60630000",
+            "libelle_compte": "Facture SYLVESTRE MATERIAUX",
+            "montant": 248.38,
+            "debit": 248.38,
+            "credit": 0.0
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 42,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 1119 A 1020",
+            "montant": 117.91,
+            "debit": 117.91,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.47,
+            "debit": 88.47,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE>ADLER 20/21",
+            "montant": 174.67,
+            "debit": 174.67,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  janvier",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM janvier",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "Facture EURO INFORMATION",
+            "montant": 37.0,
+            "debit": 37.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "CH D'AVANCE LOCATIONS> EURO-INFO",
+            "montant": -33.92,
+            "debit": 0.0,
+            "credit": 33.92
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 100.96000000000001,
+            "debit": 100.96000000000001,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ALAE",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61520000",
+            "libelle_compte": "Facture ALAE",
+            "montant": 3680.0,
+            "debit": 3680.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521299",
+            "libelle_compte": "Facture BETONS GRANULATS SYLVESTRE",
+            "montant": 363.78,
+            "debit": 363.78,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL / du 251220 au 240121",
+            "montant": 37.78,
+            "debit": 37.78,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL / du 251220 au 240121",
+            "montant": 4135.18,
+            "debit": 4135.18,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL / DU 250121 AU 240221",
+            "montant": 37.78,
+            "debit": 37.78,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL / DU 250121 AU 240221",
+            "montant": 436.99,
+            "debit": 436.99,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ DU 050121 AU 040221",
+            "montant": 39.5,
+            "debit": 39.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ DU 050121 AU 040221",
+            "montant": 4133.75,
+            "debit": 4133.75,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture JLC PROJECT SASU",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture COMPTOIR DE L'ARROSAGE",
+            "montant": 123.26,
+            "debit": 123.26,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Janvier 2021",
+            "montant": 276.0,
+            "debit": 276.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 0.0,
+            "debit": 138.89,
+            "credit": 138.89
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 138.89,
+            "debit": 138.89,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA KIA FV-703-ZP",
+            "montant": -449.74,
+            "debit": 0.0,
+            "credit": 449.74
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS",
+            "montant": -4879.63,
+            "debit": 0.0,
+            "credit": 4879.63
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture MEDIACO VAUCLUSE",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture MEDIACO VAUCLUSE",
+            "montant": 4961.2,
+            "debit": 4961.2,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  janvier",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL / du 251220 au 240121> Régul TVA",
+            "montant": 827.04,
+            "debit": 827.04,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL / DU 250121 AU 240221> Régul TVA",
+            "montant": 87.4,
+            "debit": 87.4,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ DU 050121 AU 040221> Régul TVA",
+            "montant": 826.75,
+            "debit": 826.75,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "ANNUL CCA KIA FV-703-ZP",
+            "montant": 449.74,
+            "debit": 449.74,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP> REG 613514",
+            "montant": -449.74,
+            "debit": 0.0,
+            "credit": 449.74
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Avoir ALAE",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61520000",
+            "libelle_compte": "Avoir ALAE",
+            "montant": -1840.0,
+            "debit": 0.0,
+            "credit": 1840.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ARTEON SAS",
+            "montant": 1680.36,
+            "debit": 1680.36,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Avoir MEDIACO VAUCLUSE",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Avoir MEDIACO VAUCLUSE",
+            "montant": -2480.6,
+            "debit": 0.0,
+            "credit": 2480.6
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 8,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64140400",
+            "libelle_compte": "IND. ACTIVITE PARTIELLE",
+            "montant": -212.87,
+            "debit": 0.0,
+            "credit": 212.87
+          },
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 01/2021  ",
+            "montant": 8913.29,
+            "debit": 8913.29,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 01/2021  ",
+            "montant": 1418.6599999999999,
+            "debit": 1418.6599999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 01/2021  ",
+            "montant": 468.41,
+            "debit": 468.41,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 01/2021  ",
+            "montant": 118.72,
+            "debit": 118.72,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 01/2021  ",
+            "montant": 107.78999999999999,
+            "debit": 107.78999999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 01/2021  ",
+            "montant": 374.36,
+            "debit": 374.36,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": -1.51,
+            "debit": 0.0,
+            "credit": 1.51
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63514000",
+            "libelle_compte": "PROV TVS 4E TRIM 20",
+            "montant": 0.0,
+            "debit": 91.0,
+            "credit": 91.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 01/2021  ",
+            "montant": 49.03,
+            "debit": 49.03,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 01/2021  ",
+            "montant": 60.599999999999994,
+            "debit": 60.599999999999994,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "2": {
+      "VENTES DE MARCHANDISES": {
+        "total": 8,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture LE JAS DE GORDES",
+            "montant": 100.0,
+            "debit": 0.0,
+            "credit": 100.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture CAMPING ARC EN CIEL ",
+            "montant": 85.0,
+            "debit": 0.0,
+            "credit": 85.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture REPCO INDUSTRIES",
+            "montant": 10.0,
+            "debit": 0.0,
+            "credit": 10.0
+          },
+          {
+            "code_compte": "70710002",
+            "libelle_compte": "Facture SJW TP",
+            "montant": 352.0,
+            "debit": 0.0,
+            "credit": 352.0
+          },
+          {
+            "code_compte": "70710002",
+            "libelle_compte": "Facture LOCA COM ",
+            "montant": 3036.0,
+            "debit": 0.0,
+            "credit": 3036.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture FAUVEAU ANTHONY",
+            "montant": 50.0,
+            "debit": 0.0,
+            "credit": 50.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture AESTAS SOMNIUM",
+            "montant": 1005.0,
+            "debit": 0.0,
+            "credit": 1005.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture ATEA TP",
+            "montant": 160.0,
+            "debit": 0.0,
+            "credit": 160.0
+          }
+        ]
+      },
+      "ACHATS DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60710004",
+            "libelle_compte": "Facture GCP RODUITS DE CONSTRUCTION SAS",
+            "montant": 1496.0,
+            "debit": 1496.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "60710002",
+            "libelle_compte": "Facture GCP RODUITS DE CONSTRUCTION SAS",
+            "montant": 1651.68,
+            "debit": 1651.68,
+            "credit": 0.0
+          }
+        ]
+      },
+      "PRESTATIONS DE SERVICES": {
+        "total": 160,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture OGUZ MACONNERIE 84",
+            "montant": 285.0,
+            "debit": 0.0,
+            "credit": 285.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture IMBERT SEBASTIEN",
+            "montant": 160.0,
+            "debit": 0.0,
+            "credit": 160.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture DOLMAN HARRY ",
+            "montant": 800.0,
+            "debit": 0.0,
+            "credit": 800.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BARTHELEMY VINCENT",
+            "montant": 293.0,
+            "debit": 0.0,
+            "credit": 293.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture BARTHELEMY VINCENT",
+            "montant": 652.0,
+            "debit": 0.0,
+            "credit": 652.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture IRRICONCEPT",
+            "montant": 250.0,
+            "debit": 0.0,
+            "credit": 250.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture IRRICONCEPT",
+            "montant": 541.5,
+            "debit": 0.0,
+            "credit": 541.5
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SCI ALPHENA",
+            "montant": 360.0,
+            "debit": 0.0,
+            "credit": 360.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture EARL ST PAUL",
+            "montant": 270.0,
+            "debit": 0.0,
+            "credit": 270.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BRICE JEAN ",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BOURGEOIS CHARLES",
+            "montant": 461.0,
+            "debit": 0.0,
+            "credit": 461.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SARL CAP SOLEIL PATRIMOINE",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PARROT VIRGINIE",
+            "montant": 240.0,
+            "debit": 0.0,
+            "credit": 240.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BENSI Jean Claude",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BOURGET Bastien",
+            "montant": 130.0,
+            "debit": 0.0,
+            "credit": 130.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture VIAU MICHEL",
+            "montant": 360.0,
+            "debit": 0.0,
+            "credit": 360.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture MONNERON JEAN MARIE",
+            "montant": 168.0,
+            "debit": 0.0,
+            "credit": 168.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture MONNERON JEAN MARIE",
+            "montant": 526.0,
+            "debit": 0.0,
+            "credit": 526.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture TAGTAS YASAR",
+            "montant": 548.0,
+            "debit": 0.0,
+            "credit": 548.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture TAGTAS YASAR",
+            "montant": 616.0,
+            "debit": 0.0,
+            "credit": 616.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture EXPERT RENOVATION PROVENCE",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture EXPERT RENOVATION PROVENCE",
+            "montant": 463.0,
+            "debit": 0.0,
+            "credit": 463.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture LE JAS DE GORDES",
+            "montant": 800.0,
+            "debit": 0.0,
+            "credit": 800.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture LE JAS DE GORDES",
+            "montant": 1012.0,
+            "debit": 0.0,
+            "credit": 1012.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture YOUDAM",
+            "montant": 570.0,
+            "debit": 0.0,
+            "credit": 570.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture YOUDAM",
+            "montant": 844.0,
+            "debit": 0.0,
+            "credit": 844.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture NOVITECH ",
+            "montant": 168.0,
+            "debit": 0.0,
+            "credit": 168.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture CAMPING ARC EN CIEL ",
+            "montant": 168.0,
+            "debit": 0.0,
+            "credit": 168.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture BOURGEOIS CHARLES",
+            "montant": 508.0,
+            "debit": 0.0,
+            "credit": 508.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PEYRON LAETITIA",
+            "montant": 160.0,
+            "debit": 0.0,
+            "credit": 160.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture EL MARBOUH Mohamed",
+            "montant": 300.0,
+            "debit": 0.0,
+            "credit": 300.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture EL MARBOUH Mohamed",
+            "montant": 750.0,
+            "debit": 0.0,
+            "credit": 750.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SYLVESTRE R ET CIE",
+            "montant": 730.0,
+            "debit": 0.0,
+            "credit": 730.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture VILLAS SPEOS",
+            "montant": 456.0,
+            "debit": 0.0,
+            "credit": 456.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture VILLAS SPEOS",
+            "montant": 778.0,
+            "debit": 0.0,
+            "credit": 778.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SJW TP",
+            "montant": 320.0,
+            "debit": 0.0,
+            "credit": 320.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SILVASUD ENVIRONNEMENT",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture SILVASUD ENVIRONNEMENT",
+            "montant": 670.0,
+            "debit": 0.0,
+            "credit": 670.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SABA Mario SARL",
+            "montant": 1184.0,
+            "debit": 0.0,
+            "credit": 1184.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture SABA Mario SARL",
+            "montant": 2030.0,
+            "debit": 0.0,
+            "credit": 2030.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture RIVA Construction",
+            "montant": 152.0,
+            "debit": 0.0,
+            "credit": 152.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture RIVA Construction",
+            "montant": 544.0,
+            "debit": 0.0,
+            "credit": 544.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PROVENCALE DE TP",
+            "montant": 5800.0,
+            "debit": 0.0,
+            "credit": 5800.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture Mas Provence COREPAC",
+            "montant": 440.0,
+            "debit": 0.0,
+            "credit": 440.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture Mas Provence COREPAC",
+            "montant": 697.0,
+            "debit": 0.0,
+            "credit": 697.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PIERRES ET LUBERON",
+            "montant": 715.0,
+            "debit": 0.0,
+            "credit": 715.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture PIERRES ET LUBERON",
+            "montant": 1056.0,
+            "debit": 0.0,
+            "credit": 1056.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture NIBBIO Stéphane",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PISCINES Jacques BRENS",
+            "montant": 882.0,
+            "debit": 0.0,
+            "credit": 882.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture M.D.S",
+            "montant": 717.0,
+            "debit": 0.0,
+            "credit": 717.0
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 31,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 1119 A 1020",
+            "montant": 117.91,
+            "debit": 117.91,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.47,
+            "debit": 88.47,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE>ADLER 20/21",
+            "montant": 174.66,
+            "debit": 174.66,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "CH D'AVANCE LOCATIONS> EURO-INFO",
+            "montant": 3.08,
+            "debit": 3.08,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM février",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  février",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL",
+            "montant": 39.5,
+            "debit": 39.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL",
+            "montant": 587.5,
+            "debit": 587.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 138.89,
+            "debit": 138.89,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 138.89,
+            "debit": 138.89,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA KIA FS-842-YS",
+            "montant": -83.6,
+            "debit": 0.0,
+            "credit": 83.6
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 729.46,
+            "debit": 729.46,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ARTEON SAS",
+            "montant": 823.64,
+            "debit": 823.64,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture WAFLARD ETBS SARL",
+            "montant": 471.22,
+            "debit": 471.22,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture LIEBHERR",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 331.25,
+            "debit": 331.25,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 395.11,
+            "debit": 395.11,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 1026.93,
+            "debit": 1026.93,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Février 2021",
+            "montant": 276.0,
+            "debit": 276.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture COMPTOIR DE L'ARROSAGE",
+            "montant": 132.35,
+            "debit": 132.35,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  février",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 75.56,
+            "debit": 75.56,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 1048.78,
+            "debit": 1048.78,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Avoir CGL/ KIA FINANCE",
+            "montant": -37.78,
+            "debit": 0.0,
+            "credit": 37.78
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Avoir CGL/ KIA FINANCE",
+            "montant": -524.39,
+            "debit": 0.0,
+            "credit": 524.39
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture PROVENCE MOTEUR",
+            "montant": 367.95,
+            "debit": 367.95,
+            "credit": 0.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 7,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 02/2021  ",
+            "montant": 10355.83,
+            "debit": 10355.83,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 02/2021  ",
+            "montant": 1563.05,
+            "debit": 1563.05,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 02/2021  ",
+            "montant": 554.23,
+            "debit": 554.23,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 02/2021  ",
+            "montant": 137.94,
+            "debit": 137.94,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 02/2021  ",
+            "montant": 107.78999999999999,
+            "debit": 107.78999999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 02/2021  ",
+            "montant": 434.94000000000005,
+            "debit": 434.94000000000005,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": 1.37,
+            "debit": 1.37,
+            "credit": 0.0
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 02/2021  ",
+            "montant": 56.949999999999996,
+            "debit": 56.949999999999996,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 02/2021  ",
+            "montant": 70.42,
+            "debit": 70.42,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "3": {
+      "VENTES DE MARCHANDISES": {
+        "total": 15,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture LALOUM LAURENT",
+            "montant": 220.0,
+            "debit": 0.0,
+            "credit": 220.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture FERRERO ANDRE",
+            "montant": 250.0,
+            "debit": 0.0,
+            "credit": 250.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture MATHIEU Philipp",
+            "montant": 60.0,
+            "debit": 0.0,
+            "credit": 60.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture ATP",
+            "montant": 280.0,
+            "debit": 0.0,
+            "credit": 280.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture AESTAS SOMNIUM",
+            "montant": 840.0,
+            "debit": 0.0,
+            "credit": 840.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture PANSOLIN",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture AUGIER FABRICE ",
+            "montant": 45.0,
+            "debit": 0.0,
+            "credit": 45.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture SCI GANET ",
+            "montant": 65.0,
+            "debit": 0.0,
+            "credit": 65.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture DELGADO Raymond",
+            "montant": 50.0,
+            "debit": 0.0,
+            "credit": 50.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture TP SUD CONSEIL",
+            "montant": 250.0,
+            "debit": 0.0,
+            "credit": 250.0
+          },
+          {
+            "code_compte": "70713999",
+            "libelle_compte": "Facture Carrières Sylvestre",
+            "montant": 2565.0,
+            "debit": 0.0,
+            "credit": 2565.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture SABA Mario SARL",
+            "montant": 50.0,
+            "debit": 0.0,
+            "credit": 50.0
+          },
+          {
+            "code_compte": "70710003",
+            "libelle_compte": "Facture TERRASSEMENTS MEZARD",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70710004",
+            "libelle_compte": "Facture SNPR-STE NOUVELLE PROVENCE RESEAUX",
+            "montant": 500.0,
+            "debit": 0.0,
+            "credit": 500.0
+          },
+          {
+            "code_compte": "70710002",
+            "libelle_compte": "Facture ZEGHARI CONSTRUCTIONS",
+            "montant": 1080.0,
+            "debit": 0.0,
+            "credit": 1080.0
+          }
+        ]
+      },
+      "ACHATS DE MARCHANDISES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60710004",
+            "libelle_compte": "Facture MASTER BUILDERS SOLUTIONS SAS ",
+            "montant": 411.0,
+            "debit": 411.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "PRESTATIONS DE SERVICES": {
+        "total": 215,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PIERRE ET CHARPENTE",
+            "montant": 239.0,
+            "debit": 0.0,
+            "credit": 239.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PARROT VIRGINIE",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PASSARO DANIEL",
+            "montant": 102.0,
+            "debit": 0.0,
+            "credit": 102.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture ROUX Eric",
+            "montant": 168.0,
+            "debit": 0.0,
+            "credit": 168.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture GAUTIER Marie",
+            "montant": 844.0,
+            "debit": 0.0,
+            "credit": 844.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture GAUTIER Marie",
+            "montant": 1376.0,
+            "debit": 0.0,
+            "credit": 1376.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BATI'PROVENCE",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture YOUDAM",
+            "montant": 486.0,
+            "debit": 0.0,
+            "credit": 486.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture YOUDAM",
+            "montant": 2026.0,
+            "debit": 0.0,
+            "credit": 2026.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SAS OGUZ",
+            "montant": 320.0,
+            "debit": 0.0,
+            "credit": 320.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture SAS OGUZ",
+            "montant": 688.0,
+            "debit": 0.0,
+            "credit": 688.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture 2CTP",
+            "montant": 165.0,
+            "debit": 0.0,
+            "credit": 165.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture RAVOIRE Thierry",
+            "montant": 140.0,
+            "debit": 0.0,
+            "credit": 140.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture SCI LA GIOCONDA",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture NOUGIER Laurent",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Avoir ",
+            "montant": -3987.0,
+            "debit": 3987.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture ABHA RESEAUX",
+            "montant": 2650.0,
+            "debit": 0.0,
+            "credit": 2650.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture ABHA RESEAUX",
+            "montant": 2508.0,
+            "debit": 0.0,
+            "credit": 2508.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture LALOUM LAURENT",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BRICE JEAN ",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture MOUTTE GABRIEL",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture LE GUILLERMIC",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture DE SOUSA GUILLAUME \"DS-CONCEPT",
+            "montant": 520.0,
+            "debit": 0.0,
+            "credit": 520.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture M2",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture DOLMAN HARRY ",
+            "montant": 360.0,
+            "debit": 0.0,
+            "credit": 360.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture DOLMAN HARRY ",
+            "montant": 1106.0,
+            "debit": 0.0,
+            "credit": 1106.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture FERRERO ANDRE",
+            "montant": 168.0,
+            "debit": 0.0,
+            "credit": 168.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture QUINTI MATHIEU",
+            "montant": 336.0,
+            "debit": 0.0,
+            "credit": 336.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture QUINTI MATHIEU",
+            "montant": 662.0,
+            "debit": 0.0,
+            "credit": 662.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BOUAISS ACHOUR",
+            "montant": 240.0,
+            "debit": 0.0,
+            "credit": 240.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PANSOLIN",
+            "montant": 500.0,
+            "debit": 0.0,
+            "credit": 500.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture THIEBLEMONT PATRICK",
+            "montant": 130.0,
+            "debit": 0.0,
+            "credit": 130.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture CHECCONI RENE",
+            "montant": 450.0,
+            "debit": 0.0,
+            "credit": 450.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture CHECCONI RENE",
+            "montant": 616.0,
+            "debit": 0.0,
+            "credit": 616.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture PROUVENC Yves",
+            "montant": 130.0,
+            "debit": 0.0,
+            "credit": 130.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture CARRIOL PATRICE",
+            "montant": 250.0,
+            "debit": 0.0,
+            "credit": 250.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture AEC",
+            "montant": 280.0,
+            "debit": 0.0,
+            "credit": 280.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture VAN REGEMORTER Jean-François",
+            "montant": 320.0,
+            "debit": 0.0,
+            "credit": 320.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture VAN REGEMORTER Jean-François",
+            "montant": 535.0,
+            "debit": 0.0,
+            "credit": 535.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture EL HADDADY",
+            "montant": 440.0,
+            "debit": 0.0,
+            "credit": 440.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture EL HADDADY",
+            "montant": 733.0,
+            "debit": 0.0,
+            "credit": 733.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BECQUET Vincent",
+            "montant": 160.0,
+            "debit": 0.0,
+            "credit": 160.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture LUTZ HERVE",
+            "montant": 114.0,
+            "debit": 0.0,
+            "credit": 114.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture HENRIOT XAVIER",
+            "montant": 461.0,
+            "debit": 0.0,
+            "credit": 461.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture HENRIOT XAVIER",
+            "montant": 1000.0,
+            "debit": 0.0,
+            "credit": 1000.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture DELIS XAVIER",
+            "montant": 120.0,
+            "debit": 0.0,
+            "credit": 120.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture BATI SUD",
+            "montant": 440.0,
+            "debit": 0.0,
+            "credit": 440.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture BATI SUD",
+            "montant": 733.0,
+            "debit": 0.0,
+            "credit": 733.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Avoir ",
+            "montant": -3567.0,
+            "debit": 3567.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture TERRASSON Stephane",
+            "montant": 126.0,
+            "debit": 0.0,
+            "credit": 126.0
+          }
+        ]
+      },
+      "FOURNITURES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60630100",
+            "libelle_compte": "Facture SOMEC ",
+            "montant": 193.89,
+            "debit": 193.89,
+            "credit": 0.0
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 40,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 1119 A 1020",
+            "montant": 117.91,
+            "debit": 117.91,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.46,
+            "debit": 88.46,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE>ADLER 20/21",
+            "montant": 174.66,
+            "debit": 174.66,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "CH D'AVANCE LOCATIONS> EURO-INFO",
+            "montant": 3.09,
+            "debit": 3.09,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 138.89,
+            "debit": 138.89,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 138.89,
+            "debit": 138.89,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM mars",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  mars",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  mars",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.5,
+            "debit": 587.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture JLC PROJECT SASU",
+            "montant": 1604.5,
+            "debit": 1604.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ARTEON SAS",
+            "montant": 1917.5,
+            "debit": 1917.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture SOMEC ",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture MIDI LUBRIFIANTS / ATOS",
+            "montant": 68.4,
+            "debit": 68.4,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture APAVE",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61554000",
+            "libelle_compte": "Facture APAVE",
+            "montant": 850.0,
+            "debit": 850.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture VDB SAS",
+            "montant": 1844.0,
+            "debit": 1844.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350099",
+            "libelle_compte": "Facture NEGOCIA",
+            "montant": 150.0,
+            "debit": 150.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551299",
+            "libelle_compte": "Facture NEGOCIA",
+            "montant": 25.0,
+            "debit": 25.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Mars  2021",
+            "montant": 912.0,
+            "debit": 912.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ARTEON SAS/GPE TAM",
+            "montant": 1069.0,
+            "debit": 1069.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture COMPTOIR DE L'ARROSAGE",
+            "montant": 108.66,
+            "debit": 108.66,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "FOUR, FACT NON PARVENUES> JLC Project",
+            "montant": 1369.79,
+            "debit": 1369.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES> ASS KIA/CGL PERTE PEC.",
+            "montant": -111.61000000000001,
+            "debit": 0.0,
+            "credit": 111.61000000000001
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CH D'AVANCE LOCATIONS> Réaj. KIA/CGL",
+            "montant": 67.79,
+            "debit": 67.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CH D'AVANCE LOCATIONS> Réaj. KIA/CGL",
+            "montant": 43.82,
+            "debit": 43.82,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "ASS FLOTTE AUTOMOBILE",
+            "montant": 0.01,
+            "debit": 0.01,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "MULTIRISQUE MAUBEC",
+            "montant": -0.01,
+            "debit": 0.0,
+            "credit": 0.01
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "EXT CCA KIA ASSURANCE PECUNIAIRE",
+            "montant": 76.12,
+            "debit": 76.12,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture BERGERAT MONONNOYEUR SERVICES / BM RENT",
+            "montant": 4074.5,
+            "debit": 4074.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Avoir APAVE",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61554000",
+            "libelle_compte": "Avoir APAVE",
+            "montant": -425.0,
+            "debit": 0.0,
+            "credit": 425.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "FOUR, FACT NON PARVENUES> HAZAN",
+            "montant": 6277.58,
+            "debit": 6277.58,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61850000",
+            "libelle_compte": "FOUR, FACT NON PARVENUES> GT RENT",
+            "montant": 2000.0,
+            "debit": 2000.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 15,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64750000",
+            "libelle_compte": "Facture N°2021001845 SAT cotisation annuelle 2021",
+            "montant": 300.0,
+            "debit": 300.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 03/2021  ",
+            "montant": 8293.949999999999,
+            "debit": 8293.949999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 03/2021  ",
+            "montant": 1428.19,
+            "debit": 1428.19,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 03/2021  ",
+            "montant": 345.59000000000003,
+            "debit": 345.59000000000003,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 03/2021  ",
+            "montant": 110.47999999999999,
+            "debit": 110.47999999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 03/2021  ",
+            "montant": 107.78999999999999,
+            "debit": 107.78999999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 03/2021  ",
+            "montant": 348.35,
+            "debit": 348.35,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": 0.53,
+            "debit": 0.53,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64520000",
+            "libelle_compte": "PROV CS S/CP BILAN 31.03.21",
+            "montant": 1528.38,
+            "debit": 1528.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64120000",
+            "libelle_compte": "PROV  S/CP BILAN 31.03.21",
+            "montant": 3820.95,
+            "debit": 3820.95,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64750000",
+            "libelle_compte": "CH D'AVANCE COTISATIONS> SAT 2021",
+            "montant": -225.0,
+            "debit": 0.0,
+            "credit": 225.0
+          },
+          {
+            "code_compte": "64140500",
+            "libelle_compte": "641404 VERS 641405",
+            "montant": -1576.54,
+            "debit": 0.0,
+            "credit": 1576.54
+          },
+          {
+            "code_compte": "64140400",
+            "libelle_compte": "641404 VERS 641405",
+            "montant": 1576.54,
+            "debit": 1576.54,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64140500",
+            "libelle_compte": "641404 VERS 641406",
+            "montant": -512.99,
+            "debit": 0.0,
+            "credit": 512.99
+          },
+          {
+            "code_compte": "64140400",
+            "libelle_compte": "641404 VERS 641406",
+            "montant": 512.99,
+            "debit": 512.99,
+            "credit": 0.0
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 03/2021  ",
+            "montant": 45.61,
+            "debit": 45.61,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 03/2021  ",
+            "montant": 56.39,
+            "debit": 56.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 3739.75,
+            "debit": 3739.75,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "4": {
+      "VENTES DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70713999",
+            "libelle_compte": "Facture COMPAGNIE DES BETONNIERS",
+            "montant": 52.5,
+            "debit": 0.0,
+            "credit": 52.5
+          },
+          {
+            "code_compte": "70712099",
+            "libelle_compte": "Facture COMPAGNIE DES BETONNIERS",
+            "montant": 120.18,
+            "debit": 0.0,
+            "credit": 120.18
+          }
+        ]
+      },
+      "ACHATS DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60710002",
+            "libelle_compte": "Facture GCP RODUITS DE CONSTRUCTION SAS",
+            "montant": 1914.56,
+            "debit": 1914.56,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "60710004",
+            "libelle_compte": "Facture GCP RODUITS DE CONSTRUCTION SAS",
+            "montant": 1496.0,
+            "debit": 1496.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "PRESTATIONS DE SERVICES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Facture LAZDANIAN Julien",
+            "montant": 1110.0,
+            "debit": 0.0,
+            "credit": 1110.0
+          },
+          {
+            "code_compte": "70610100",
+            "libelle_compte": "Facture LAZDANIAN Julien",
+            "montant": 855.0,
+            "debit": 0.0,
+            "credit": 855.0
+          }
+        ]
+      },
+      "FOURNITURES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60640000",
+            "libelle_compte": "Facture PRINT O CLOCK",
+            "montant": 42.0,
+            "debit": 42.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 25,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.83999999999997,
+            "debit": 138.89,
+            "credit": 1.05
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 138.89,
+            "credit": 1.1
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  avril",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  avril",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM avril",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.5,
+            "debit": 587.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture JLC PROJECT SASU",
+            "montant": 3172.56,
+            "debit": 3172.56,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "FOUR, FACT NON PARVENUES> EXT JLC Project",
+            "montant": -1369.79,
+            "debit": 0.0,
+            "credit": 1369.79
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ARTEON SAS/GPE TAM",
+            "montant": 1622.5,
+            "debit": 1622.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Avril  2021",
+            "montant": 355.0,
+            "debit": 355.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture HAUTE PRESSION 3000",
+            "montant": 1715.41,
+            "debit": 1715.41,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture GROENEVELD",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350099",
+            "libelle_compte": "Facture NEGOCIA",
+            "montant": 206.25,
+            "debit": 206.25,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Avoir HAUTE PRESSION 3000",
+            "montant": -1715.41,
+            "debit": 0.0,
+            "credit": 1715.41
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Avoir JLC PROJECT SASU",
+            "montant": -1802.78,
+            "debit": 0.0,
+            "credit": 1802.78
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture SYLVESTRE MATERIAUX",
+            "montant": 191.49,
+            "debit": 191.49,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0620 A 0521",
+            "montant": 117.91,
+            "debit": 117.91,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA KIA REAJ ERREUR FORMULE",
+            "montant": -3.15,
+            "debit": 0.0,
+            "credit": 3.15
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA KIA REAJ ERREUR FORMULE",
+            "montant": -2.19,
+            "debit": 0.0,
+            "credit": 2.19
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 7,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 04/2021  ",
+            "montant": 9438.24,
+            "debit": 9438.24,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 04/2021  ",
+            "montant": 1682.21,
+            "debit": 1682.21,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 04/2021  ",
+            "montant": 490.51,
+            "debit": 490.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 04/2021  ",
+            "montant": 125.71,
+            "debit": 125.71,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 04/2021  ",
+            "montant": 107.78999999999999,
+            "debit": 107.78999999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 04/2021  ",
+            "montant": 396.40999999999997,
+            "debit": 396.40999999999997,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": -0.18,
+            "debit": 0.0,
+            "credit": 0.18
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.58,
+            "debit": 1246.58,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 04/2021  ",
+            "montant": 51.910000000000004,
+            "debit": 51.910000000000004,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 04/2021  ",
+            "montant": 64.18,
+            "debit": 64.18,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "5": {
+      "ACHATS DE MARCHANDISES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60710004",
+            "libelle_compte": "Facture MASTER BUILDERS SOLUTIONS SAS ",
+            "montant": 1421.0,
+            "debit": 1421.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "PRESTATIONS DE SERVICES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "Avoir ",
+            "montant": -40.0,
+            "debit": 40.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "70610140",
+            "libelle_compte": "EXT.AAE BILAN 31.03.21",
+            "montant": 40.0,
+            "debit": 0.0,
+            "credit": 40.0
+          }
+        ]
+      },
+      "FOURNITURES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60640000",
+            "libelle_compte": "Facture SOMEC ",
+            "montant": 718.0,
+            "debit": 718.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 29,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.51,
+            "debit": 587.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.83999999999997,
+            "debit": 138.89,
+            "credit": 1.05
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 138.89,
+            "credit": 1.1
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  mai",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  mai",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM mai",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "EXT FOUR, FACT NON PARVENUES> HAZAN",
+            "montant": -6277.58,
+            "debit": 0.0,
+            "credit": 6277.58
+          },
+          {
+            "code_compte": "61850000",
+            "libelle_compte": "Facture GTRENT",
+            "montant": 2000.0,
+            "debit": 2000.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61850000",
+            "libelle_compte": "EXT FOUR, FACT NON PARVENUES> GT RENT",
+            "montant": -2000.0,
+            "debit": 0.0,
+            "credit": 2000.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 155.1,
+            "debit": 155.1,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Mai 2021",
+            "montant": 355.0,
+            "debit": 355.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 530.69,
+            "debit": 530.69,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 537.93,
+            "debit": 537.93,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 419.07,
+            "debit": 419.07,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 9261.42,
+            "debit": 9261.42,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550000",
+            "libelle_compte": "Facture BERBIGUIER PREMIUM AUTOMOBILES",
+            "montant": 1331.04,
+            "debit": 1331.04,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture SYLVESTRE MATERIAUX",
+            "montant": 18.8,
+            "debit": 18.8,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture SOMEC ",
+            "montant": 691.6,
+            "debit": 691.6,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ARTEON SAS/GPE TAM",
+            "montant": 1310.0,
+            "debit": 1310.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0620 A 0521",
+            "montant": 117.92,
+            "debit": 117.92,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550000",
+            "libelle_compte": "Facture GARAGE SOUQUET TRUCK",
+            "montant": 315.0,
+            "debit": 315.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": -353.79,
+            "debit": 0.0,
+            "credit": 353.79
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Avoir ARTEON SAS/GPE TAM",
+            "montant": -746.0,
+            "debit": 0.0,
+            "credit": 746.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 7,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 05/2021  ",
+            "montant": 9217.21,
+            "debit": 9217.21,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 05/2021  ",
+            "montant": 1580.4900000000002,
+            "debit": 1580.4900000000002,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 05/2021  ",
+            "montant": 480.04999999999995,
+            "debit": 480.04999999999995,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 05/2021  ",
+            "montant": 122.77,
+            "debit": 122.77,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 05/2021  ",
+            "montant": 107.78999999999999,
+            "debit": 107.78999999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 05/2021  ",
+            "montant": 387.13,
+            "debit": 387.13,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": -0.83,
+            "debit": 0.0,
+            "credit": 0.83
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 4,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.58,
+            "debit": 1246.58,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 05/2021  ",
+            "montant": 50.7,
+            "debit": 50.7,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 05/2021  ",
+            "montant": 62.68,
+            "debit": 62.68,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": 0.02,
+            "debit": 0.02,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "6": {
+      "VENTES DE MARCHANDISES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "70712099",
+            "libelle_compte": "Facture COMPAGNIE DES BETONNIERS",
+            "montant": 40.06,
+            "debit": 0.0,
+            "credit": 40.06
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 24,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.84,
+            "debit": 137.84,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 137.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  juin",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  juin",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.51,
+            "debit": 587.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61523500",
+            "libelle_compte": "Facture AGUILAR SAS",
+            "montant": 6400.0,
+            "debit": 6400.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM juin",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "Facture ALFI ADLER TECHNOLOGIES",
+            "montant": 1415.0,
+            "debit": 1415.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521299",
+            "libelle_compte": "Facture BETONS GRANULATS SYLVESTRE",
+            "montant": 347.5,
+            "debit": 347.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": -1297.08,
+            "debit": 0.0,
+            "credit": 1297.08
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.45,
+            "debit": 88.45,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ALAE",
+            "montant": 1159.0,
+            "debit": 1159.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Avoir ARTEON SAS/GPE TAM",
+            "montant": -1327.0,
+            "debit": 0.0,
+            "credit": 1327.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ARTEON SAS/GPE TAM",
+            "montant": 1159.0,
+            "debit": 1159.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture GARAGE LA SABLIERE",
+            "montant": 325.3,
+            "debit": 325.3,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture MIDI PESAGE",
+            "montant": 1195.0,
+            "debit": 1195.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture REXEL CAVAILLON",
+            "montant": 155.05,
+            "debit": 155.05,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Avoir API",
+            "montant": -2025.0,
+            "debit": 0.0,
+            "credit": 2025.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 7,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 06/2021  ",
+            "montant": 10890.65,
+            "debit": 10890.65,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 06/2021  ",
+            "montant": 2725.46,
+            "debit": 2725.46,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 06/2021  ",
+            "montant": 1083.16,
+            "debit": 1083.16,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 06/2021  ",
+            "montant": 145.06,
+            "debit": 145.06,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 06/2021  ",
+            "montant": 107.78999999999999,
+            "debit": 107.78999999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 06/2021  ",
+            "montant": 457.41,
+            "debit": 457.41,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": -0.12,
+            "debit": 0.0,
+            "credit": 0.12
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.59,
+            "debit": 1246.59,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 06/2021  ",
+            "montant": 59.9,
+            "debit": 59.9,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 06/2021  ",
+            "montant": 74.07,
+            "debit": 74.07,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "7": {
+      "ACHATS DE MARCHANDISES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60710004",
+            "libelle_compte": "Facture GCP RODUITS DE CONSTRUCTION SAS",
+            "montant": 4488.0,
+            "debit": 4488.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "60710004",
+            "libelle_compte": "Facture MASTER BUILDERS SOLUTIONS SAS ",
+            "montant": 852.0,
+            "debit": 852.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "FOURNITURES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60630000",
+            "libelle_compte": "Facture PRINT O CLOCK",
+            "montant": 36.0,
+            "debit": 36.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "60630400",
+            "libelle_compte": "LGC 84 S.A.S  Juin 2021> 37moules plastiques",
+            "montant": 81.4,
+            "debit": 81.4,
+            "credit": 0.0
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 31,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.92,
+            "debit": 117.92,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.45,
+            "debit": 88.45,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.84,
+            "debit": 137.84,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 137.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  juillet",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  juillet",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.51,
+            "debit": 587.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 537.99,
+            "debit": 537.99,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 419.07,
+            "debit": 419.07,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 8907.01,
+            "debit": 8907.01,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM juillet",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ALAE",
+            "montant": 1840.0,
+            "debit": 1840.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture HAUTE PRESSION 3000",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture HAUTE PRESSION 3000",
+            "montant": 5.42,
+            "debit": 5.42,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 247.95,
+            "debit": 247.95,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550000",
+            "libelle_compte": "Facture BERBIGUIER PREMIUM AUTOMOBILES",
+            "montant": 78.56,
+            "debit": 78.56,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture SYLVESTRE MATERIAUX",
+            "montant": 212.86,
+            "debit": 212.86,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61523599",
+            "libelle_compte": "Facture PROVENCALE DE TP",
+            "montant": 1300.0,
+            "debit": 1300.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61850000",
+            "libelle_compte": "Facture NLCR COMPAGNIE",
+            "montant": 2500.0,
+            "debit": 2500.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture VDB SAS",
+            "montant": 326.7,
+            "debit": 326.7,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture OTEC",
+            "montant": 245.04,
+            "debit": 245.04,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Juillet 2021",
+            "montant": 344.0,
+            "debit": 344.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture QUALIFEU FPI",
+            "montant": 337.82,
+            "debit": 337.82,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Juin 2021",
+            "montant": 447.0,
+            "debit": 447.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 7,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 07/2021  ",
+            "montant": 6547.75,
+            "debit": 6547.75,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 07/2021  ",
+            "montant": 1160.15,
+            "debit": 1160.15,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 07/2021  ",
+            "montant": 342.95,
+            "debit": 342.95,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 07/2021  ",
+            "montant": 87.22,
+            "debit": 87.22,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 07/2021  ",
+            "montant": 71.86,
+            "debit": 71.86,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 07/2021  ",
+            "montant": 275.02,
+            "debit": 275.02,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": -1.9,
+            "debit": 0.0,
+            "credit": 1.9
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.58,
+            "debit": 1246.58,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 07/2021  ",
+            "montant": 36.010000000000005,
+            "debit": 36.010000000000005,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 07/2021  ",
+            "montant": 44.53,
+            "debit": 44.53,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "8": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 21,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.92,
+            "debit": 117.92,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.45,
+            "debit": 88.45,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.51,
+            "debit": 587.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.84,
+            "debit": 137.84,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 137.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  août",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  août",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM août",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 173.43,
+            "debit": 173.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550000",
+            "libelle_compte": "Facture BERBIGUIER PREMIUM AUTOMOBILES",
+            "montant": 163.82,
+            "debit": 163.82,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550000",
+            "libelle_compte": "Facture HAUTE PRESSION 3000",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture HAUTE PRESSION 3000",
+            "montant": 66.04,
+            "debit": 66.04,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Août 2021",
+            "montant": 184.0,
+            "debit": 184.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture SPB",
+            "montant": 54.48,
+            "debit": 54.48,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61523500",
+            "libelle_compte": "Facture ATEA TP",
+            "montant": 1900.0,
+            "debit": 1900.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 7,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 08/2021  ",
+            "montant": 6591.9,
+            "debit": 6591.9,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 08/2021  ",
+            "montant": 1275.81,
+            "debit": 1275.81,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 08/2021  ",
+            "montant": 366.94000000000005,
+            "debit": 366.94000000000005,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 08/2021  ",
+            "montant": 87.8,
+            "debit": 87.8,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 08/2021  ",
+            "montant": 71.86,
+            "debit": 71.86,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 08/2021  ",
+            "montant": 276.86,
+            "debit": 276.86,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": 1.7,
+            "debit": 1.7,
+            "credit": 0.0
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.58,
+            "debit": 1246.58,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 08/2021  ",
+            "montant": 36.25,
+            "debit": 36.25,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 08/2021  ",
+            "montant": 44.81999999999999,
+            "debit": 44.81999999999999,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "9": {
+      "FOURNITURES": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60630000",
+            "libelle_compte": "Facture ARTEON SAS/GPE TAM",
+            "montant": 1025.1399999999999,
+            "debit": 1025.1399999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "60630000",
+            "libelle_compte": "Avoir ARTEON SAS/GPE TAM",
+            "montant": -140.34,
+            "debit": 0.0,
+            "credit": 140.34
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 32,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.91,
+            "debit": 117.91,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": -442.25000000000006,
+            "debit": 88.44,
+            "credit": 530.69
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.84,
+            "debit": 137.84,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 137.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.51,
+            "debit": 587.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  septembre",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  septembre",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture ARTEON SAS/GPE TAM",
+            "montant": 288.0,
+            "debit": 288.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Avoir ARTEON SAS/GPE TAM",
+            "montant": -144.0,
+            "debit": 0.0,
+            "credit": 144.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM septembre",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61555000",
+            "libelle_compte": "CULLIGAN DU 011021 AU 311021",
+            "montant": 26.44,
+            "debit": 26.44,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Septembre 2021",
+            "montant": 344.0,
+            "debit": 344.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 530.69,
+            "debit": 530.69,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 537.99,
+            "debit": 537.99,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 419.07,
+            "debit": 419.07,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "Facture CABINET HAZAN AGENT AXA",
+            "montant": 2420.2,
+            "debit": 2420.2,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": -537.99,
+            "debit": 0.0,
+            "credit": 537.99
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": -419.07,
+            "debit": 0.0,
+            "credit": 419.07
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": -2420.2,
+            "debit": 0.0,
+            "credit": 2420.2
+          },
+          {
+            "code_compte": "61351199",
+            "libelle_compte": "Facture BGS REFACT 150921 AU 151021",
+            "montant": 1987.32,
+            "debit": 1987.32,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "FOUR, FACT NON PARVENUES> Loxam Fre 31/10/21",
+            "montant": 57.75,
+            "debit": 57.75,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE> Réaj ADLER 1120/1021",
+            "montant": 1048.01,
+            "debit": 1048.01,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61555000",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE> Culligan Oct 21",
+            "montant": -22.03,
+            "debit": 0.0,
+            "credit": 22.03
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "CH D'AVANCE LOCATIONS> Réaj. EURO INFO 2021",
+            "montant": 18.5,
+            "debit": 18.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351199",
+            "libelle_compte": "CH D'AVANCE LOCATIONS> BGS loyer 150921 au 151021",
+            "montant": -993.66,
+            "debit": 0.0,
+            "credit": 993.66
+          },
+          {
+            "code_compte": "61555000",
+            "libelle_compte": "FRE CULLIGAN DU 010921 AU 300921 >REG 60401200 ",
+            "montant": 26.44,
+            "debit": 26.44,
+            "credit": 0.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 10,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 09/2021  ",
+            "montant": 7644.969999999999,
+            "debit": 7644.969999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 09/2021  ",
+            "montant": 1160.19,
+            "debit": 1160.19,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 09/2021  ",
+            "montant": 345.77,
+            "debit": 345.77,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 09/2021  ",
+            "montant": 101.83,
+            "debit": 101.83,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 09/2021  ",
+            "montant": 71.86,
+            "debit": 71.86,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 09/2021  ",
+            "montant": 321.09000000000003,
+            "debit": 321.09000000000003,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": -0.83,
+            "debit": 0.0,
+            "credit": 0.83
+          },
+          {
+            "code_compte": "64520000",
+            "libelle_compte": "PROV CS S/CP SITUATION 30/09/21",
+            "montant": -509.19,
+            "debit": 507.57,
+            "credit": 1016.76
+          },
+          {
+            "code_compte": "64120000",
+            "libelle_compte": "PROV S/CPSITUATION 30/09/21",
+            "montant": -1272.9699999999998,
+            "debit": 1268.92,
+            "credit": 2541.89
+          },
+          {
+            "code_compte": "64750000",
+            "libelle_compte": "CH D'AVANCE COTISATIONS> Réaj. SAT 2021",
+            "montant": 150.0,
+            "debit": 150.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.59,
+            "debit": 1246.59,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 09/2021  ",
+            "montant": 42.05,
+            "debit": 42.05,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 09/2021  ",
+            "montant": 51.980000000000004,
+            "debit": 51.980000000000004,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "10": {
+      "ACHATS DE MARCHANDISES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60710004",
+            "libelle_compte": "Facture VDB SAS",
+            "montant": 363.0,
+            "debit": 363.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "FOURNITURES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "60630000",
+            "libelle_compte": "Facture SOMEC ",
+            "montant": 109.0,
+            "debit": 109.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "SERVICES EXTÉRIEURS": {
+        "total": 30,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.91,
+            "debit": 117.91,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.84,
+            "debit": 137.84,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 137.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  octobre",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  octobre",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.51,
+            "debit": 587.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM octobre",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 57.75,
+            "debit": 57.75,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550000",
+            "libelle_compte": "Facture COMPTOIR DE L'ARROSAGE",
+            "montant": 512.67,
+            "debit": 512.67,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture SYLVESTRE MATERIAUX",
+            "montant": 53.27,
+            "debit": 53.27,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61555000",
+            "libelle_compte": "CULLIGAN DU 011121 AU 301121",
+            "montant": 26.44,
+            "debit": 26.44,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.45,
+            "debit": 88.45,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 179.33,
+            "debit": 179.33,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 139.69,
+            "debit": 139.69,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 806.73,
+            "debit": 806.73,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521299",
+            "libelle_compte": "Facture BGS/ P/AMENAGT LOCAL ADJUVANTS",
+            "montant": 90.24,
+            "debit": 90.24,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61710000",
+            "libelle_compte": "LGC 84 S.A.S  Octobre 2021",
+            "montant": 391.0,
+            "debit": 391.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351199",
+            "libelle_compte": "Facture BGS REFACT DU 151021 AU 151121",
+            "montant": 191.3,
+            "debit": 191.3,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61523500",
+            "libelle_compte": "Facture COMMUNE DE CAV/ RBT SINISTRE ST JACQUES",
+            "montant": 360.0,
+            "debit": 360.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture PROVENCE MOTEUR",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "FOUR, FACT NON PARVENUES> Ext. Loxam",
+            "montant": -57.75,
+            "debit": 0.0,
+            "credit": 57.75
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE> Réaj ADLER 1120/1021",
+            "montant": 174.67,
+            "debit": 174.67,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550000",
+            "libelle_compte": "Facture SOMEC ",
+            "montant": 398.0,
+            "debit": 398.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 8,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 10/2021  ",
+            "montant": 8806.34,
+            "debit": 8806.34,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 10/2021  ",
+            "montant": 1378.73,
+            "debit": 1378.73,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 10/2021  ",
+            "montant": 384.5,
+            "debit": 384.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 10/2021  ",
+            "montant": 117.3,
+            "debit": 117.3,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 10/2021  ",
+            "montant": 107.78999999999999,
+            "debit": 107.78999999999999,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 10/2021  ",
+            "montant": 369.87,
+            "debit": 369.87,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": 0.15,
+            "debit": 0.15,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64750000",
+            "libelle_compte": "CH D'AVANCE COTISATIONS> Réaj. SAT 2021",
+            "montant": 25.0,
+            "debit": 25.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.58,
+            "debit": 1246.58,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 10/2021  ",
+            "montant": 48.43,
+            "debit": 48.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 10/2021  ",
+            "montant": 59.88,
+            "debit": 59.88,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "11": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 25,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.91,
+            "debit": 117.91,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM novembre",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.84,
+            "debit": 137.84,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 137.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  novembre",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  novembre",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 77.28,
+            "debit": 77.28,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.51,
+            "debit": 587.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.45,
+            "debit": 88.45,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 179.33,
+            "debit": 179.33,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 139.69,
+            "debit": 139.69,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 806.73,
+            "debit": 806.73,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 524.39,
+            "debit": 524.39,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550000",
+            "libelle_compte": "Facture LIEBHERR",
+            "montant": 779.16,
+            "debit": 779.16,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61550999",
+            "libelle_compte": "Facture GARAGE DU CALAVON",
+            "montant": 1800.0,
+            "debit": 1800.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture OTEC",
+            "montant": 876.72,
+            "debit": 876.72,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61551200",
+            "libelle_compte": "Facture APAVE",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61554000",
+            "libelle_compte": "Facture APAVE",
+            "montant": 469.12,
+            "debit": 469.12,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61350000",
+            "libelle_compte": "Facture LOXAM",
+            "montant": 162.7,
+            "debit": 162.7,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61521200",
+            "libelle_compte": "Facture ALFI ADLER TECHNOLOGIES",
+            "montant": 0.0,
+            "debit": 0.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "Facture ALFI ADLER TECHNOLOGIES",
+            "montant": 2096.0,
+            "debit": 2096.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE>ADLER 21/22",
+            "montant": -1921.33,
+            "debit": 0.0,
+            "credit": 1921.33
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 7,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64750000",
+            "libelle_compte": "CH D'AVANCE COTISATIONS> Réaj. SAT 2021",
+            "montant": 25.0,
+            "debit": 25.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64110000",
+            "libelle_compte": "Salaire de 11/2021  ",
+            "montant": 10620.24,
+            "debit": 10620.24,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "Salaire de 11/2021  ",
+            "montant": 1616.61,
+            "debit": 1616.61,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64530000",
+            "libelle_compte": "Salaire de 11/2021  ",
+            "montant": 445.75,
+            "debit": 445.75,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64531000",
+            "libelle_compte": "Salaire de 11/2021  ",
+            "montant": 141.47,
+            "debit": 141.47,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64533000",
+            "libelle_compte": "Salaire de 11/2021  ",
+            "montant": 71.86,
+            "debit": 71.86,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "64540000",
+            "libelle_compte": "Salaire de 11/2021  ",
+            "montant": 446.05,
+            "debit": 446.05,
+            "credit": 0.0
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 3,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.58,
+            "debit": 1246.58,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63130000",
+            "libelle_compte": "Salaire de 11/2021  ",
+            "montant": 58.410000000000004,
+            "debit": 58.410000000000004,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "63350000",
+            "libelle_compte": "Salaire de 11/2021  ",
+            "montant": 72.21000000000001,
+            "debit": 72.21000000000001,
+            "credit": 0.0
+          }
+        ]
+      }
+    },
+    "12": {
+      "SERVICES EXTÉRIEURS": {
+        "total": 16,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE ALFI/ADLER 0621 A 0522",
+            "montant": 117.92,
+            "debit": 117.92,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61352300",
+            "libelle_compte": "LOCAM décembre",
+            "montant": 29.0,
+            "debit": 29.0,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61639000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 88.45,
+            "debit": 88.45,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61630000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 179.33,
+            "debit": 179.33,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61622000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 139.69,
+            "debit": 139.69,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61620000",
+            "libelle_compte": "CH D'AVANCE ASSURANCES > HAZAN",
+            "montant": 806.74,
+            "debit": 806.74,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (SMC)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CCA CB CENTRALE A BETON (PAL)--->30/09/27",
+            "montant": 1071.43,
+            "debit": 1071.43,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351300",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FV-703-ZP --> 25/11/23",
+            "montant": 137.84,
+            "debit": 137.84,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "CCA LOC KIA ELECTRIQUE FS-842-YS --> 05/12/23",
+            "montant": 137.79,
+            "debit": 137.79,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61215000",
+            "libelle_compte": "CB 1/2 CENTRALE  décembre",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61216000",
+            "libelle_compte": "CB PAL 1/2 CENTRALE  décembre",
+            "montant": 4469.85,
+            "debit": 4469.85,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61633000",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 39.5,
+            "debit": 39.5,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61351400",
+            "libelle_compte": "Facture CGL/ KIA FINANCE",
+            "montant": 587.51,
+            "debit": 587.51,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61320200",
+            "libelle_compte": "GD GEAS LOYER TERRAIN MAUBEC",
+            "montant": 70.38,
+            "debit": 70.38,
+            "credit": 0.0
+          },
+          {
+            "code_compte": "61556100",
+            "libelle_compte": "CH D'AVANCE MAINTENANCE>ADLER 21/22",
+            "montant": 174.66,
+            "debit": 174.66,
+            "credit": 0.0
+          }
+        ]
+      },
+      "CHARGES DE PERSONNEL": {
+        "total": 2,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "64510000",
+            "libelle_compte": "CENTRALISATION PAIE",
+            "montant": -0.58,
+            "debit": 0.0,
+            "credit": 0.58
+          },
+          {
+            "code_compte": "64750000",
+            "libelle_compte": "CH D'AVANCE COTISATIONS> Réaj. SAT 2021",
+            "montant": 25.0,
+            "debit": 25.0,
+            "credit": 0.0
+          }
+        ]
+      },
+      "IMPÔTS ET TAXES": {
+        "total": 1,
+        "limit": 50,
+        "offset": 0,
+        "comptes": [
+          {
+            "code_compte": "63511110",
+            "libelle_compte": "PROV CET 2021",
+            "montant": 1246.59,
+            "debit": 1246.59,
+            "credit": 0.0
+          }
+        ]
+      }
+    }
+  }
+}

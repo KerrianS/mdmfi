@@ -3,12 +3,18 @@ import 'package:mobaitec_decision_making/components/navbar.dart';
 import 'package:mobaitec_decision_making/utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
+import 'package:mobaitec_decision_making/services/data/societe_sync_service.dart';
 
 class DashboardHeader extends StatelessWidget {
   final Pages currentPage;
   final VoidCallback? onLogout;
   final bool isKeycloakConnected;
-  const DashboardHeader({Key? key, required this.currentPage, this.onLogout, this.isKeycloakConnected = false}) : super(key: key);
+  const DashboardHeader(
+      {Key? key,
+      required this.currentPage,
+      this.onLogout,
+      this.isKeycloakConnected = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +33,30 @@ class DashboardHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 24),
-              // Sélecteur de société (visible si sociétés disponibles)
+              // Sélecteur de société (visible si sociétés disponibles avec données locales)
               Consumer<KeycloakProvider>(
                 builder: (context, keycloakProvider, _) {
-                  print('[Header] sociétés = ' + keycloakProvider.accessibleCompanies.toString());
-                  print('[Header] société sélectionnée = ' + (keycloakProvider.selectedCompany ?? 'Aucune'));
-                  if (keycloakProvider.accessibleCompanies.isEmpty) return SizedBox.shrink();
+                  // Filtrer les sociétés qui ont des données locales
+                  final societesWithData = keycloakProvider.accessibleCompanies
+                      .where((s) =>
+                          SocieteSyncService.hasLocalDataForKeycloakSociete(
+                              s['name']))
+                      .toList();
+
+                  print(
+                      '[Header] sociétés avec données locales = ${societesWithData.map((s) => s['name'])}');
+                  print(
+                      '[Header] société sélectionnée = ${keycloakProvider.selectedCompany ?? 'Aucune'}');
+
+                  if (societesWithData.isEmpty) return SizedBox.shrink();
+
                   return Row(
                     children: [
-                      const Text('Société : ', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('Société : ',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                       DropdownButton<String>(
                         value: keycloakProvider.selectedCompany,
-                        items: keycloakProvider.accessibleCompanies
+                        items: societesWithData
                             .map((s) => DropdownMenuItem(
                                   value: s['name'],
                                   child: Text(s['name']!),
@@ -79,12 +97,15 @@ class DashboardHeader extends StatelessWidget {
                 Consumer<KeycloakProvider>(
                   builder: (context, keycloakProvider, _) {
                     final selectedCompany = keycloakProvider.selectedCompany;
-                    final company = keycloakProvider.accessibleCompanies.firstWhere(
+                    final company =
+                        keycloakProvider.accessibleCompanies.firstWhere(
                       (c) => c['name'] == selectedCompany,
                       orElse: () => <String, String>{},
                     );
                     final logoUrl = company['logoURL'];
-                    if (logoUrl != null && logoUrl.isNotEmpty && logoUrl != 'null') {
+                    if (logoUrl != null &&
+                        logoUrl.isNotEmpty &&
+                        logoUrl != 'null') {
                       return Padding(
                         padding: const EdgeInsets.only(left: 0),
                         child: Container(
@@ -98,11 +119,15 @@ class DashboardHeader extends StatelessWidget {
                                 height: 70,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  color: Colors.white, // Arrière-plan blanc rectangle
+                                  color: Colors
+                                      .white, // Arrière-plan blanc rectangle
                                   border: Border.all(
-                                    color: Theme.of(context).brightness == Brightness.dark 
-                                        ? Color(0xFFE0E0E0) // Blanc cassé en mode sombre
-                                        : Colors.transparent, // Transparent en mode clair
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Color(
+                                            0xFFE0E0E0) // Blanc cassé en mode sombre
+                                        : Colors
+                                            .transparent, // Transparent en mode clair
                                     width: 2,
                                   ),
                                 ),
@@ -114,7 +139,8 @@ class DashboardHeader extends StatelessWidget {
                                   width: 150,
                                   height: 85,
                                   fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(Icons.image_not_supported),
                                 ),
                               ),
                             ],
@@ -130,13 +156,11 @@ class DashboardHeader extends StatelessWidget {
                   SizedBox(width: 16),
                   IconButton(
                     onPressed: onLogout,
-                    icon: Icon(
-                      Icons.logout, 
-                      color: Theme.of(context).brightness == Brightness.dark 
-                          ? Colors.white 
-                          : Colors.black, 
-                      size: 24
-                    ),
+                    icon: Icon(Icons.logout,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                        size: 24),
                     tooltip: 'Se déconnecter',
                     padding: EdgeInsets.all(8),
                     constraints: BoxConstraints(minWidth: 40, minHeight: 40),
