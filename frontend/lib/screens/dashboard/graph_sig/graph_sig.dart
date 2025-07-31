@@ -110,15 +110,23 @@ class _GraphSigState extends State<GraphSig> {
         trimestre: selectedTrimestre,
       );
       print(
-          '[GraphSig] Indicateurs chargés: ${indicateursResponse?.indicateurs.length} années');
+          '[GraphSig] Indicateurs chargés: ${(indicateursResponse?['indicateurs'] as Map<String, dynamic>?)?.length ?? 0} années');
       // Initialiser la sélection à tous les indicateurs si vide
       if (indicateursResponse != null && selectedIndicateurs.isEmpty) {
         final allIndics = <String>{};
-        for (final annee in indicateursResponse!.indicateurs.keys) {
-          final indicateursList = indicateursResponse!.indicateurs[annee]
-              as List<SIGIndicateurGlobal>;
-          for (final ind in indicateursList) {
-            allIndics.add(ind.indicateur);
+        final indicateursData =
+            indicateursResponse!['indicateurs'] as Map<String, dynamic>?;
+        if (indicateursData != null) {
+          for (final annee in indicateursData.keys) {
+            final indicateursList = indicateursData[annee] as List<dynamic>?;
+            if (indicateursList != null) {
+              for (final ind in indicateursList) {
+                final indicateur = ind['indicateur'] as String?;
+                if (indicateur != null) {
+                  allIndics.add(indicateur);
+                }
+              }
+            }
           }
         }
         selectedIndicateurs = allIndics.toList();

@@ -116,14 +116,8 @@ class _DashBoardState extends State<DashBoard> {
         }
       });
     }
-    // Si connecté, forcer la page globale
-    if (keycloakProvider.isConnected && currentPage != Pages.global) {
-      setState(() {
-        currentPage = Pages.global;
-        _pageIndex = Pages.values.indexOf(Pages.global);
-        _pageController.jumpToPage(_pageIndex);
-      });
-    }
+    // Suppression de la logique qui force la page globale
+    // L'utilisateur peut maintenant rester sur l'écran de son choix
   }
 
   @override

@@ -100,7 +100,7 @@ class _GraphSigDetailState extends State<GraphSigDetail> {
         trimestre: selectedTrimestre,
       );
       print(
-          '[GraphSigDetail] Indicateurs chargés: ${indicateursResponse?.indicateurs.length} années');
+          '[GraphSigDetail] Indicateurs chargés: ${(indicateursResponse?['indicateurs'] as Map<String, dynamic>?)?.length ?? 0} années');
 
       sousIndicsResponse = await UnifiedSIGService.fetchSousIndicateursGlobal(
         societe: _lastSociete!,

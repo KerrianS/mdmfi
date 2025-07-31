@@ -207,6 +207,12 @@ class UnifiedSIGService {
     final jsonData =
         LocalDataService.getIndicateursGlobalAnnee(selectedSociete);
     if (jsonData == null) {
+      print(
+          '❌ [UnifiedSIGService] Données globales non trouvées pour $selectedSociete');
+      print(
+          '🔍 [UnifiedSIGService] Cache disponible: ${LocalDataService.getAvailableSocietes()}');
+      print(
+          '🔍 [UnifiedSIGService] Années disponibles: ${LocalDataService.getAvailableYears(selectedSociete)}');
       throw Exception(
           'Données non disponibles pour la société $selectedSociete');
     }
@@ -437,20 +443,26 @@ class UnifiedSIGService {
       throw Exception('Trimestre invalide: $trimestre');
     }
 
-    // Charger les données mensuelles pour toutes les années disponibles
-    final annees = ['2020', '2021', '2022'];
+    // Obtenir les années disponibles pour cette société
+    final anneesDisponibles = LocalDataService.getAvailableYears(societe);
+    print(
+        '[UnifiedSIGService] Années disponibles pour $societe: $anneesDisponibles');
+
+    if (anneesDisponibles.isEmpty) {
+      throw Exception('Aucune année disponible pour la société $societe');
+    }
+
     final Map<String, List<Map<String, dynamic>>> resultat = {};
 
-    for (final annee in annees) {
+    for (final annee in anneesDisponibles) {
       try {
-        final jsonData =
-            LocalDataService.getIndicateursMensuel(societe, int.parse(annee));
+        final jsonData = LocalDataService.getIndicateursMensuel(societe, annee);
         if (jsonData == null) continue;
 
         final result = LocalDataService.convertToIndicateursMensuelResponse(
           jsonData,
           societe,
-          int.parse(annee),
+          annee,
         );
 
         if (result == null) continue;
@@ -484,7 +496,7 @@ class UnifiedSIGService {
                 .toList();
 
         if (indicateursTrimestre.isNotEmpty) {
-          resultat[annee] = indicateursTrimestre;
+          resultat[annee.toString()] = indicateursTrimestre;
         }
       } catch (e) {
         print(
@@ -516,20 +528,27 @@ class UnifiedSIGService {
       throw Exception('Trimestre invalide: $trimestre');
     }
 
-    // Charger les données mensuelles pour toutes les années disponibles
-    final annees = ['2020', '2021', '2022'];
+    // Obtenir les années disponibles pour cette société
+    final anneesDisponibles = LocalDataService.getAvailableYears(societe);
+    print(
+        '[UnifiedSIGService] Années disponibles pour $societe: $anneesDisponibles');
+
+    if (anneesDisponibles.isEmpty) {
+      throw Exception('Aucune année disponible pour la société $societe');
+    }
+
     final Map<String, Map<String, List<Map<String, dynamic>>>> resultat = {};
 
-    for (final annee in annees) {
+    for (final annee in anneesDisponibles) {
       try {
-        final jsonData = LocalDataService.getSousIndicateursMensuel(
-            societe, int.parse(annee));
+        final jsonData =
+            LocalDataService.getSousIndicateursMensuel(societe, annee);
         if (jsonData == null) continue;
 
         final result = LocalDataService.convertToSousIndicateursMensuelResponse(
           jsonData,
           societe,
-          int.parse(annee),
+          annee,
         );
 
         if (result == null) continue;
@@ -580,7 +599,7 @@ class UnifiedSIGService {
         }
 
         if (sousIndicateursTrimestre.isNotEmpty) {
-          resultat[annee] = sousIndicateursTrimestre;
+          resultat[annee.toString()] = sousIndicateursTrimestre;
         }
       } catch (e) {
         print(

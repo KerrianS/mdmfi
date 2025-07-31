@@ -36,3 +36,4 @@ flutter:
     - lib/data/rsp-bgs/
     - lib/data/rsp-neg/
     - lib/data/rsp-sb/
+    - lib/data/aitecservice/

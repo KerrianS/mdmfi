@@ -950,7 +950,14 @@ class _GlobalState extends State<Global> {
                   )
                 : comptesResponse != null
                     ? comptesResponse!['hasComptes'] == true
-                        ? AdaptiveTableContainer(
+                        ? Container(
+                            height: 500, // Hauteur fixe plus grande
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Color(0xFF65887a).withOpacity(0.3),
+                              ),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
                             child: GlobalAccountDataTable(
                               comptes: getComptesGlobalTableForResp(
                                       getAnneesComptesFromResp(

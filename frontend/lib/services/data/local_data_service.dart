@@ -30,7 +30,7 @@ class LocalDataService {
     try {
       // Pour l'instant, retourner les sociétés connues
       // TODO: Implémenter la découverte automatique depuis AssetManifest.json
-      return ['rsp-bgs', 'rsp-neg', 'rsp-sb'];
+      return ['rsp-bgs', 'rsp-neg', 'rsp-sb', 'aitecservice'];
     } catch (e) {
       print('❌ Erreur lors de la découverte des sociétés: $e');
       return [];
@@ -48,14 +48,23 @@ class LocalDataService {
         'comptes_mensuel_2020',
         'comptes_mensuel_2021',
         'comptes_mensuel_2022',
+        'comptes_mensuel_2023',
+        'comptes_mensuel_2024',
+        'comptes_mensuel_2025',
         'indicateurs_global_annee',
         'indicateurs_mensuel_2020',
         'indicateurs_mensuel_2021',
         'indicateurs_mensuel_2022',
+        'indicateurs_mensuel_2023',
+        'indicateurs_mensuel_2024',
+        'indicateurs_mensuel_2025',
         'sous_indicateurs_global_annee',
         'sous_indicateurs_mensuel_2020',
         'sous_indicateurs_mensuel_2021',
         'sous_indicateurs_mensuel_2022',
+        'sous_indicateurs_mensuel_2023',
+        'sous_indicateurs_mensuel_2024',
+        'sous_indicateurs_mensuel_2025',
       ];
 
       for (String dataType in dataTypes) {
@@ -73,6 +82,15 @@ class LocalDataService {
       _cache[societe] = societeData;
       print(
           '✅ Données chargées pour $societe: ${societeData.keys.length} types');
+      print('📊 Types de données pour $societe: ${societeData.keys.toList()}');
+      
+      // Log spécial pour aitecservice
+      if (societe == 'aitecservice') {
+        print('🔍 Détail des données aitecservice:');
+        for (final key in societeData.keys) {
+          print('  - $key: ${societeData[key] != null ? '✅' : '❌'}');
+        }
+      }
     } catch (e) {
       print('❌ Erreur lors du chargement des données pour $societe: $e');
     }
@@ -265,6 +283,41 @@ class LocalDataService {
     }
 
     return stats;
+  }
+
+  /// Obtient les années disponibles pour une société
+  static List<int> getAvailableYears(String societe) {
+    final societeData = _cache[societe];
+    if (societeData == null) return [];
+    
+    final years = <int>{};
+    
+    // Chercher dans les données mensuelles
+    for (final key in societeData.keys) {
+      if (key.startsWith('indicateurs_mensuel_') || 
+          key.startsWith('comptes_mensuel_') || 
+          key.startsWith('sous_indicateurs_mensuel_')) {
+        final yearStr = key.split('_').last;
+        final year = int.tryParse(yearStr);
+        if (year != null) {
+          years.add(year);
+        }
+      }
+    }
+    
+    // Chercher dans les données globales
+    final globalData = societeData['indicateurs_global_annee'];
+    if (globalData != null && globalData['indicateurs'] != null) {
+      final indicateurs = globalData['indicateurs'] as Map<String, dynamic>;
+      for (final yearStr in indicateurs.keys) {
+        final year = int.tryParse(yearStr);
+        if (year != null) {
+          years.add(year);
+        }
+      }
+    }
+    
+    return years.toList()..sort();
   }
 
   /// Obtient les informations de cache pour l'écran settings

@@ -7,6 +7,7 @@ import 'package:mobaitec_decision_making/screens/dashboard/mensuel/mensuel_sub_i
 import 'package:provider/provider.dart';
 import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dart';
 import 'package:mobaitec_decision_making/utils/shimmer_utils.dart';
+import 'package:mobaitec_decision_making/services/data/local_data_service.dart';
 
 class Mensuel extends StatefulWidget {
   static String lastSelectedAnnee = (DateTime.now().year - 1).toString();
@@ -93,7 +94,7 @@ class _MensuelState extends State<Mensuel> {
       selectedSousIndicateur = null;
       Future.microtask(() {
         if (mounted) {
-          _loadAnnees(societe);
+          _loadAnnees();
         }
       });
     }
@@ -104,27 +105,39 @@ class _MensuelState extends State<Mensuel> {
     super.dispose();
   }
 
-  Future<void> _loadAnnees(String societe) async {
+  Future<void> _loadAnnees() async {
+    final keycloakProvider =
+        Provider.of<KeycloakProvider>(context, listen: false);
+    final societe = keycloakProvider.selectedCompany;
+
+    if (societe == null) {
+      print('[Mensuel] Aucune société sélectionnée');
+      return;
+    }
+
+    print('[Mensuel] Début du chargement pour $societe');
+    keycloakProvider.setDataReloading(true);
+
+    if (!mounted) return;
     setState(() {
       isLoading = true;
     });
 
     try {
-      // Générer les années de l'année actuelle jusqu'à 2020
-      final currentYear = DateTime.now().year;
-      allAnnees = [];
-      for (int year = currentYear; year >= 2020; year--) {
-        allAnnees.add(year.toString());
-      }
+      // Utiliser LocalDataService pour obtenir les années disponibles
+      final availableYears = LocalDataService.getAvailableYears(societe);
+      allAnnees = availableYears.map((year) => year.toString()).toList();
+
+      print('[Mensuel] Années disponibles pour $societe: $allAnnees');
 
       if (!mounted) return;
       setState(() {
-        selectedAnnee =
-            allAnnees.first; // Sélectionner l'année actuelle par défaut
+        selectedAnnee = allAnnees.isNotEmpty ? allAnnees.first : '';
         isLoading = false;
       });
       _loadData();
     } catch (e) {
+      print('[Mensuel] Erreur lors du chargement des années: $e');
       if (!mounted) return;
       setState(() {
         isLoading = false;
@@ -791,14 +804,6 @@ class _MensuelState extends State<Mensuel> {
                             comptesResponses[selectedSousIndicateur]),
                         selectedRowIndex: null,
                         onRowSelect: null,
-                        total: comptesResponses[selectedSousIndicateur] is Map
-                            ? comptesResponses[selectedSousIndicateur]
-                                    ['total'] ??
-                                0
-                            : 0,
-                        currentPage: currentPage,
-                        pageSize: comptesLimit,
-                        onPageChanged: _onPageChanged,
                         formuleTextParMois: getFormuleTextParMois(),
                         isKEuros: isKEuros,
                       ),

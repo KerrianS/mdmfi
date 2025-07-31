@@ -7,10 +7,6 @@ class MensuelAccountDataTable extends StatefulWidget {
   final int? selectedRowIndex;
   final void Function(int)? onRowSelect;
   final Map<String, Map<String, double>> montantsParMois;
-  final int total;
-  final int currentPage;
-  final int pageSize;
-  final Function(int page)? onPageChanged;
   final Map<String, String>? formuleTextParMois; // Ajout pour le surlignage
   final bool isKEuros; // Ajout pour l'affichage en KEuros
 
@@ -21,10 +17,6 @@ class MensuelAccountDataTable extends StatefulWidget {
     required this.montantsParMois,
     this.selectedRowIndex,
     this.onRowSelect,
-    this.total = 0,
-    this.currentPage = 0,
-    this.pageSize = 50,
-    this.onPageChanged,
     this.formuleTextParMois,
     this.isKEuros = false,
   });
@@ -214,10 +206,16 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                                                   Currency.format(montant,
                                                       isKEuros:
                                                           widget.isKEuros),
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                       fontSize: 13,
                                                       fontWeight:
-                                                          FontWeight.bold),
+                                                          FontWeight.bold,
+                                                      color: montant < 0
+                                                          ? Colors.red[700]
+                                                          : montant > 0
+                                                              ? Colors
+                                                                  .green[700]
+                                                              : Colors.black),
                                                   textAlign: TextAlign.center,
                                                 ),
                                               ),
@@ -256,9 +254,14 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                     Currency.format(montant, isKEuros: widget.isKEuros),
                     style: TextStyle(
                         fontSize: 13,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? const Color(0xFFE0E0E0)
-                            : Colors.black),
+                        color: montant < 0
+                            ? Colors.red[700]
+                            : montant > 0
+                                ? Colors.green[700]
+                                : (Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? const Color(0xFFE0E0E0)
+                                    : Colors.black)),
                     textAlign: TextAlign.right,
                     overflow: TextOverflow.ellipsis,
                   ),

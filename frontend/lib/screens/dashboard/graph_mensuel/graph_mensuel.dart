@@ -7,6 +7,7 @@ import 'package:mobaitec_decision_making/services/keycloak/keycloak_provider.dar
 import 'package:mobaitec_decision_making/utils/shimmer_utils.dart';
 import 'package:mobaitec_decision_making/services/data/unified_sig_service.dart';
 import 'package:mobaitec_decision_making/components/adaptive_table_container.dart';
+import 'package:mobaitec_decision_making/services/data/local_data_service.dart';
 
 class GraphMensuel extends StatefulWidget {
   @override
@@ -73,7 +74,7 @@ class _GraphMensuelState extends State<GraphMensuel> {
         // Planifier le chargement pour le prochain frame
         Future.microtask(() {
           if (mounted) {
-            _loadAnnees(societe);
+            _loadAnnees();
           }
         });
       }
@@ -86,10 +87,17 @@ class _GraphMensuelState extends State<GraphMensuel> {
     super.dispose();
   }
 
-  Future<void> _loadAnnees(String societe) async {
-    print('[GraphMensuel] Début du chargement pour $societe');
+  Future<void> _loadAnnees() async {
     final keycloakProvider =
-        Provider.of<KeycloakProvider>(context, listen: true);
+        Provider.of<KeycloakProvider>(context, listen: false);
+    final societe = keycloakProvider.selectedCompany;
+    
+    if (societe == null) {
+      print('[GraphMensuel] Aucune société sélectionnée');
+      return;
+    }
+    
+    print('[GraphMensuel] Début du chargement pour $societe');
     keycloakProvider.setDataReloading(true);
 
     if (!mounted) return;
@@ -97,16 +105,15 @@ class _GraphMensuelState extends State<GraphMensuel> {
       isLoading = true;
     });
     try {
-      // Générer les années de l'année actuelle jusqu'à 2020
-      final currentYear = DateTime.now().year;
-      allAnnees = [];
-      for (int year = currentYear; year >= 2020; year--) {
-        allAnnees.add(year.toString());
-      }
+      // Utiliser LocalDataService pour obtenir les années disponibles
+      final availableYears = LocalDataService.getAvailableYears(societe);
+      allAnnees = availableYears.map((year) => year.toString()).toList();
+      
+      print('[GraphMensuel] Années disponibles pour $societe: $allAnnees');
 
       if (!mounted) return;
       setState(() {
-        selectedAnnee = allAnnees.first;
+        selectedAnnee = allAnnees.isNotEmpty ? allAnnees.first : '';
         isLoading = false;
       });
       _loadData();
@@ -134,15 +141,22 @@ class _GraphMensuelState extends State<GraphMensuel> {
       indicateursResponse = await UnifiedSIGService.fetchIndicateursMensuel(
           societe: _lastSociete!, annee: anneeInt);
       print(
-          '[GraphMensuel] Indicateurs chargés: ${indicateursResponse?.mois.length} mois');
+          '[GraphMensuel] Indicateurs chargés: ${(indicateursResponse?['mois'] as Map<String, dynamic>?)?.length ?? 0} mois');
       // Initialiser la sélection à tous les indicateurs si vide
       if (indicateursResponse != null && selectedIndicateurs.isEmpty) {
         final allIndics = <String>{};
-        for (final mois in indicateursResponse!.mois.keys) {
-          final indicateursList =
-              indicateursResponse!.mois[mois] as List<SIGIndicateurMensuel>;
-          for (final ind in indicateursList) {
-            allIndics.add(ind.indicateur);
+        final moisData = indicateursResponse!['mois'] as Map<String, dynamic>?;
+        if (moisData != null) {
+          for (final mois in moisData.keys) {
+            final indicateursList = moisData[mois] as List<dynamic>?;
+            if (indicateursList != null) {
+              for (final ind in indicateursList) {
+                final indicateur = ind['indicateur'] as String?;
+                if (indicateur != null) {
+                  allIndics.add(indicateur);
+                }
+              }
+            }
           }
         }
         selectedIndicateurs = allIndics.toList();
