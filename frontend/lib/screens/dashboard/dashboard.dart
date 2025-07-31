@@ -25,6 +25,7 @@ class _DashBoardState extends State<DashBoard> {
   late PageController _pageController;
   int _pageIndex = 0;
   Pages currentPage = Pages.parametres;
+  bool _hasInitialized = false; // Flag pour éviter les redirections multiples
 
   final List<PageItem> _pages = [
     PageItem(Pages.parametres, SettingsScreen()),
@@ -78,6 +79,20 @@ class _DashBoardState extends State<DashBoard> {
     super.didChangeDependencies();
     final keycloakProvider =
         Provider.of<KeycloakProvider>(context, listen: false);
+
+    // Rediriger vers Global si l'utilisateur est connecté et qu'on est sur Settings
+    if (keycloakProvider.isConnected &&
+        currentPage == Pages.parametres &&
+        !_hasInitialized) {
+      _hasInitialized = true;
+      print('[Dashboard] Utilisateur connecté, redirection vers Global');
+      setState(() {
+        currentPage = Pages.global;
+        _pageIndex = Pages.values.indexOf(Pages.global);
+        _pageController.jumpToPage(_pageIndex);
+      });
+    }
+
     // On ne fetch que si connecté et sociétés pas encore chargées
     if (keycloakProvider.isConnected &&
         keycloakProvider.accessibleCompanies.isEmpty) {
@@ -116,8 +131,6 @@ class _DashBoardState extends State<DashBoard> {
         }
       });
     }
-    // Suppression de la logique qui force la page globale
-    // L'utilisateur peut maintenant rester sur l'écran de son choix
   }
 
   @override
