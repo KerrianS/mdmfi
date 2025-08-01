@@ -67,17 +67,34 @@ class GlobalIndicateurDataTable extends StatelessWidget {
     return SingleChildScrollView(
       child: DataTable(
         showCheckboxColumn: false,
-        columnSpacing: 16,
+        columnSpacing: 8,
         headingRowHeight: 32,
         dataRowMinHeight: 28,
         dataRowMaxHeight: 32,
         columns: [
-          const DataColumn(
-              label: Text('Indicateur', style: TextStyle(fontSize: 12))),
-          const DataColumn(
-              label: Text('Libellé', style: TextStyle(fontSize: 12))),
-          ...annees.map((an) =>
-              DataColumn(label: Text(an, style: TextStyle(fontSize: 12)))),
+          DataColumn(
+              label: Container(
+            width: 120,
+            child: Text('Indicateur',
+                style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+          )),
+          DataColumn(
+              label: Container(
+            width: 200,
+            child: Text('Libellé',
+                style: TextStyle(fontSize: 12), textAlign: TextAlign.left),
+          )),
+          ...annees.map((an) => DataColumn(
+                label: SizedBox(
+                  width: 120,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 25),
+                    child: Text(an,
+                        style: TextStyle(fontSize: 12),
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+              )),
         ],
         rows: entries.map((entry) {
           final ind = entry.key;
@@ -111,7 +128,8 @@ class GlobalIndicateurDataTable extends StatelessWidget {
             onSelectChanged: (_) {
               // Si la ligne est déjà sélectionnée, on la désélectionne
               if (isSelected) {
-                onSelectIndicateur(''); // Passer une chaîne vide pour désélectionner
+                onSelectIndicateur(
+                    ''); // Passer une chaîne vide pour désélectionner
               } else {
                 onSelectIndicateur(ind); // Sinon, sélectionner la ligne
               }
@@ -132,7 +150,7 @@ class GlobalIndicateurDataTable extends StatelessWidget {
             cells: [
               DataCell(
                 Container(
-                  width: 100,
+                  width: 120,
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     ind,
@@ -142,6 +160,7 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                           isSelected ? FontWeight.w900 : FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
@@ -426,24 +445,20 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                   ),
                 ),
               ),
-              ...annees.map((an) {
-                return DataCell(
-                  Container(
-                    width: 100,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Text(
-                      montants[an]?.format(isKEuros: isKEuros) ?? '0,00 €',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight:
-                            isSelected ? FontWeight.w900 : FontWeight.normal,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+              ...annees.map((an) => DataCell(
+                    Container(
+                      width: 150,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                          montants[an]?.format(isKEuros: isKEuros) ?? '0,00 €',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: isSelected
+                                  ? FontWeight.w900
+                                  : FontWeight.normal),
+                          textAlign: TextAlign.center),
                     ),
-                  ),
-                );
-              }),
+                  )),
             ],
           );
         }).toList(),

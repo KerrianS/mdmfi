@@ -28,17 +28,33 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return DataTable(
       showCheckboxColumn: false,
-      columnSpacing: 16,
+      columnSpacing: 8,
       headingRowHeight: 32,
       dataRowMinHeight: 28,
       dataRowMaxHeight: 32,
       columns: [
-        const DataColumn(
-            label: Text('Sous-indicateur', style: TextStyle(fontSize: 13))),
-        const DataColumn(
-            label: Text('Libellé', style: TextStyle(fontSize: 13))),
-        ...annees.map((an) =>
-            DataColumn(label: Text(an, style: TextStyle(fontSize: 13)))),
+        DataColumn(
+            label: Container(
+          width: 120,
+          child: Text('Sous-indicateur',
+              style: TextStyle(fontSize: 13), textAlign: TextAlign.center),
+        )),
+        DataColumn(
+            label: Container(
+          width: 200,
+          child: Text('Libellé',
+              style: TextStyle(fontSize: 13), textAlign: TextAlign.left),
+        )),
+        ...annees.map((an) => DataColumn(
+              label: Container(
+                width: 120,
+                alignment: Alignment.center,
+                padding: EdgeInsets.only(left: 25),
+                child: Text(an,
+                    style: TextStyle(fontSize: 13),
+                    textAlign: TextAlign.center),
+              ),
+            )),
       ],
       rows: data.entries.map((entry) {
         final sousInd = entry.key;
@@ -153,7 +169,7 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
           cells: [
             DataCell(
               Container(
-                width: 100,
+                width: 120,
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: Text(
                   initiales ?? sousInd,
@@ -162,6 +178,7 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                       fontWeight:
                           isSelected ? FontWeight.w900 : FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
@@ -383,7 +400,7 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
             ),
             ...annees.map((an) => DataCell(
                   Container(
-                    width: double.infinity,
+                    width: 150,
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Text(
                         montants[an]?.format(isKEuros: isKEuros) ?? '0,00 €',
@@ -391,7 +408,8 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                             fontSize: 12,
                             fontWeight: isSelected
                                 ? FontWeight.w900
-                                : FontWeight.normal)),
+                                : FontWeight.normal),
+                        textAlign: TextAlign.center),
                   ),
                 )),
           ],

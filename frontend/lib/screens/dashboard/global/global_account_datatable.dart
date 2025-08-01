@@ -83,16 +83,18 @@ class GlobalAccountDataTable extends StatelessWidget {
               width: double.infinity, // Prend toute la largeur disponible
               child: DataTable(
                 showCheckboxColumn: false,
-                columnSpacing: 0, // Réduire l'espacement entre colonnes
+                columnSpacing: 8, // Espacement standardisé entre colonnes
                 headingRowHeight: 32,
                 dataRowMinHeight: 28,
                 dataRowMaxHeight: 32,
                 columns: [
                   DataColumn(
                     label: Container(
-                      width: 100,
+                      width: 120,
                       padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text('Compte', style: TextStyle(fontSize: 13)),
+                      child: Text('Compte',
+                          style: TextStyle(fontSize: 13),
+                          textAlign: TextAlign.center),
                     ),
                   ),
                   DataColumn(
@@ -105,13 +107,14 @@ class GlobalAccountDataTable extends StatelessWidget {
                     ),
                   ),
                   ...annees.map((an) => DataColumn(
-                        label: Container(
+                        label: SizedBox(
                           width: 120,
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          alignment: Alignment.centerRight,
-                          child: Text(an,
-                              style: const TextStyle(fontSize: 13),
-                              textAlign: TextAlign.right),
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 25),
+                            child: Text(an,
+                                style: const TextStyle(fontSize: 13),
+                                textAlign: TextAlign.center),
+                          ),
                         ),
                       )),
                 ],
@@ -129,9 +132,11 @@ class GlobalAccountDataTable extends StatelessWidget {
                               ? (_) {
                                   // Si la ligne est déjà sélectionnée, on la désélectionne
                                   if (isSelected) {
-                                    onSelectCompte!(''); // Passer une chaîne vide pour désélectionner
+                                    onSelectCompte!(
+                                        ''); // Passer une chaîne vide pour désélectionner
                                   } else {
-                                    onSelectCompte!(codeCompte); // Sinon, sélectionner la ligne
+                                    onSelectCompte!(
+                                        codeCompte); // Sinon, sélectionner la ligne
                                   }
                                 }
                               : null,
@@ -148,7 +153,7 @@ class GlobalAccountDataTable extends StatelessWidget {
                           cells: [
                             DataCell(
                               Container(
-                                width: 100,
+                                width: 120,
                                 padding: EdgeInsets.symmetric(
                                     vertical: 8, horizontal: 8),
                                 child: Text(
@@ -160,6 +165,7 @@ class GlobalAccountDataTable extends StatelessWidget {
                                           : FontWeight.bold,
                                       color: Colors.black), // Texte en noir
                                   overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
                             ),
@@ -401,10 +407,8 @@ class GlobalAccountDataTable extends StatelessWidget {
                               final montant = montants[an]?['montant'] ?? 0.0;
                               return DataCell(
                                 Container(
-                                  width: 120,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 8),
-                                  alignment: Alignment.centerRight,
+                                  width: 150,
+                                  padding: EdgeInsets.symmetric(vertical: 8),
                                   child: Text(
                                     Currency.format(montant,
                                         isKEuros: isKEuros),
@@ -420,6 +424,7 @@ class GlobalAccountDataTable extends StatelessWidget {
                                               : Colors
                                                   .black, // Couleurs vert/rouge
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               );
