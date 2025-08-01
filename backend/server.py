@@ -3,9 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from routes.odoo_routes import odoo_router
 from routes.navision_routes import navision_router
-from routes.notification_routes import notification_router
-from routes.websocket_routes import websocket_router
-from websocket.data_detector import data_detector
+from routes.file_routes import file_router
 import json
 import locale
 import os
@@ -40,24 +38,7 @@ async def force_utf8_encoding(request, call_next):
     return response
 app.include_router(odoo_router)
 app.include_router(navision_router)
-# app.include_router(notification_router)
-# app.include_router(websocket_router)
-
-# @app.on_event("startup")
-# async def startup_event():
-#     """Démarrer le monitoring automatique au lancement du serveur"""
-#     logger.info("🚀 Démarrage du serveur MDM-FI avec WebSocket Relay")
-    
-#     # Démarrer le monitoring automatique des données
-#     data_detector.start_monitoring()
-#     logger.info("📊 Monitoring automatique des données démarré")
-
-# @app.on_event("shutdown")
-# async def shutdown_event():
-#     """Nettoyer les ressources au arrêt du serveur"""
-#     logger.info("🔄 Arrêt du serveur MDM-FI")
-#     data_detector.stop_monitoring()
-#     logger.info("⏹️ Monitoring des données arrêté")
+app.include_router(file_router)
 
 @app.get("/")
 def root():
@@ -68,11 +49,15 @@ def root():
             "Analyse SIG Navision/Odoo",
             "Notifications temps réel via WebSocket",
             "Monitoring automatique des données",
-            "WebSocket Relay pour multi-clients"
+            "WebSocket Relay pour multi-clients",
+            "Gestion des fichiers JSON",
+            "Synchronisation temps réel"
         ],
         "endpoints": {
             "api_docs": "/docs",
             "websocket_test": "/ws/test",
-            "websocket_stats": "/ws/stats"
+            "websocket_stats": "/ws/stats",
+            "files_websocket": "/api/files/ws",
+            "files_status": "/api/files/status"
         }
     }

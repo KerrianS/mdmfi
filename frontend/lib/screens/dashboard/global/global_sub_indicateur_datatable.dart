@@ -47,18 +47,24 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
         String? libelle;
         if (sousIndicsResponse != null) {
           try {
-            final sousIndicsMap = sousIndicsResponse.sousIndicateurs;
-            outerLoop:
-            for (final annee in sousIndicsMap.keys) {
-              final indicMap = sousIndicsMap[annee];
-              if (indicMap == null) continue;
-              for (final indicateurKey in indicMap.keys) {
-                final sousIndicateursList = indicMap[indicateurKey] ?? [];
-                for (final sousIndicateurObj in sousIndicateursList) {
-                  if (sousIndicateurObj.sousIndicateur == sousInd) {
-                    initiales = sousIndicateurObj.initiales;
-                    libelle = sousIndicateurObj.libelle;
-                    break outerLoop;
+            final sousIndicsMap =
+                sousIndicsResponse['sousIndicateurs'] as Map<String, dynamic>?;
+            if (sousIndicsMap != null) {
+              outerLoop:
+              for (final annee in sousIndicsMap.keys) {
+                final indicMap = sousIndicsMap[annee] as Map<String, dynamic>?;
+                if (indicMap == null) continue;
+                for (final indicateurKey in indicMap.keys) {
+                  final sousIndicateursList =
+                      indicMap[indicateurKey] as List<dynamic>? ?? [];
+                  for (final sousIndicateurObj in sousIndicateursList) {
+                    final sousIndicateurName =
+                        sousIndicateurObj['sousIndicateur'] as String?;
+                    if (sousIndicateurName == sousInd) {
+                      initiales = sousIndicateurObj['initiales'] as String?;
+                      libelle = sousIndicateurObj['libelle'] as String?;
+                      break outerLoop;
+                    }
                   }
                 }
               }
@@ -126,10 +132,10 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
           color: MaterialStateProperty.resolveWith<Color?>(
               (Set<MaterialState> states) {
             if (isAssocie) {
-              return Colors.yellow.shade200;
+              return Colors.grey.shade300;
             }
             if (isSelected) {
-              return Colors.grey.shade300;
+              return Colors.yellow.shade200;
             }
             if (states.contains(MaterialState.hovered)) {
               return Colors.grey.withOpacity(0.1);
@@ -213,63 +219,144 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                             Builder(
                               builder: (context) {
                                 String? formule;
+                                print(
+                                    '[DEBUG] Recherche formule pour sousInd: $sousInd');
+                                print(
+                                    '[DEBUG] sousIndicsResponse: $sousIndicsResponse');
+
                                 try {
                                   final sousIndicsMap =
-                                      sousIndicsResponse.sousIndicateurs;
-                                  outerLoop:
-                                  for (final annee in sousIndicsMap.keys) {
-                                    final indicMap = sousIndicsMap[annee];
-                                    if (indicMap == null) continue;
-                                    for (final indicateurKey in indicMap.keys) {
-                                      final sousIndicateursList =
-                                          indicMap[indicateurKey] ?? [];
-                                      for (final sousIndicateurObj
-                                          in sousIndicateursList) {
-                                        if (sousIndicateurObj.sousIndicateur ==
-                                            sousInd) {
-                                          if (sousIndicateurObj.formule !=
-                                                  null &&
-                                              sousIndicateurObj
-                                                  .formule.isNotEmpty) {
-                                            formule = sousIndicateurObj.formule;
+                                      sousIndicsResponse['sousIndicateurs'];
+                                  print(
+                                      '[DEBUG] Type de sousIndicsMap: ${sousIndicsMap.runtimeType}');
+                                  print(
+                                      '[DEBUG] sousIndicsMap brut: $sousIndicsMap');
+                                  print(
+                                      '[DEBUG] sousIndicsMap: $sousIndicsMap');
+
+                                  if (sousIndicsMap != null) {
+                                    outerLoop:
+                                    for (final annee in sousIndicsMap.keys) {
+                                      print('[DEBUG] Année: $annee');
+                                      final indicMap = sousIndicsMap[annee]
+                                          as Map<String, dynamic>?;
+                                      print('[DEBUG] indicMap: $indicMap');
+
+                                      if (indicMap == null) continue;
+                                      for (final indicateurKey
+                                          in indicMap.keys) {
+                                        print(
+                                            '[DEBUG] Indicateur: $indicateurKey');
+                                        final sousIndicateursList =
+                                            indicMap[indicateurKey]
+                                                    as List<dynamic>? ??
+                                                [];
+                                        print(
+                                            '[DEBUG] Sous-indicateurs: $sousIndicateursList');
+
+                                        for (final sousIndicateurObj
+                                            in sousIndicateursList) {
+                                          final sousIndicateurName =
+                                              sousIndicateurObj[
+                                                  'sousIndicateur'] as String?;
+                                          print(
+                                              '[DEBUG] Comparaison: $sousIndicateurName == $sousInd');
+
+                                          if (sousIndicateurName == sousInd) {
+                                            final formuleObj =
+                                                sousIndicateurObj['formule']
+                                                    as String?;
+                                            print(
+                                                '[DEBUG] Formule trouvée: $formuleObj');
+                                            if (formuleObj != null &&
+                                                formuleObj.isNotEmpty) {
+                                              formule = formuleObj;
+                                            }
+                                            break outerLoop;
                                           }
-                                          break outerLoop;
                                         }
                                       }
                                     }
                                   }
                                 } catch (e) {
+                                  print('[DEBUG] Erreur: $e');
                                   // ignore
                                 }
-                                if (formule != null && formule.isNotEmpty)
-                                  return GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) => AlertDialog(
-                                          title: Row(
-                                            children: [
-                                              Icon(Icons.info_outline,
-                                                  color: Colors.blue),
-                                              SizedBox(width: 8),
-                                              Text('Formule'),
-                                            ],
-                                          ),
-                                          content: Text(formule!),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(ctx).pop(),
-                                              child: Text('Fermer'),
-                                            ),
+                                print('[DEBUG] Formule finale: $formule');
+                                return GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: Row(
+                                          children: [
+                                            Icon(Icons.info_outline,
+                                                color: Colors.blue),
+                                            SizedBox(width: 8),
+                                            Text('Formule'),
                                           ],
                                         ),
-                                      );
-                                    },
-                                    child: Icon(Icons.info_outline,
-                                        size: 18, color: Colors.blue),
-                                  );
-                                return SizedBox.shrink();
+                                        content: SingleChildScrollView(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              if (formule != null &&
+                                                  formule.isNotEmpty) ...[
+                                                Text(
+                                                  'Formule :',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    color: Colors.blue[700],
+                                                  ),
+                                                ),
+                                                SizedBox(height: 8),
+                                                Container(
+                                                  padding: EdgeInsets.all(12),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey[50],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                    border: Border.all(
+                                                        color:
+                                                            Colors.grey[300]!),
+                                                  ),
+                                                  child: Text(
+                                                    formule!,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontFamily: 'monospace',
+                                                    ),
+                                                  ),
+                                                ),
+                                              ] else ...[
+                                                Text(
+                                                  'Aucune formule disponible pour ce sous-indicateur.',
+                                                  style: TextStyle(
+                                                    fontStyle: FontStyle.italic,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.of(ctx).pop(),
+                                            child: Text('Fermer'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  child: Icon(Icons.info_outline,
+                                      size: 18, color: Colors.blue),
+                                );
                               },
                             ),
                         ],

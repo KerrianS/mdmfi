@@ -185,10 +185,10 @@ class MensuelIndicateurDataTable extends StatelessWidget {
           color: WidgetStateProperty.resolveWith<Color?>(
               (Set<WidgetState> states) {
             if (isAssocie) {
-              return Colors.yellow.shade200;
+              return Colors.grey.shade300;
             }
             if (isSelected) {
-              return Colors.grey.shade300;
+              return Colors.yellow.shade200;
             }
             if (states.contains(WidgetState.hovered)) {
               return Colors.grey.withOpacity(0.1);

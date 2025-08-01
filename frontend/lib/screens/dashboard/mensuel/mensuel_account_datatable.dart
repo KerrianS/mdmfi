@@ -90,12 +90,9 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
               (Set<WidgetState> states) {
             final isDarkMode = Theme.of(context).brightness == Brightness.dark;
             if (isAssocie) {
-              return Colors.yellow.shade200;
+              return Colors.grey.shade300;
             }
-            if (isSelected)
-              return isDarkMode
-                  ? const Color(0xFF404040)
-                  : Colors.grey.shade300;
+            if (isSelected) return Colors.yellow.shade200;
             if (states.contains(WidgetState.hovered))
               return isDarkMode
                   ? const Color(0xFF2C2C2C)

@@ -134,10 +134,11 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
         String? initiales;
         String? libelle;
         if (sousIndicsResponse != null) {
-          final mois = sousIndicsResponse!['mois'] as Map<String, dynamic>?;
-          if (mois != null) {
-            for (final moisEntry in mois.entries) {
-              final indicateurs = moisEntry.value as Map<String, dynamic>?;
+          final sousIndicateurs =
+              sousIndicsResponse!['sousIndicateurs'] as Map<String, dynamic>?;
+          if (sousIndicateurs != null) {
+            for (final anneeEntry in sousIndicateurs.entries) {
+              final indicateurs = anneeEntry.value as Map<String, dynamic>?;
               if (indicateurs != null) {
                 for (final indicateurEntry in indicateurs.entries) {
                   final sousIndicateursList =
@@ -172,10 +173,10 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
           color: WidgetStateProperty.resolveWith<Color?>(
               (Set<WidgetState> states) {
             if (isAssocie) {
-              return Colors.yellow.shade200;
+              return Colors.grey.shade300;
             }
             if (isSelected) {
-              return Colors.grey.shade300;
+              return Colors.yellow.shade200;
             }
             if (states.contains(WidgetState.hovered)) {
               return Colors.grey.withOpacity(0.1);
@@ -266,26 +267,50 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                       Builder(
                         builder: (context) {
                           String? formule;
-                          final mois = sousIndicsResponse!['mois']
-                              as Map<String, dynamic>?;
-                          if (mois != null) {
-                            for (final moisEntry in mois.entries) {
+                          print(
+                              '[DEBUG] Recherche formule pour sousInd: $sousInd');
+                          print(
+                              '[DEBUG] sousIndicsResponse: $sousIndicsResponse');
+
+                          final sousIndicateurs =
+                              sousIndicsResponse!['mois'];
+                          print(
+                              '[DEBUG] Type de sousIndicateurs: ${sousIndicateurs.runtimeType}');
+                          print(
+                              '[DEBUG] sousIndicateurs brut: $sousIndicateurs');
+                          print('[DEBUG] sousIndicateurs: $sousIndicateurs');
+
+                          if (sousIndicateurs != null) {
+                            for (final anneeEntry in sousIndicateurs.entries) {
+                              print('[DEBUG] Année: ${anneeEntry.key}');
                               final indicateurs =
-                                  moisEntry.value as Map<String, dynamic>?;
+                                  anneeEntry.value as Map<String, dynamic>?;
+                              print('[DEBUG] Indicateurs: $indicateurs');
+
                               if (indicateurs != null) {
                                 for (final indicateurEntry
                                     in indicateurs.entries) {
+                                  print(
+                                      '[DEBUG] Indicateur: ${indicateurEntry.key}');
                                   final sousIndicateursList =
                                       indicateurEntry.value as List<dynamic>? ??
                                           [];
+                                  print(
+                                      '[DEBUG] Sous-indicateurs: $sousIndicateursList');
+
                                   for (final sousIndicateur
                                       in sousIndicateursList) {
                                     final sousIndicateurName =
                                         sousIndicateur['sousIndicateur']
                                             as String?;
+                                    print(
+                                        '[DEBUG] Comparaison: $sousIndicateurName == $sousInd');
+
                                     if (sousIndicateurName == sousInd) {
                                       formule =
                                           sousIndicateur['formule'] as String?;
+                                      print(
+                                          '[DEBUG] Formule trouvée: $formule');
                                       break;
                                     }
                                   }
@@ -295,13 +320,82 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                               if (formule != null) break;
                             }
                           }
-                          if (formule != null && formule.isNotEmpty)
-                            return const Padding(
-                              padding: EdgeInsets.only(left: 4.0),
+                          print('[DEBUG] Formule finale: $formule');
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 4.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: Row(
+                                      children: [
+                                        Icon(Icons.info_outline,
+                                            color: Colors.blue),
+                                        SizedBox(width: 8),
+                                        Text('Formule'),
+                                      ],
+                                    ),
+                                    content: SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          if (formule != null &&
+                                              formule.isNotEmpty) ...[
+                                            Text(
+                                              'Formule :',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                                color: Colors.blue[700],
+                                              ),
+                                            ),
+                                            SizedBox(height: 8),
+                                            Container(
+                                              padding: EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[50],
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: Colors.grey[300]!),
+                                              ),
+                                              child: Text(
+                                                formule!,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontFamily: 'monospace',
+                                                ),
+                                              ),
+                                            ),
+                                          ] else ...[
+                                            Text(
+                                              'Aucune formule disponible pour ce sous-indicateur.',
+                                              style: TextStyle(
+                                                fontStyle: FontStyle.italic,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(),
+                                        child: Text('Fermer'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                               child: Icon(Icons.info_outline,
                                   size: 18, color: Colors.blue),
-                            );
-                          return const SizedBox.shrink();
+                            ),
+                          );
                         },
                       ),
                   ],

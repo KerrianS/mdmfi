@@ -170,6 +170,8 @@ class UnifiedSIGService {
             .map((sous) => {
                   'sousIndicateur': sous.sousIndicateur,
                   'libelle': sous.libelle,
+                  'initiales': sous.initiales,
+                  'formule': sous.formule,
                   'montant': sous.montant,
                 })
             .toList();
@@ -297,6 +299,8 @@ class UnifiedSIGService {
               .map((sous) => {
                     'sousIndicateur': sous.sousIndicateur,
                     'libelle': sous.libelle,
+                    'initiales': sous.initiales,
+                    'formule': sous.formule,
                     'montant': sous.montant,
                   })
               .toList();
