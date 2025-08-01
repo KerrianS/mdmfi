@@ -181,7 +181,15 @@ class MensuelIndicateurDataTable extends StatelessWidget {
 
         return DataRow(
           selected: isSelected,
-          onSelectChanged: (_) => onSelectIndicateur(ind),
+          onSelectChanged: (_) {
+            // Si la ligne est déjà sélectionnée, on la désélectionne
+            if (isSelected) {
+              onSelectIndicateur(
+                  ''); // Passer une chaîne vide pour désélectionner
+            } else {
+              onSelectIndicateur(ind); // Sinon, sélectionner la ligne
+            }
+          },
           color: WidgetStateProperty.resolveWith<Color?>(
               (Set<WidgetState> states) {
             if (isAssocie) {
@@ -202,7 +210,10 @@ class MensuelIndicateurDataTable extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   ind,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -216,7 +227,11 @@ class MensuelIndicateurDataTable extends StatelessWidget {
                     Expanded(
                       child: Text(
                         libelle ?? ind,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight:
+                              isSelected ? FontWeight.w900 : FontWeight.normal,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -388,9 +403,12 @@ class MensuelIndicateurDataTable extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     montants[m]?.format(isKEuros: isKEuros) ?? '0,00 €',
-                    style: TextStyle(fontSize: 12),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight:
+                          isSelected ? FontWeight.w900 : FontWeight.normal,
+                    ),
                     overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
                   ),
                 ),
               );

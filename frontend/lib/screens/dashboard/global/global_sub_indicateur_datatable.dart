@@ -128,7 +128,15 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
         // ...existing code...
         return DataRow(
           selected: isSelected,
-          onSelectChanged: (_) => onSelectSousIndicateur(sousInd),
+          onSelectChanged: (_) {
+            // Si la ligne est déjà sélectionnée, on la désélectionne
+            if (isSelected) {
+              onSelectSousIndicateur(
+                  ''); // Passer une chaîne vide pour désélectionner
+            } else {
+              onSelectSousIndicateur(sousInd); // Sinon, sélectionner la ligne
+            }
+          },
           color: MaterialStateProperty.resolveWith<Color?>(
               (Set<MaterialState> states) {
             if (isAssocie) {
@@ -149,7 +157,10 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: Text(
                   initiales ?? sousInd,
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight:
+                          isSelected ? FontWeight.w900 : FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -163,7 +174,11 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                     Expanded(
                       child: Text(
                         libelle ?? sousInd,
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isSelected
+                                ? FontWeight.w900
+                                : FontWeight.normal),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -372,7 +387,11 @@ class GlobalSubIndicateurDataTable extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Text(
                         montants[an]?.format(isKEuros: isKEuros) ?? '0,00 €',
-                        style: TextStyle(fontSize: 12)),
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isSelected
+                                ? FontWeight.w900
+                                : FontWeight.normal)),
                   ),
                 )),
           ],

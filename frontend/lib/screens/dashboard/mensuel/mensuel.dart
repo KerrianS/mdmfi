@@ -394,12 +394,12 @@ class _MensuelState extends State<Mensuel> {
             label: Text(isKEuros ? 'Euros' : 'KEuros',
                 style: TextStyle(fontWeight: FontWeight.w500)),
           ),
-          // Bouton info jaune (yellow.shade200)
+          // Bouton info gris
           Padding(
             padding: const EdgeInsets.only(left: 8, right: 8),
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow.shade200,
+                backgroundColor: Colors.grey.shade300,
                 foregroundColor: Colors.black,
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 elevation: 1,
@@ -412,13 +412,13 @@ class _MensuelState extends State<Mensuel> {
                   builder: (ctx) => AlertDialog(
                     title: Row(
                       children: [
-                        Icon(Icons.info, color: Colors.yellow.shade700),
+                        Icon(Icons.info, color: Colors.grey.shade600),
                         SizedBox(width: 8),
                         Text('Information'),
                       ],
                     ),
                     content: Text(
-                        'Chaque élément surligné en jaune est relié au calcul de l\'indicateur que vous avez sélectionné !'),
+                        'Chaque élément surligné en gris est relié au calcul de l\'indicateur que vous avez sélectionné !'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(ctx).pop(),

@@ -108,7 +108,14 @@ class GlobalIndicateurDataTable extends StatelessWidget {
               associeLibelles.contains(libelle);
           return DataRow(
             selected: isSelected,
-            onSelectChanged: (_) => onSelectIndicateur(ind),
+            onSelectChanged: (_) {
+              // Si la ligne est déjà sélectionnée, on la désélectionne
+              if (isSelected) {
+                onSelectIndicateur(''); // Passer une chaîne vide pour désélectionner
+              } else {
+                onSelectIndicateur(ind); // Sinon, sélectionner la ligne
+              }
+            },
             color: MaterialStateProperty.resolveWith<Color?>(
                 (Set<MaterialState> states) {
               if (isAssocie) {
@@ -129,7 +136,11 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     ind,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight:
+                          isSelected ? FontWeight.w900 : FontWeight.bold,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -143,7 +154,12 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                       Expanded(
                         child: Text(
                           libelle,
-                          style: TextStyle(fontSize: 12),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isSelected
+                                ? FontWeight.w900
+                                : FontWeight.normal,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -410,16 +426,24 @@ class GlobalIndicateurDataTable extends StatelessWidget {
                   ),
                 ),
               ),
-              ...annees.map((an) => DataCell(
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text(
-                        montants[an]?.format(isKEuros: isKEuros) ?? '-',
-                        style: TextStyle(fontSize: 12),
+              ...annees.map((an) {
+                return DataCell(
+                  Container(
+                    width: 100,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      montants[an]?.format(isKEuros: isKEuros) ?? '0,00 €',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight:
+                            isSelected ? FontWeight.w900 : FontWeight.normal,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  )),
+                  ),
+                );
+              }),
             ],
           );
         }).toList(),

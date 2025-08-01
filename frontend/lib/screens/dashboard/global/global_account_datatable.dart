@@ -126,7 +126,14 @@ class GlobalAccountDataTable extends StatelessWidget {
                         return DataRow(
                           selected: isSelected,
                           onSelectChanged: onSelectCompte != null
-                              ? (_) => onSelectCompte!(codeCompte)
+                              ? (_) {
+                                  // Si la ligne est déjà sélectionnée, on la désélectionne
+                                  if (isSelected) {
+                                    onSelectCompte!(''); // Passer une chaîne vide pour désélectionner
+                                  } else {
+                                    onSelectCompte!(codeCompte); // Sinon, sélectionner la ligne
+                                  }
+                                }
                               : null,
                           color: WidgetStateProperty.resolveWith<Color?>(
                               (Set<WidgetState> states) {
@@ -148,7 +155,9 @@ class GlobalAccountDataTable extends StatelessWidget {
                                   codeCompte,
                                   style: TextStyle(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w900
+                                          : FontWeight.bold,
                                       color: Colors.black), // Texte en noir
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -166,6 +175,9 @@ class GlobalAccountDataTable extends StatelessWidget {
                                         libelle,
                                         style: TextStyle(
                                             fontSize: 12,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w900
+                                                : FontWeight.normal,
                                             color:
                                                 Colors.black), // Texte en noir
                                         overflow: TextOverflow.ellipsis,
@@ -398,7 +410,9 @@ class GlobalAccountDataTable extends StatelessWidget {
                                         isKEuros: isKEuros),
                                     style: TextStyle(
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w900
+                                          : FontWeight.w500,
                                       color: montant < 0
                                           ? Colors.red
                                           : montant > 0

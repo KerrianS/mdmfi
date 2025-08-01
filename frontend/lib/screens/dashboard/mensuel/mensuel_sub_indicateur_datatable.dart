@@ -169,7 +169,15 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
 
         return DataRow(
           selected: isSelected,
-          onSelectChanged: (_) => onSelectSousIndicateur(sousInd),
+          onSelectChanged: (_) {
+            // Si la ligne est déjà sélectionnée, on la désélectionne
+            if (isSelected) {
+              onSelectSousIndicateur(
+                  ''); // Passer une chaîne vide pour désélectionner
+            } else {
+              onSelectSousIndicateur(sousInd); // Sinon, sélectionner la ligne
+            }
+          },
           color: WidgetStateProperty.resolveWith<Color?>(
               (Set<WidgetState> states) {
             if (isAssocie) {
@@ -192,7 +200,7 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                   initiales ?? sousInd,
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? const Color(0xFFE0E0E0)
                         : Colors.black,
@@ -212,6 +220,8 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                         libelle ?? sousInd,
                         style: TextStyle(
                           fontSize: 12,
+                          fontWeight:
+                              isSelected ? FontWeight.w900 : FontWeight.normal,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? const Color(0xFFE0E0E0)
                               : Colors.black,
@@ -272,8 +282,7 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                           print(
                               '[DEBUG] sousIndicsResponse: $sousIndicsResponse');
 
-                          final sousIndicateurs =
-                              sousIndicsResponse!['mois'];
+                          final sousIndicateurs = sousIndicsResponse!['mois'];
                           print(
                               '[DEBUG] Type de sousIndicateurs: ${sousIndicateurs.runtimeType}');
                           print(
@@ -414,6 +423,8 @@ class MensuelSubIndicateurDataTable extends StatelessWidget {
                         : '0,00 €',
                     style: TextStyle(
                       fontSize: 12,
+                      fontWeight:
+                          isSelected ? FontWeight.w900 : FontWeight.normal,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? const Color(0xFFE0E0E0)
                           : Colors.black,

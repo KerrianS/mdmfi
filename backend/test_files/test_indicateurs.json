@@ -1,0 +1,51 @@
+{
+  "societe": "test-societe",
+  "annee": "2023",
+  "type": "indicateurs",
+  "data": {
+    "indicateurs": [
+      {
+        "nom": "Ratio de liquidité",
+        "valeur": 1.85,
+        "unite": "fois",
+        "tendance": "hausse",
+        "seuil_alerte": 1.5,
+        "seuil_critique": 1.0
+      },
+      {
+        "nom": "Ratio de solvabilité",
+        "valeur": 0.65,
+        "unite": "%",
+        "tendance": "stable",
+        "seuil_alerte": 0.7,
+        "seuil_critique": 0.5
+      },
+      {
+        "nom": "Marge bénéficiaire",
+        "valeur": 12.5,
+        "unite": "%",
+        "tendance": "hausse",
+        "seuil_alerte": 10.0,
+        "seuil_critique": 5.0
+      },
+      {
+        "nom": "ROE (Return on Equity)",
+        "valeur": 15.2,
+        "unite": "%",
+        "tendance": "hausse",
+        "seuil_alerte": 12.0,
+        "seuil_critique": 8.0
+      },
+      {
+        "nom": "ROA (Return on Assets)",
+        "valeur": 8.7,
+        "unite": "%",
+        "tendance": "stable",
+        "seuil_alerte": 7.0,
+        "seuil_critique": 4.0
+      }
+    ],
+    "date_generation": "2023-12-19T10:30:00",
+    "version": "1.0"
+  }
+} 

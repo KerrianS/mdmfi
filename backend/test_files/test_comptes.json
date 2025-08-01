@@ -1,0 +1,42 @@
+{
+  "societe": "test-societe",
+  "annee": "2023",
+  "type": "comptes",
+  "data": {
+    "comptes": [
+      {
+        "numero": "601000",
+        "intitule": "Achats de matières premières",
+        "solde": 50000,
+        "type": "charge"
+      },
+      {
+        "numero": "602000",
+        "intitule": "Achats d'approvisionnements",
+        "solde": 25000,
+        "type": "charge"
+      },
+      {
+        "numero": "603000",
+        "intitule": "Achats d'emballages",
+        "solde": 15000,
+        "type": "charge"
+      },
+      {
+        "numero": "604000",
+        "intitule": "Achats de fournitures d'entretien",
+        "solde": 8000,
+        "type": "charge"
+      },
+      {
+        "numero": "605000",
+        "intitule": "Achats de fournitures administratives",
+        "solde": 12000,
+        "type": "charge"
+      }
+    ],
+    "total_charges": 110000,
+    "date_generation": "2023-12-19T10:30:00",
+    "version": "1.0"
+  }
+} 

@@ -99,8 +99,16 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                   : Colors.grey.shade200;
             return null;
           }),
-          onSelectChanged:
-              widget.onRowSelect != null ? (_) => widget.onRowSelect!(i) : null,
+          onSelectChanged: widget.onRowSelect != null
+              ? (_) {
+                  // Si la ligne est déjà sélectionnée, on la désélectionne
+                  if (isSelected) {
+                    widget.onRowSelect!(-1); // Passer -1 pour désélectionner
+                  } else {
+                    widget.onRowSelect!(i); // Sinon, sélectionner la ligne
+                  }
+                }
+              : null,
           cells: [
             DataCell(
               Container(
@@ -110,7 +118,7 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                   codeCompte,
                   style: TextStyle(
                     fontSize: 13,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? const Color(0xFFE0E0E0)
                         : Colors.black,
@@ -130,6 +138,9 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                         libelleCompte,
                         style: TextStyle(
                             fontSize: 13,
+                            fontWeight: isSelected
+                                ? FontWeight.w900
+                                : FontWeight.normal,
                             color:
                                 Theme.of(context).brightness == Brightness.dark
                                     ? const Color(0xFFE0E0E0)
@@ -251,6 +262,8 @@ class _MensuelAccountDataTableState extends State<MensuelAccountDataTable> {
                     Currency.format(montant, isKEuros: widget.isKEuros),
                     style: TextStyle(
                         fontSize: 13,
+                        fontWeight:
+                            isSelected ? FontWeight.w900 : FontWeight.normal,
                         color: montant < 0
                             ? Colors.red[700]
                             : montant > 0
